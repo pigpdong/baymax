@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:baymax="http://baymax.tongbanjie.com/schema/baymax" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	   http://www.springframework.org/schema/beans 
+	   http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	   http://baymax.tongbanjie.com/schema/baymax
+	   http://baymax.tongbanjie.com/schema/baymax.xsd">
+
+	<baymax:rule id="trade_order_rule" logicTableName="trade_order"
+		physicsTablePrefix="trade_order_" partitionKeys="userId,id">
+		<property name="partition">
+			<list>
+				<value>p1:[0000-0009]</value>
+				<value>p2:[0010-0010]</value>
+			</list>
+		</property>
+		<property name="dbRuleArray">
+			<list>
+				<value>userId % 20 / 2</value>
+			</list>
+		</property>
+		<property name="tbRuleArray">
+			<list>
+				<!-- <value>id > 1 ? false:false</value> -->
+				<value>userId % 10</value>
+			</list>
+		</property>
+	</baymax:rule>
+</beans>
