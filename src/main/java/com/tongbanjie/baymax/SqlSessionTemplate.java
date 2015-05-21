@@ -32,18 +32,45 @@ import com.tongbanjie.baymax.parser.SqlParser;
 import com.tongbanjie.baymax.router.IRouteService;
 import com.tongbanjie.baymax.utils.SqlSessionUtils;
 
+/**
+ * 所有数据库操作的入口
+ * SqlSessionTemplate->解析SQL->SQL路由->使用Mybatis执行SQL->合并结果集
+ * 
+ * @author dawei
+ *
+ */
 public class SqlSessionTemplate implements SqlSession {
 
+	/**
+	 * Mybatis原始的SessionFactory
+	 * 如果一个Sql被路由到了其他的DataSource,虽然还是用这个SessionFactory来获取一个新的Session,但是这个新的Session关联的是路由目标的DataSource
+	 * 而不是SessionFactory初始化时默认的DataSource.
+	 */
 	private final SqlSessionFactory sqlSessionFactory;
 
+	/**
+	 * Sql执行类型(默认)
+	 */
 	private final ExecutorType executorType;
 
+	/**
+	 * SessionProxy用来嵌入BayMax的入口点.在这里捕获原始SQL,解析,路由,执行
+	 */
 	private final SqlSession sqlSessionProxy;
 
+	/**
+	 * 一个异常翻译器,把JDBC异常翻译为Spring异常.
+	 */
 	private final PersistenceExceptionTranslator exceptionTranslator;
 
+	/**
+	 * 一个多数据源管理器,用来更具数据分区的名称,返回目标数据源实例.
+	 */
 	private final DataSourceDispatcher dataSourceDispatcher;
 	
+	/**
+	 * 一个SQL路由服务,用来把一个原始SQL,路由到对应的DataSource实例,替换Sql表名.
+	 */
 	private final IRouteService routeService;
 
 	// TODO
@@ -210,6 +237,11 @@ public class SqlSessionTemplate implements SqlSession {
 		return sqlSessionProxy.getConnection();
 	}
 
+	/**
+	 * 入口,在执行SQL前切入分库分表逻辑.
+	 * @author dawei
+	 *
+	 */
 	private class SqlSessionInterceptor implements InvocationHandler {
 		// 入口
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -267,7 +299,7 @@ public class SqlSessionTemplate implements SqlSession {
 			return null;
 		}
 
-		// 执行
+		// 执行目标SQL
 		public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
 			try {
 				Object result = method.invoke(sqlSession, args);
