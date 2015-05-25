@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.mapping.BoundSql;
@@ -21,7 +21,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.MyBatisExceptionTranslator;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.util.Assert;
-
 import com.alibaba.fastjson.JSON;
 import com.tongbanjie.baymax.datasources.DataSourceDispatcher;
 import com.tongbanjie.baymax.model.RouteResult;
@@ -275,8 +274,15 @@ public class SqlSessionTemplate implements SqlSession {
 				sqlActionResult.add(this.invoke(proxy, method, args, sqlSession));
 				SqlHandler.clear();
 			}// 循环执行完毕应该释放事务
+			
 			// 结果合并  TODO 虽然现在还没有实现一条原始SQL更具参数被分发到不同数据分区上执行,但是对于全表扫描还是需要进行结果合并.
 			// TODO 结果排序
+			if(sqlActionResult == null || sqlActionResult.size() == 0){
+				return null;
+			}
+			if(sqlActionResult.size() == 1){
+				return sqlActionResult.get(0);
+			}
 			Class<?> resultClass = method.getReturnType();
 			if(resultClass == List.class){
 				List<Object> mearge = new ArrayList<Object>();
@@ -293,10 +299,51 @@ public class SqlSessionTemplate implements SqlSession {
 					mearge = mearge && (Boolean)obj;
 				}
 				return mearge;
-			}else if(resultClass == Number.class){
-				
+			} else if (resultClass == String.class) {
+				throw new RuntimeException("值需要一个String类型的结果,但是返回了多个.");
+			} else if (resultClass == Map.class) {
+				Map<Object, Object> mearge = new HashMap<Object, Object>();
+				for(Object map : sqlActionResult){
+					mearge.putAll((Map)map);
+				}
+			} else if (resultClass == Byte.class) {
+				byte mearge = (byte)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Byte)obj;
+				}
+				return mearge;
+			} else if (resultClass == Short.class) {
+				short mearge = (short)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Short)obj;
+				}
+				return mearge;
+			} else if (resultClass == Integer.class) {
+				int mearge = (int)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Integer)obj;
+				}
+				return mearge;
+			} else if (resultClass == Long.class) {
+				long mearge = (long)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Long)obj;
+				}
+				return mearge;
+			} else if (resultClass == Float.class) {
+				float mearge = (float)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Float)obj;
+				}
+				return mearge;
+			} else if (resultClass == Double.class) {
+				double mearge = (double)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Double)obj;
+				}
+				return mearge;
 			}
-			return null;
+			throw new RuntimeException("结果集合并遇到了不支持的类型:"+resultClass);
 		}
 
 		// 执行目标SQL

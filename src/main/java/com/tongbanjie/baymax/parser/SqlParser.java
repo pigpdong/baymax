@@ -120,9 +120,20 @@ public class SqlParser {
 
 		return null;
 	}
+	
+	/**
+	 * 替换SQL表名
+	 * @param sql
+	 * @param logicTableName 逻辑表名
+	 * @param phyTableName 物理表名
+	 * @return new Sql
+	 */
+	public String replaceTableName(String sql, String logicTableName, String phyTableName){
+		return sql.replaceFirst(logicTableName, phyTableName);
+	}
 
 	/**
-	 * SQL解析
+	 * SQL解析,提取WHERE条件中的KEY,VALUE
 	 * 
 	 * @param boundSql
 	 * @return
@@ -199,7 +210,7 @@ public class SqlParser {
 		List<String> sqls = new ArrayList<String>();
 		sqls.add("	\r	\r\n \n   	update 	t_a$ble0 set a=1");
 		sqls.add("delete from t_a$ble0\r\n t where t.id = 0");
-		sqls.add("delete from t_a$ble0");
+		sqls.add("delete from T_$ble0");
 		sqls.add("insert into t_a$ble0 t values(?,?) where t.id = 0");
 		sqls.add("insert into t_a$ble0(col_a, col_b) values(?,?) where id = 0");
 		sqls.add("select count(*) from t_a$ble0");

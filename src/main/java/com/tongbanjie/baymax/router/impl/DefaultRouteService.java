@@ -54,8 +54,8 @@ public class DefaultRouteService implements IRouteService{
 	@Override
 	public RouteResult doRoute(BoundSql boundSql){
 		String sql = boundSql.getSql();
-		String tableName = parser.findTableName(sql);
-		ITableRule rule = tableRuleMapping.get(tableName);
+		String logicTableName = parser.findTableName(sql);
+		ITableRule rule = tableRuleMapping.get(logicTableName);
 		if(rule == null){
 			// 不需要路由
 			RouteResult routeResult = new RouteResult();
@@ -108,10 +108,10 @@ public class DefaultRouteService implements IRouteService{
 				routeResult.setResultType(RouteResultType.PARTITION);
 				Sql actionSql = new Sql();
 				actionSql.setDataSource(dataSourceDispatcher.getDataSourceWhithParttionName(target.getObject1()));
-				actionSql.setLogicTableName(tableName);
+				actionSql.setLogicTableName(logicTableName);
 				actionSql.setSqlReWrite(true);
 				actionSql.setOriginalSql(null);
-				actionSql.setTargetSql(null);//TODO 替换表名
+				actionSql.setTargetSql(parser.replaceTableName(sql, logicTableName, target.getObject2()));
 				actionSql.setTargetTableName(target.getObject2());
 				actionSql.setReWriteParameter(null); // TODO 暂时不实现参数重写,所以这里继续使用Mybatis的参数
 				routeResult.addSql(actionSql);
