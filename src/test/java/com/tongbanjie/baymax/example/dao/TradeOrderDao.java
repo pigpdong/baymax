@@ -14,14 +14,20 @@ public class TradeOrderDao extends BayMaxSqlSessionDaoSupport {
 		return (TradeOrder) getSqlSession().selectOne("example.getById", id);
 	}
 	
-	public TradeOrder get(TradeOrder order){
-		return (TradeOrder) getSqlSession().selectOne("example.getById", order);
+	@SuppressWarnings("unchecked")
+	public List<TradeOrder> listByExample(TradeOrder order){
+		return (List<TradeOrder>) getSqlSession().selectList("example.listByExample", order);
 	}
-
-	public List<TradeOrder> list() {
-		TradeOrder order = new TradeOrder();
-		order.setUserId("xxoo");
-		return (List<TradeOrder>) getSqlSession().selectList("example.getById", order);
+	
+	public int insert(TradeOrder order){
+		return getSqlSession().insert("example.insert", order);
 	}
-
+	
+	public int delete(TradeOrder order){
+		return getSqlSession().delete("example.deleteByExample", order);
+	}
+	
+	public int update(TradeOrder order){
+		return getSqlSession().update("example.updateById", order);
+	}
 }

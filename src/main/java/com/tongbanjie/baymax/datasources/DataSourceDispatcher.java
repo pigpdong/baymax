@@ -15,6 +15,9 @@ import org.springframework.util.CollectionUtils;
 /**
  * DataSource分发器
  * 
+ * 一个原始的DataSource被包装为了一个{@link NativeDataSourceHandler}
+ * 这个类主要个根据DataSource的identity返回对应的{@link NativeDataSourceHandler}
+ * 
  * @author dawei
  *
  */

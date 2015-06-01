@@ -5,12 +5,18 @@ import javax.sql.DataSource;
 /**
  * 原始DataSource包装器
  * 
+ * 一个包装器里面可能包含四个个DataSource,一个{@link targetDataSource}一个{@link standbyDataSource}
+ * 这两个DataSource用来做读写分离。
+ * 另外还有两个DataSource {@link targetDetectorDataSource},{@link standbyDetectorDataSource}用来做心跳检测。
+ * 之所以要分离出转门用作心跳检测的DataSource是应为用来执行业务的DataSource链接有可能被用完，但是这时候数据库还是活的，导致心跳检测不准确.
+ * 
  * @author dawei
  *
  */
 public class NativeDataSourceHandler {
+	
 	/**
-	 * the identity of to-be-exposed DataSource.
+	 * 命名,唯一标识
 	 */
 	private String identity;
 	/**

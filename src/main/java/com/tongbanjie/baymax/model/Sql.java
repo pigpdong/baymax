@@ -22,6 +22,8 @@ public class Sql {
 	
 	private String targetSql;
 	
+	private SqlType sqlType;
+	
 	/**
 	 * 只有{@link sqlReWrite==true} 控制Statement拦截器是否使用targetSQL。
 	 * 只有{@link sqlReWrite==true} 控制statement是否使用{@link reWriteParameter}
@@ -102,6 +104,14 @@ public class Sql {
 
 	public void setReWriteParameter(Object reWriteParameter) {
 		this.reWriteParameter = reWriteParameter;
+	}
+
+	public SqlType getSqlType() {
+		return sqlType;
+	}
+
+	public void setSqlType(SqlType sqlType) {
+		this.sqlType = sqlType;
 	}
 
 }

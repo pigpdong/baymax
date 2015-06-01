@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.mapping.BoundSql;
@@ -21,13 +22,13 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.MyBatisExceptionTranslator;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.util.Assert;
+
 import com.alibaba.fastjson.JSON;
 import com.tongbanjie.baymax.datasources.DataSourceDispatcher;
 import com.tongbanjie.baymax.model.RouteResult;
 import com.tongbanjie.baymax.model.RouteResultType;
 import com.tongbanjie.baymax.model.Sql;
 import com.tongbanjie.baymax.model.SqlHandler;
-import com.tongbanjie.baymax.parser.SqlParser;
 import com.tongbanjie.baymax.router.IRouteService;
 import com.tongbanjie.baymax.utils.SqlSessionUtils;
 
@@ -126,6 +127,9 @@ public class SqlSessionTemplate implements SqlSession {
 		return sqlSessionProxy.selectList(statement, parameter, rowBounds);
 	}
 
+	/**
+	 * @return Map<?, Map<?, ?>> ==> Map<mapKey, Map<columnName, columnValue>>
+	 */
 	@Override
 	public Map<?, ?> selectMap(String statement, String mapKey) {
 		return sqlSessionProxy.selectMap(statement, mapKey);
@@ -250,21 +254,20 @@ public class SqlSessionTemplate implements SqlSession {
 			// 参数准备
 			BoundSql boundSql = sqlSessionFactory.getConfiguration().getMappedStatement(statement).getBoundSql(parameter);
 
-			// Parser
-			SqlParser parser = new SqlParser();
-			System.out.println(JSON.toJSONString(parser.parse(boundSql), true));
-			
 			// 路由
-			RouteResult routeResult = routeService.doRoute(boundSql.getSql(), boundSql.getParameterMappings());
-			List<Sql> sqlList = routeResult.getSqlList();
-			
+			RouteResult routeResult = routeService.doRoute(boundSql);
 			if(routeResult.getResultType() == RouteResultType.NO){
-				// TODO
-				dataSourceDispatcher.getDefaultDataSource();
+				final SqlSession sqlSession = SqlSessionUtils.getSqlSession(SqlSessionTemplate.this.sqlSessionFactory,
+						SqlSessionTemplate.this.executorType, SqlSessionTemplate.this.exceptionTranslator,
+						dataSourceDispatcher.getDefaultDataSource());
+				return this.invoke(proxy, method, args, sqlSession);
+				//无需路由直接返回执行结果
 			}
 			
+			//RouteResultType.PARTITION || RouteResultType.ALL
 			// 循环执行
 			// 循环执行前应该启用事务,应为对调用者来说,这应该是一个整体
+			List<Sql> sqlList = routeResult.getSqlList();
 			List<Object> sqlActionResult = new ArrayList<Object>();
 			for (Sql sql : sqlList) {
 				SqlHandler.set(sql);
@@ -275,14 +278,27 @@ public class SqlSessionTemplate implements SqlSession {
 				SqlHandler.clear();
 			}// 循环执行完毕应该释放事务
 			
-			// 结果合并  TODO 虽然现在还没有实现一条原始SQL更具参数被分发到不同数据分区上执行,但是对于全表扫描还是需要进行结果合并.
-			// TODO 结果排序
 			if(sqlActionResult == null || sqlActionResult.size() == 0){
 				return null;
 			}
 			if(sqlActionResult.size() == 1){
+				// 只有一个结果 直接return
 				return sqlActionResult.get(0);
 			}
+			
+			/**
+			 * 结果合并  
+			 * selectOne-object
+			 * selectList->list
+			 * selectMap->map
+			 * insert->int
+			 * update->int
+			 * delete->int
+			 * 只有返回类型为List,Int,Map(待测试)的才会有多个执行结果,所以其他类型的就直接return了.
+			 * 对于select avg(a),sum(b) from table这种SQL,会分发执行并产生多个执行结果,所以这类查询需要改造业务使用selectList方法,并在业务中合并结果.
+			 * 而不能直接使用selectOne方法.// TODO 这个会在后面考虑用BayMax根据语法自动合并。
+			 */
+			// TODO 结果排序-暂时使用业务排序
 			Class<?> resultClass = method.getReturnType();
 			if(resultClass == List.class){
 				List<Object> mearge = new ArrayList<Object>();
@@ -290,63 +306,30 @@ public class SqlSessionTemplate implements SqlSession {
 					mearge.addAll((List<?>)obj);
 				}
 				return mearge;
-			}else if(resultClass == Boolean.class){
-				if(sqlActionResult == null || sqlActionResult.size() == 0){
-					return false;
-				}
-				boolean mearge = true;
-				for(Object obj : sqlActionResult){
-					mearge = mearge && (Boolean)obj;
-				}
-				return mearge;
-			} else if (resultClass == String.class) {
-				throw new RuntimeException("值需要一个String类型的结果,但是返回了多个.");
-			} else if (resultClass == Map.class) {
+			}else if (resultClass == Map.class) {
 				Map<Object, Object> mearge = new HashMap<Object, Object>();
 				for(Object map : sqlActionResult){
-					mearge.putAll((Map)map);
+					mearge.putAll((Map<?, ?>)map);
 				}
-			} else if (resultClass == Byte.class) {
-				byte mearge = (byte)0;
-				for(Object obj : sqlActionResult){
-					mearge += (Byte)obj;
-				}
-				return mearge;
-			} else if (resultClass == Short.class) {
-				short mearge = (short)0;
-				for(Object obj : sqlActionResult){
-					mearge += (Short)obj;
-				}
-				return mearge;
-			} else if (resultClass == Integer.class) {
+			} else if (resultClass == Integer.class || "int".equals(resultClass.getName())) {
 				int mearge = (int)0;
 				for(Object obj : sqlActionResult){
 					mearge += (Integer)obj;
 				}
 				return mearge;
-			} else if (resultClass == Long.class) {
-				long mearge = (long)0;
-				for(Object obj : sqlActionResult){
-					mearge += (Long)obj;
-				}
-				return mearge;
-			} else if (resultClass == Float.class) {
-				float mearge = (float)0;
-				for(Object obj : sqlActionResult){
-					mearge += (Float)obj;
-				}
-				return mearge;
-			} else if (resultClass == Double.class) {
-				double mearge = (double)0;
-				for(Object obj : sqlActionResult){
-					mearge += (Double)obj;
-				}
-				return mearge;
 			}
-			throw new RuntimeException("结果集合并遇到了不支持的类型:"+resultClass);
+			throw new RuntimeException("结果集合并遇到了不支持的类型, 只能需要一个结果, 却返回了多个:resultType"+resultClass + " ,sql:" + statement + " ,param:" + JSON.toJSONString(parameter));
 		}
 
-		// 执行目标SQL
+		/**
+		 * 执行
+		 * @param proxy
+		 * @param method
+		 * @param args
+		 * @param sqlSession
+		 * @return
+		 * @throws Throwable
+		 */
 		public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
 			try {
 				Object result = method.invoke(sqlSession, args);

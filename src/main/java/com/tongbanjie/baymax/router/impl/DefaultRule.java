@@ -12,15 +12,22 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.router.ITableRule;
-import com.tongbanjie.baymax.router.model.TableRulePartitionDescripter;
+import com.tongbanjie.baymax.router.model.PartitionDescripter;
 import com.tongbanjie.baymax.utils.Pair;
 
+/**
+ * 这个类是对XML配置文件解析结果的Model对象。
+ * 一个对象对应XML中一个逻辑表的路由信息。
+ * 他的父类{@link ITableRule}定义了一些路由规则公用的基本属性。
+ * @author dawei
+ *
+ */
 public class DefaultRule extends ITableRule implements InitializingBean{
 
 	private static Map<String, Object> functionMap = new HashMap<String, Object>();// TODO
 	
 	//解析
-	List<TableRulePartitionDescripter> partitionDescripters;
+	List<PartitionDescripter> partitionDescripters;
 	
 	/**
 	 * 返回所有分区-表的映射
@@ -35,7 +42,7 @@ public class DefaultRule extends ITableRule implements InitializingBean{
 	@Override
 	public List<Pair<String/*targetDB*/, String/*targetTable*/>> getAllTableNames(){
 		List<Pair<String/*targetDB*/, String/*targetTable*/>> allTables = new ArrayList<Pair<String,String>>();
-		for(TableRulePartitionDescripter descripter : partitionDescripters){
+		for(PartitionDescripter descripter : partitionDescripters){
 			for(String suffix : descripter.getAllTableNameSuffix()){
 				allTables.add(new Pair<String, String>(descripter.getPartitionName(), this.getPhysicsTablePrefix() + suffix));
 			}
@@ -47,18 +54,24 @@ public class DefaultRule extends ITableRule implements InitializingBean{
 	public Pair<String/*targetDB*/,String/*targetTable*/> executeRule(Map<?,?> param){
 		String targetDB = null;
 		String targetTable = null;
-		TableRulePartitionDescripter targetDescrepter = null;
+		PartitionDescripter targetDescrepter = null;
 		
 		List<String> dbRuleArray = getDbRuleArray();
 		List<String> tbRuleArray = getTbRuleArray();
 		
 		//DB
 		if(dbRuleArray != null){
-			for(String dbRule : dbRuleArray){
-				Integer dbIndex = Integer.valueOf(String.valueOf(executeExpression(dbRule, param)));
-				if(dbIndex == null){
-					throw new RuntimeException("cat convert this type of el result : " + dbIndex);
+			for(int i = 0; i<dbRuleArray.size(); i++){
+				String dbRule = dbRuleArray.get(i);
+				if(!parameterParepare(super.getTbRuleArrayColumns().get(i), param)){
+					// 这个规则对应的EL表达式需要的参数不满足
+					continue;
 				}
+				Double doubleResult = (Double) executeExpression(dbRule, param, Double.class);// 舍去小数,返回int
+				if(doubleResult == null){
+					throw new RuntimeException("cat convert this type of el result : " + doubleResult);
+				}
+				Integer dbIndex = doubleResult.intValue();
 				targetDescrepter = partitionDescripters.get((Integer)dbIndex);
 				targetDB = targetDescrepter.getPartitionName();
 			}
@@ -66,8 +79,13 @@ public class DefaultRule extends ITableRule implements InitializingBean{
 		
 		//TABLE
 		if(tbRuleArray != null){
-			for(String tbRule : tbRuleArray){
-				Object ruleResult = executeExpression(tbRule, param);
+			for(int i = 0; i<tbRuleArray.size(); i++){
+				String tbRule = tbRuleArray.get(i);
+				if(!parameterParepare(super.getTbRuleArrayColumns().get(i), param)){
+					// 这个规则对应的EL表达式需要的参数不满足
+					continue;
+				}
+				Object ruleResult = executeExpression(tbRule, param, null);
 				if(Boolean.class == ruleResult.getClass() || Boolean.class.isAssignableFrom(ruleResult.getClass())){
 					//boolean
 					if((Boolean)ruleResult == false){
@@ -79,6 +97,7 @@ public class DefaultRule extends ITableRule implements InitializingBean{
 					//Integer
 					String suffix = targetDescrepter.getSuffix((Integer)ruleResult);
 					targetTable = getPhysicsTablePrefix() + suffix;
+					break;//以第一个有结果的规则为准
 				}else{
 					throw new BayMaxException("is the express only can return boolean or integer !" + tbRule);
 				}
@@ -93,25 +112,57 @@ public class DefaultRule extends ITableRule implements InitializingBean{
 	 * @param param
 	 * @return
 	 */
-	private Object executeExpression(String expression, Object param){
+	private <T> Object executeExpression(String expression, Object param, Class<T> toType){
 		Map<String, Object> vrs = new HashMap<String, Object>();
 		vrs.putAll(functionMap);//拓展函数
 		vrs.put("$ROOT", param); 
 		VariableResolverFactory vrfactory = new MapVariableResolverFactory(vrs);
-		return MVEL.eval(expression, param, vrfactory);
+		if(toType != null){
+			return MVEL.eval(expression, param, vrfactory, toType);			
+		}else{
+			return MVEL.eval(expression, param, vrfactory);
+		}
+	}
+	
+	/**
+	 * 判断param中是否包含一个EL表达式所需要的所有参数
+	 * @param ruleColumns
+	 * @param param
+	 * @return
+	 */
+	private boolean parameterParepare(List<String> ruleColumns, Map<?,?> param){
+		for(String column : ruleColumns){
+			if(param.get(column) == null){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		partitionDescripters = new ArrayList<TableRulePartitionDescripter>(getPartition().size());
+		// 1. 创建每个数据分区的描述对象
+		partitionDescripters = new ArrayList<PartitionDescripter>(getPartition().size());
 		for(String pattern : getPartition()){
-			TableRulePartitionDescripter descrepter = new TableRulePartitionDescripter(pattern);
+			PartitionDescripter descrepter = new PartitionDescripter(pattern);
 			if(partitionDescripters.contains(descrepter)){
 				throw new BayMaxException("the table pattern in the rule whid dbIndex is dunplate : " + pattern);
 			}
 			partitionDescripters.add(descrepter);
 		}
+		// 2. 把shardingKeys转换为数组
+		// TODO 校验,tirm()
+		setShardingColumnsArray(getShardingColumns().split(","));
+		
+		//3. 初始化EL表达式需要的KEY
+		initELColumns();
+		
 		//TODO 输入校验
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(new Double(0.9).intValue());
+		System.out.println(new Double(1.9).intValue());
 	}
 	
 }

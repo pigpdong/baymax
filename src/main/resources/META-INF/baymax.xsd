@@ -22,7 +22,7 @@
 				</xsd:choice>
 				<xsd:attribute name="physicsTablePrefix" use="required" />
 				<xsd:attribute name="logicTableName" use="required" />
-				<xsd:attribute name="partitionKeys" use="required" />
+				<xsd:attribute name="shardingColumns" use="required" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

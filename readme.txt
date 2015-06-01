@@ -29,3 +29,57 @@
 
 下一版本考虑一下问题
 1. 聚合函数
+
+
+
+
+
+
+
+
+
+代码垃圾箱
+Class<?> resultClass = method.getReturnType();
+			if(resultClass == List.class){
+				List<Object> mearge = new ArrayList<Object>();
+				for(Object obj : sqlActionResult){
+					mearge.addAll((List<?>)obj);
+				}
+				return mearge;
+			}else if (resultClass == Map.class) {
+				Map<Object, Object> mearge = new HashMap<Object, Object>();
+				for(Object map : sqlActionResult){
+					mearge.putAll((Map<?, ?>)map);
+				}
+			}else if (resultClass == Short.class) {
+				short mearge = (short)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Short)obj;
+				}
+				return mearge;
+			} else if (resultClass == Integer.class) {
+				int mearge = (int)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Integer)obj;
+				}
+				return mearge;
+			} else if (resultClass == Long.class) {
+				long mearge = (long)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Long)obj;
+				}
+				return mearge;
+			} else if (resultClass == Float.class) {
+				float mearge = (float)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Float)obj;
+				}
+				return mearge;
+			} else if (resultClass == Double.class) {
+				double mearge = (double)0;
+				for(Object obj : sqlActionResult){
+					mearge += (Double)obj;
+				}
+				return mearge;
+			}
+			throw new RuntimeException("结果集合并遇到了不支持的类型:"+resultClass);

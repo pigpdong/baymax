@@ -31,6 +31,15 @@ public class New {
     public static <T> ArrayList<T> arrayList() {
         return new ArrayList<T>(4);
     }
+    
+    @SuppressWarnings("unchecked")
+	public static <T> ArrayList<T> arrayList(Object[] array){
+    	ArrayList<T> list = new ArrayList<T>(array.length);
+    	for(Object o : array){
+    		list.add((T) o);
+    	}
+    	return list;
+    }
 
     /**
      * Create a new HashMap.

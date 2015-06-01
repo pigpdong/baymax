@@ -1,6 +1,5 @@
 package com.tongbanjie.baymax;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -14,10 +13,18 @@ import com.tongbanjie.baymax.router.IRouteService;
 import com.tongbanjie.baymax.router.ITableRule;
 import com.tongbanjie.baymax.router.impl.DefaultRouteService;
 
+/**
+ * BayMax的上下文对象,一个Spring上下中最好只初始化一个BayMax,你初始化多个也没意义.
+ * 他包含了BayMax工作时一些必须的内部组件.
+ * 
+ * @author dawei
+ *
+ */
 public class BayMaxContext implements InitializingBean,ApplicationListener<ContextRefreshedEvent> {
 	
 	private DataSourceDispatcher dataSourceDispatcher;
 	
+	@Autowired
 	private List<ITableRule> tableRules;
 	
 	private IRouteService routeService;
@@ -27,11 +34,6 @@ public class BayMaxContext implements InitializingBean,ApplicationListener<Conte
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		String[] tableRulesBeanName = event.getApplicationContext().getBeanNamesForType(ITableRule.class);
-		tableRules = new ArrayList<ITableRule>(tableRulesBeanName.length);
-		for(String ruleBeanName : tableRulesBeanName){
-			tableRules.add((ITableRule)event.getApplicationContext().getBean(ruleBeanName));
-		}
 		checkContextInte();
 	}
 	

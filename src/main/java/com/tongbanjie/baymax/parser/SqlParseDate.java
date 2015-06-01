@@ -1,16 +1,12 @@
 package com.tongbanjie.baymax.parser;
 
 /**
- * SQL解析后的原数据
+ * SQL解析后的Statement参数
  * 
  * @author dawei
  *
  */
 public class SqlParseDate {
-	
-	private String tableName;
-	
-	private String sqlType;
 	
 	private String key;
 	
@@ -43,21 +39,5 @@ public class SqlParseDate {
 
 	public void setOriginalValue(String originalValue) {
 		this.originalValue = originalValue;
-	}
-
-	public String getTableName() {
-		return tableName;
-	}
-
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
-
-	public String getSqlType() {
-		return sqlType;
-	}
-
-	public void setSqlType(String sqlType) {
-		this.sqlType = sqlType;
 	}
 }

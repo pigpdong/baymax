@@ -4,6 +4,14 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DaoSupport;
 
+/**
+ * 使用BayMax的入口.
+ * 你的Dao需要基础这个类,这个就能自动注入一个实现了Mybatis{@link SqlSession}的{@link SqlSessionTemplate}对象
+ * 使用这个对应就和使用原生的Mybatis一样。
+ * 
+ * @author dawei
+ *
+ */
 public abstract class BayMaxSqlSessionDaoSupport extends DaoSupport{
 
 	  private SqlSessionTemplate sqlSession;

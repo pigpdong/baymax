@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
+
+import com.tongbanjie.baymax.model.SqlType;
+import com.tongbanjie.baymax.utils.Pair;
 import com.tongbanjie.baymax.utils.ReflectionUtils;
 
 /**
@@ -13,6 +17,8 @@ import com.tongbanjie.baymax.utils.ReflectionUtils;
  * '123'.且key,value都不能使用函数 3. value只能是Long,String,Date类型。 3.
  * 子查询中请不要出现分区列,否则会把他当成路由参数而出现路由结果错误!
  * 
+ * SQL解析器
+ * 主要用来提取SQL中的表名,Where中的KEY=VALUE形式的参数
  * @author dawei
  *
  */
@@ -26,11 +32,13 @@ public class SqlParser {
 	private static Pattern pfrom_where = Pattern.compile("\\s+from\\s+(.*)\\s+where\\s+"); // .*默认最大匹配
 	private static String hintregx = "/\\*.*?\\*/"; // hint正则式，懒惰匹配(最短匹配)
 	private static Pattern kv_parameters = Pattern.compile("\\s+`*(\\w+){1}`*\\s*=\\s*'*(\\w|\\.|\\?)*'*(;|\\s*)");// where中的查询条件
+	private static Pattern insertColumns = Pattern.compile("\\s+into\\s+(\\w)+\\s+\\((\\w|,|\\s)+\\)");//提取insert中的列名
+	private static Pattern insertValues = Pattern.compile("\\s+values\\s+\\((\\w|,|\\s|\\?)+\\)");//提取insert中的列值
 
 	/**
-	 * @return 返回sql中第一个表明的小写
+	 * @return 返回sql中第一个表明的小写/sql类型
 	 */
-	public String findTableName(String sql) {
+	public Pair<String/*tableName*/, SqlType/*sqlType*/> findTableName(String sql) {
 		if (sql == null)
 			return null;
 		sql = sql.trim(); // trim可以去掉\\s,包括换行符、制表符等
@@ -50,7 +58,7 @@ public class SqlParser {
 		if (sql.startsWith("update")) {
 			Matcher m = ptable.matcher(sql);
 			if (m.find(6)) {
-				return m.group(1);
+				return new Pair<String, SqlType>(m.group(1), SqlType.UPDATE);
 			}
 			return null;
 		}
@@ -58,12 +66,12 @@ public class SqlParser {
 		if (sql.startsWith("delete")) {
 			Matcher m = pdelete_from.matcher(sql);
 			if (m.find(6)) {
-				return m.group(1);
+				return new Pair<String, SqlType>(m.group(1), SqlType.DELETE);
 			}
 
 			m = ptable.matcher(sql); // delete 可以没有from
 			if (m.find(6)) {
-				return m.group(1);
+				return new Pair<String, SqlType>(m.group(1), SqlType.DELETE);
 			}
 			return null;
 		}
@@ -71,7 +79,7 @@ public class SqlParser {
 		if (sql.startsWith("insert")) {
 			Matcher m = pinsert_into.matcher(sql);
 			if (m.find(6)) {
-				return m.group(1);
+				return new Pair<String, SqlType>(m.group(1), SqlType.INSERT);
 			}
 			return null;
 		}
@@ -79,7 +87,7 @@ public class SqlParser {
 		if (sql.startsWith("replace")) {
 			Matcher m = preplace_from.matcher(sql);
 			if (m.find(6)) {
-				return m.group(1);
+				return new Pair<String, SqlType>(m.group(1), SqlType.REPLACE);
 			}
 			return null;
 		}
@@ -90,7 +98,7 @@ public class SqlParser {
 
 		Matcher m = pselect_from.matcher(sql);
 		if (m.find(6)) {
-			return m.group(1);
+			return new Pair<String, SqlType>(m.group(1), SqlType.SELECT);
 		}
 
 		m = pfrom_where.matcher(sql);
@@ -101,9 +109,9 @@ public class SqlParser {
 			for (int i = 1; i < tables.length; i++) {
 				// 因为第一个项已经搜索过了，所以从第二项开始
 				if (tables[i].indexOf('(') == -1) {
-					return tables[i].trim().split("\\s")[0];
+					return new Pair<String, SqlType>(tables[i].trim().split("\\s")[0], SqlType.SELECT);
 				} else {
-					String subTable = findTableName(tables[i]);
+					Pair<String/*tableName*/, SqlType/*sqlType*/> subTable = findTableName(tables[i]);
 					if (subTable != null) {
 						return subTable;
 					}
@@ -133,41 +141,140 @@ public class SqlParser {
 	}
 
 	/**
-	 * SQL解析,提取WHERE条件中的KEY,VALUE
-	 * 
+	 * 在insert语句中提取参数
+	 * INSERT INTO
+		trade_order (
+			id,
+			product_id,
+			amount,
+			real_pay_amount,
+			create_time,
+			user_id,
+			ta_id
+		)
+		VALUES
+		(
+			#{id},
+			#{productId},
+			#{amount},
+			#{realPayAmount},
+			#{createTime},
+			#{userId},
+			#{taId}
+		)
 	 * @param boundSql
+	 * @param sqlType
 	 * @return
 	 */
-	public List<SqlParseDate> parse(BoundSql boundSql) {
+	public Pair<String[]/*columnsName*/, String[]/*columnsValue*/> parseInsertSql(BoundSql boundSql, SqlType sqlType) {
 		String sql = boundSql.getSql().trim();
 		if (sql.endsWith(";")) {
 			sql = sql.substring(0, sql.length() - 1);
 		}
-		SqlParseDate data = new SqlParseDate();
-		Matcher m = kv_parameters.matcher(sql);
-		List<SqlParseDate> dataList = new ArrayList<SqlParseDate>();
+		sql = sql.toLowerCase() + " ";
+		Matcher m = insertColumns.matcher(sql);
+		String[] columns = null;
+		String[] columnsValue = null;
+		// 提取列名
+		while(m.find()){
+			String str = m.group();
+			if(str != null && str.trim().length() != 0){
+				columns = getColums(str);
+				break;
+			}
+		}
+		// 提取列值
+		m = insertValues.matcher(sql);
+		while(m.find()){
+			String str = m.group();
+			if(str != null && str.trim().length() != 0){
+				columnsValue = getColums(str);
+				break;
+			}
+		}
+		return new Pair<String[], String[]>(columns, columnsValue);
+	}
+	
+	private String[] getColums(String str){
+		str = str.substring(str.indexOf("(")+1, str.lastIndexOf(")"));
+		return str.split(",");
+	}
+	
+	/**
+	 * 在where条件解析提取参数
+	 * @param boundSql
+	 * @param sqlType
+	 * @return
+	 */
+	public Pair<String[]/*columnsName*/, String[]/*columnsValue*/> parseWhereSql(BoundSql boundSql, SqlType sqlType) {
+		String sql = boundSql.getSql().trim();
+		if (sql.endsWith(";")) {
+			sql = sql.substring(0, sql.length() - 1);
+		}
+		Matcher m = kv_parameters.matcher(sql);// 提取where中的 key=value对
+		List<String> columns = new ArrayList<String>();
+		List<String> columnsValue = new ArrayList<String>();
 		while (m.find()) {
 			String kvstr = m.group();
-			System.out.println("--" + kvstr);
 			String[/* key-value */] kv = kvstr.split("=");
 			kv[0] = kv[0].trim();
 			kv[1] = kv[1].trim();
 			if (kv[0].startsWith("`") && kv[0].endsWith("`")) {
 				kv[0] = kv[0].substring(1, kv[0].length() - 1);
 			}
-			dataList.add(data);
-			data.setKey(kv[0]);
-			data.setOriginalValue(kv[1]);
+			columns.add(kv[0]);
+			columnsValue.add(kv[1]);
+		}
+		String[] col = new String[columns.size()];
+		String[] colValue = new String[columnsValue.size()];
+		return new Pair<String[], String[]>(columns.toArray(col), columnsValue.toArray(colValue));
+	}
+	
+	/**
+	 * SQL解析,提取条件中的KEY,VALUE
+	 * 
+	 * @param boundSql
+	 * @return
+	 */
+	public List<SqlParseDate> parse(BoundSql boundSql, SqlType sqlType) {
+		Pair<String[]/*columnsName*/, String[]/*columnsValue*/> kvs = null;
+		if(sqlType == SqlType.INSERT){
+			kvs =  parseInsertSql(boundSql, sqlType);
+		}else{
+			kvs = parseWhereSql(boundSql, sqlType);
+		}
+		return buildDate(kvs.getObject1(), kvs.getObject2(), boundSql);
+	}
 
-			if (kv[1].startsWith("'") && kv[1].endsWith("'")) {
-				data.setValue(kv[1]);
-			} else if ("?".equals(kv[1])) {
+	/**
+	 * 把SQL中提取的参数转化为对象,如果参数是?占位符号则从Mybats中获取这个占位符对应的参数对象.
+	 * @param columnNames
+	 * @param columnValues
+	 * @param boundSql
+	 * @return
+	 */
+	private List<SqlParseDate> buildDate(String[] columnNames, String[] columnValues, BoundSql boundSql){
+		List<SqlParseDate> sqlParseDateList = new ArrayList<SqlParseDate>();
+		for(int i = 0; i<columnNames.length; i++){
+			String columnName = columnNames[i].trim();
+			String columnValue = columnValues[i].trim();
+			SqlParseDate data = new SqlParseDate();
+			if (columnName.startsWith("`") && columnName.endsWith("`")) {
+				columnName = columnName.substring(1, columnName.length() - 1);
+			}
+			data.setKey(columnName);
+			data.setOriginalValue(columnValue);
+
+			if (columnValue.startsWith("'") && columnValue.endsWith("'")) {
+				data.setValue(columnValue);// String
+			} else if ("?".equals(columnValue)) {
 				Object value = null;
-				ParameterMapping mapping = boundSql.getParameterMappings().get(getPlaceholderIndex(sql, kvstr));
-				Class<?> javaType = mapping.getJavaType();
+				ParameterMapping mapping = boundSql.getParameterMappings().get(getPlaceholderIndex(columnValues, i));//获取i之前已经有几个?号了
+				Class<?> javaType = boundSql.getParameterObject().getClass();
+				// TODO 这里需要对不同的参数类型做很多测试
 				if (javaType == Byte.class || javaType == Short.class || javaType == Integer.class || javaType == Long.class
 						|| javaType == Float.class || javaType == Double.class) {
-					value = ReflectionUtils.getFieldValue(boundSql.getParameterObject(), "longValue");
+					value = ReflectionUtils.getFieldValue(boundSql.getParameterObject(), "doubleValue");//数字统一转换为Double用于EL
 				} else if (javaType == String.class) {
 					value = boundSql.getParameterObject();
 				} else if (javaType == Boolean.class) {
@@ -179,29 +286,28 @@ public class SqlParser {
 				}
 				data.setValue(value);
 			} else {
-				data.setValue(Double.valueOf(kv[1]));
+				data.setValue(Double.valueOf(columnValue));// 数字
 			}
+			sqlParseDateList.add(data);
 		}
-		return dataList;
+		return sqlParseDateList;
 	}
-
+	
 	/**
 	 * 获取占位符下标
-	 * 
+	 * 应为要从Mybatis的List<ParameterMapping>中获取参数的话,需要知道?是第几个参数
 	 * @param sql
 	 * @param str
 	 * @return
 	 */
-	public int getPlaceholderIndex(String sql, String str) {
-		int end = sql.indexOf(str);
-		sql = sql.substring(0, end);
-		int index = 0;
-		for (int i = 0; i < sql.length(); i++) {
-			if ("?".equals(sql)) {
-				index++;
+	public int getPlaceholderIndex(String[] columnsValue, int thisIndex) {
+		int count = 0;
+		for(int i = 0; i<columnsValue.length && i<thisIndex; i ++){
+			if(columnsValue[i].trim().equals("?")){
+				count++;
 			}
 		}
-		return index;
+		return count;
 	}
 
 	public static void main(String[] args) {

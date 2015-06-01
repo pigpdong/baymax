@@ -29,11 +29,11 @@
 		<property name="nativeDataSourceHandlerSet">
 			<set>
 				<bean class="com.tongbanjie.baymax.datasources.NativeDataSourceHandler">
-					<property name="identity" value="partion1"/>
+					<property name="identity" value="p1"/>
 					<property name="targetDataSource" ref="dataSource"/>
 				</bean>
 				<bean class="com.tongbanjie.baymax.datasources.NativeDataSourceHandler">
-					<property name="identity" value="partion2"/>
+					<property name="identity" value="p2"/>
 					<property name="targetDataSource" ref="dataSource"/>
 				</bean>
 			</set>

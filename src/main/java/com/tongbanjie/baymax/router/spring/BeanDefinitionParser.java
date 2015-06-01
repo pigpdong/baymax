@@ -7,6 +7,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * 用于Spring XML自定义标签拓展
+ * @author dawei
+ *
+ */
 public class BeanDefinitionParser extends AbstractSimpleBeanDefinitionParser {
 
 	private final Class<?> beanClass;
@@ -43,6 +48,10 @@ public class BeanDefinitionParser extends AbstractSimpleBeanDefinitionParser {
 			element.setAttribute("id", id);
 			parserContext.getRegistry().registerBeanDefinition(id, beanDefinition.getRawBeanDefinition());
 		}
+		// 自定义参数的处理
+		beanDefinition.addPropertyValue("physicsTablePrefix", element.getAttribute("physicsTablePrefix"));
+		beanDefinition.addPropertyValue("logicTableName", element.getAttribute("logicTableName"));
+		beanDefinition.addPropertyValue("shardingColumns", element.getAttribute("shardingColumns"));
 	    
 		/**
 		 * 解析标签内部的<property>节点

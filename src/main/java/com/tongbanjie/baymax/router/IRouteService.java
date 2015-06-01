@@ -4,9 +4,12 @@ import org.apache.ibatis.mapping.BoundSql;
 
 import com.tongbanjie.baymax.model.RouteResult;
 
+/**
+ * SQL路由服务
+ * @author dawei
+ *
+ */
 public interface IRouteService {
-
-	RouteResult doRoute(String statement, Object parameter);
 
 	/**
 	 * Mybatis路由专用
@@ -14,5 +17,5 @@ public interface IRouteService {
 	 * @return
 	 */
 	RouteResult doRoute(BoundSql boundSql);
-
+	
 }

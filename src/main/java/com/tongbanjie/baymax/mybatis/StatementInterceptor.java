@@ -9,24 +9,28 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.tongbanjie.baymax.model.Sql;
 import com.tongbanjie.baymax.model.SqlHandler;
-import com.tongbanjie.baymax.utils.Log;
 import com.tongbanjie.baymax.utils.ReflectionUtils;
 
 @Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }) })
 public class StatementInterceptor implements Interceptor {
+	
+	private final static Logger LOG = LoggerFactory.getLogger(StatementInterceptor.class);
 
 	@Override
 	public Object intercept(Invocation invocation) throws Throwable {
 		StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
-
+		
 		String sql = statementHandler.getBoundSql().getSql();
-		Log.debug("----Original Sql [" + sql + "]");
-
 		String targetSql = SqlHandler.get().getTargetSql();
-		Log.debug("----Converted Sql [" + targetSql + "]");
+		
+		if(LOG.isDebugEnabled()){
+			LOG.debug("=> Original Sql{}", sql);
+			LOG.debug("=> TargetSql{},TargetPartition{}",targetSql,SqlHandler.get().getPartition());
+		}
 		
 		Sql target = SqlHandler.get();
 		if(target != null && target.isSqlReWrite()){
