@@ -7,7 +7,7 @@
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean id="dataSource_p1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="url">
 			<value>
 				${jdbc.druid.url}
@@ -18,23 +18,34 @@
 		</property>
 		<property name="password">
 			<value>${jdbc.druid.password}</value>
-			<!-- <bean class="com.tongbanjie.commons.support.spring.EncryptDBPasswordFactory">
-				<property name="password" value="${jdbc.druid.password}" />
-			</bean> -->
 		</property>
 	</bean>
-	
+
+	<bean id="dataSource_p2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url">
+			<value>
+				${jdbc.druid.p2.url}
+			</value>
+		</property>
+		<property name="username">
+			<value>${jdbc.druid.p2.user}</value>
+		</property>
+		<property name="password">
+			<value>${jdbc.druid.p2.password}</value>
+		</property>
+	</bean>
+		
 	<!-- 数据源分发器 -->
 	<bean id="dataSourceDispatcher" class="com.tongbanjie.baymax.datasources.DataSourceDispatcher">
 		<property name="nativeDataSourceHandlerSet">
 			<set>
 				<bean class="com.tongbanjie.baymax.datasources.NativeDataSourceHandler">
 					<property name="identity" value="p1"/>
-					<property name="targetDataSource" ref="dataSource"/>
+					<property name="targetDataSource" ref="dataSource_p1"/>
 				</bean>
 				<bean class="com.tongbanjie.baymax.datasources.NativeDataSourceHandler">
 					<property name="identity" value="p2"/>
-					<property name="targetDataSource" ref="dataSource"/>
+					<property name="targetDataSource" ref="dataSource_p2"/>
 				</bean>
 			</set>
 		</property>
@@ -51,7 +62,7 @@
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="configLocation" value="classpath:META-INF/mybatis/mybatis-configuration.xml" />
 		<property name="mapperLocations" value="classpath*:META-INF/mybatis/tables/*.xml" />
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataSource_p1" />
 	</bean>
 	
 	<!-- BayMax上下文 -->

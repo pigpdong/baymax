@@ -13,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.router.ITableRule;
 import com.tongbanjie.baymax.router.model.PartitionDescripter;
+import com.tongbanjie.baymax.support.Functions;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -24,7 +25,14 @@ import com.tongbanjie.baymax.utils.Pair;
  */
 public class DefaultRule extends ITableRule implements InitializingBean{
 
-	private static Map<String, Object> functionMap = new HashMap<String, Object>();// TODO
+	private static Map<String, Object> functionMap;
+	
+	static{
+		if(functionMap == null){
+			functionMap = new HashMap<String, Object>();// TODO
+			functionMap.put("func", new Functions());
+		}
+	}
 	
 	//解析
 	List<PartitionDescripter> partitionDescripters;
@@ -63,7 +71,7 @@ public class DefaultRule extends ITableRule implements InitializingBean{
 		if(dbRuleArray != null){
 			for(int i = 0; i<dbRuleArray.size(); i++){
 				String dbRule = dbRuleArray.get(i);
-				if(!parameterParepare(super.getTbRuleArrayColumns().get(i), param)){
+				if(!parameterParepare(super.getDbRuleArrayColumns().get(i), param)){
 					// 这个规则对应的EL表达式需要的参数不满足
 					continue;
 				}

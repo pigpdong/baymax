@@ -28,8 +28,8 @@ public class StatementInterceptor implements Interceptor {
 		String targetSql = SqlHandler.get().getTargetSql();
 		
 		if(LOG.isDebugEnabled()){
-			LOG.debug("=> Original Sql{}", sql);
-			LOG.debug("=> TargetSql{},TargetPartition{}",targetSql,SqlHandler.get().getPartition());
+			LOG.debug("=> OriginalSql:{}", sql);
+			LOG.debug("=> TargetSql:{} TargetPartition:{}",targetSql,SqlHandler.get().getPartition());
 		}
 		
 		Sql target = SqlHandler.get();

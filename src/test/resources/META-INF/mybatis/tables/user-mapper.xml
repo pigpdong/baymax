@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="example">
+	
+	<resultMap type="TradeOrder" id="TradeOrderMap">
+		<id column="id" property="id"/>
+		<result column="product_id" property="productId"/>
+		<result column="amount" property="amount"/>
+		<result column="real_pay_amount" property="realPayAmount"/>
+		<result column="create_time" property="createTime"/>
+		<result column="modify_time" property="modifyTime"/>
+		<result column="status" property="status"/>
+		<result column="type" property="type"/>
+		<result column="user_id" property="userId"/>
+		<result column="ta_id" property="taId"/>
+	</resultMap>
 
-	<select id="getById" parameterType="TradeOrder" resultType="TradeOrder">
+
+	<select id="getById" parameterType="TradeOrder" resultMap="TradeOrderMap">
 		select * from trade_order where id=#{id}
 	</select>
 	
-	<select id="listByExample" parameterType="TradeOrder" resultType="TradeOrder">
+	<select id="listByExample" parameterType="TradeOrder" resultMap="TradeOrderMap">
 		select * from trade_order
 		<where>
 			<if test="id != null">

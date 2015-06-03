@@ -35,7 +35,7 @@ public class TestMain {
 	@Test
 	public void testGetById(){
 		System.out.println("--test start--");
-		TradeOrder orders = dao.getById("0001");
+		TradeOrder orders = dao.getById("000138");
 		System.out.println(JSON.toJSONString(orders, true));
 	}
 	
@@ -45,7 +45,7 @@ public class TestMain {
 	@Test
 	public void testListByExample() {
 		TradeOrder example = new TradeOrder();
-		example.setUserId("116708114");
+		example.setUserId("9901");
 		List<TradeOrder> orders = dao.listByExample(example);
 		System.out.println(JSON.toJSONString(orders, true));
 	}
@@ -56,8 +56,8 @@ public class TestMain {
 	@Test
 	public void testListByExampleWithId() {
 		TradeOrder example = new TradeOrder();
-		example.setUserId("116708114");
-		example.setId("10025503");
+		example.setUserId("990138");
+		example.setId("000138");
 		List<TradeOrder> orders = dao.listByExample(example);
 		System.out.println(JSON.toJSONString(orders, true));
 	}
@@ -68,7 +68,7 @@ public class TestMain {
 	@Test
 	public void testListByExampleAllTableScan() {
 		TradeOrder example = new TradeOrder();
-		example.setProductId("xs12");
+		example.setProductId("xs14");
 		List<TradeOrder> orders = dao.listByExample(example);
 		System.out.println(JSON.toJSONString(orders, true));
 	}
@@ -84,19 +84,29 @@ public class TestMain {
 		example.setAmount(new BigDecimal(10.01));
 		example.setRealPayAmount(new BigDecimal(10.02));
 		example.setCreateTime(new Date());
-		example.setUserId("0001");
+		example.setUserId("9901");
 		example.setTaId("t10001");
 		int count = dao.insert(example);
 		System.out.println(count);
 	} 
 	
 	/**
-	 * Detele测试
+	 * Detele测试ById
 	 */
 	@Test
 	public void testDelete() {
 		TradeOrder example = new TradeOrder();
 		example.setId("0001");
+		int count = dao.delete(example);
+		System.out.println(count);
+	}
+	
+	/**
+	 * Detele测试全表
+	 */
+	@Test
+	public void testDeleteAll() {
+		TradeOrder example = new TradeOrder();
 		int count = dao.delete(example);
 		System.out.println(count);
 	}
@@ -124,6 +134,36 @@ public class TestMain {
 		System.out.println(count);
 	}
 	
+	@Test
+	public void insertDatas(){
+		System.out.println("----insert datas----");
+		TradeOrder example = new TradeOrder();
+		int count = 0;
+		for(int i = 0; i < 100; i++){
+			example.setId("000"+i);
+			example.setProductId("xs14");
+			example.setAmount(new BigDecimal(10.01));
+			example.setRealPayAmount(new BigDecimal(10.02));
+			example.setCreateTime(new Date());
+			example.setUserId("990"+i);
+			example.setTaId("t10001");
+			count += dao.insert(example);
+		}
+		System.out.println(count);
+		
+		for(int i = 101; i < 200; i++){
+			example.setId("000"+i);
+			example.setProductId("xs14");
+			example.setAmount(new BigDecimal(10.01));
+			example.setRealPayAmount(new BigDecimal(10.02));
+			example.setCreateTime(new Date());
+			example.setUserId("990"+i);
+			example.setTaId("t10001");
+			count += dao.insert(example);
+		}
+		System.out.println(count);
+	}
+	
 	
 	//@Test
 	public void testRouteService(){
@@ -141,4 +181,13 @@ public class TestMain {
 	public void testConfig(){
 		System.out.println(JSON.toJSONString(tableRules, true));
 	}
+	
+	public static void main(String[] args) {
+		System.out.println(1%4);
+		System.out.println(2%4);
+		System.out.println(3%4);
+		System.out.println(4%4);
+		
+	}
+	
 }

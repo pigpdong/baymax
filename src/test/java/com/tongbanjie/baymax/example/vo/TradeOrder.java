@@ -15,10 +15,10 @@ public class TradeOrder {
 	private String userId;
 	private String taId;
 	
-	@Override
-	public String toString() {
-		return "[id:"+id+" amount:"+amount+"]"; 
-	}
+//	@Override
+//	public String toString() {
+//		return "[id:"+id+" amount:"+amount+"]"; 
+//	}
 
 	public String getId() {
 		return id;
