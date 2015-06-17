@@ -11,10 +11,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.tongbanjie.baymax.BayMaxContext;
-import com.tongbanjie.baymax.example.dao.TradeOrderDao;
+import com.tongbanjie.baymax.example.dao.ITradeOrderDao;
 import com.tongbanjie.baymax.example.vo.TradeOrder;
 import com.tongbanjie.baymax.router.ITableRule;
 import com.tongbanjie.baymax.utils.Pair;
@@ -24,7 +25,7 @@ import com.tongbanjie.baymax.utils.Pair;
 public class TestMain {
 	
 	@Autowired
-	private TradeOrderDao dao;
+	private ITradeOrderDao dao;
 	
 	@Autowired
 	private BayMaxContext context;
@@ -68,7 +69,7 @@ public class TestMain {
 	@Test
 	public void testListByExampleAllTableScan() {
 		TradeOrder example = new TradeOrder();
-		example.setProductId("xs14");
+		//example.setProductId("xs14");
 		List<TradeOrder> orders = dao.listByExample(example);
 		System.out.println(JSON.toJSONString(orders, true));
 	}
@@ -79,12 +80,12 @@ public class TestMain {
 	@Test
 	public void testInsert() {
 		TradeOrder example = new TradeOrder();
-		example.setId("0001");
+		example.setId("0009");
 		example.setProductId("xs14");
 		example.setAmount(new BigDecimal(10.01));
 		example.setRealPayAmount(new BigDecimal(10.02));
 		example.setCreateTime(new Date());
-		example.setUserId("9901");
+		example.setUserId("9909");
 		example.setTaId("t10001");
 		int count = dao.insert(example);
 		System.out.println(count);
@@ -135,34 +136,23 @@ public class TestMain {
 	}
 	
 	@Test
-	public void insertDatas(){
-		System.out.println("----insert datas----");
-		TradeOrder example = new TradeOrder();
-		int count = 0;
-		for(int i = 0; i < 100; i++){
-			example.setId("000"+i);
-			example.setProductId("xs14");
-			example.setAmount(new BigDecimal(10.01));
-			example.setRealPayAmount(new BigDecimal(10.02));
-			example.setCreateTime(new Date());
-			example.setUserId("990"+i);
-			example.setTaId("t10001");
-			count += dao.insert(example);
-		}
-		System.out.println(count);
-		
-		for(int i = 101; i < 200; i++){
-			example.setId("000"+i);
-			example.setProductId("xs14");
-			example.setAmount(new BigDecimal(10.01));
-			example.setRealPayAmount(new BigDecimal(10.02));
-			example.setCreateTime(new Date());
-			example.setUserId("990"+i);
-			example.setTaId("t10001");
-			count += dao.insert(example);
-		}
-		System.out.println(count);
+	public void testGetCount(){
+		System.out.println(dao.getCount());
 	}
+	
+	@Test
+	public void insertDatas(){
+		dao.insertDatas();
+	}
+	
+	@Test
+	public void testTransaction(){
+		testDeleteAll();
+		testInsert();
+		insertDatas();
+		
+	}
+	
 	
 	
 	//@Test

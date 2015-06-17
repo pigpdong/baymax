@@ -15,6 +15,12 @@ import org.springframework.util.CollectionUtils;
 
 import com.tongbanjie.baymax.merger.IMerger;
 
+/**
+ * 暂时不用
+ * @author dawei
+ *
+ * @param <E>
+ */
 public class ConcurrentSortMerger<E> implements IMerger<List<E>, List<E>>, InitializingBean, DisposableBean {
 
 	private boolean usingDefaultExecutor = false;

@@ -311,7 +311,7 @@ public class SqlSessionTemplate implements SqlSession {
 				for(Object map : sqlActionResult){
 					mearge.putAll((Map<?, ?>)map);
 				}
-			} else if (resultClass == Integer.class || "int".equals(resultClass.getName())) {
+			} else if (resultClass == Integer.class || "int".equals(resultClass.getName()) || (sqlActionResult.get(0) instanceof Integer)) {
 				int mearge = (int)0;
 				for(Object obj : sqlActionResult){
 					mearge += (Integer)obj;
@@ -333,7 +333,8 @@ public class SqlSessionTemplate implements SqlSession {
 		public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
 			try {
 				Object result = method.invoke(sqlSession, args);
-				if (!SqlSessionUtils.isSqlSessionTransactional(sqlSession, SqlSessionTemplate.this.sqlSessionFactory)) {
+				if (!SqlSessionUtils.isSqlSessionTransactional(sqlSession, SqlHandler.get().getDataSource())) {
+					// commit非事务的connection
 					sqlSession.commit();
 				}
 				return result;
@@ -348,7 +349,8 @@ public class SqlSessionTemplate implements SqlSession {
 				}
 				throw unwrapped;
 			} finally {
-				SqlSessionUtils.closeSqlSession(sqlSession, SqlSessionTemplate.this.sqlSessionFactory);
+				// 统一关闭
+				SqlSessionUtils.closeSqlSession(sqlSession, SqlHandler.get().getDataSource());
 			}
 		}
 	}

@@ -20,6 +20,10 @@
 		select * from trade_order where id=#{id}
 	</select>
 	
+	<select id="getCount" resultType="int">
+		select count(*) from trade_order
+	</select>
+	
 	<select id="listByExample" parameterType="TradeOrder" resultMap="TradeOrderMap">
 		select * from trade_order
 		<where>
@@ -56,7 +60,9 @@
 			real_pay_amount,
 			create_time,
 			user_id,
-			ta_id
+			ta_id,
+			status,
+			type
 		)
 		VALUES
 		(
@@ -66,7 +72,9 @@
 			#{realPayAmount},
 			#{createTime},
 			#{userId},
-			#{taId}
+			#{taId},
+			#{status},
+			#{type}
 		)
 	</insert>
 	

@@ -24,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 public class DataSourceDispatcher implements InitializingBean {
 	private Set<NativeDataSourceHandler> nativeDataSourceHandlerSet = new HashSet<NativeDataSourceHandler>();
 	private Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
+	private Set<DataSource> dataSourceSet = new HashSet<DataSource>();
 	private DataSource defaultDataSource;
 
 	public Map<String, DataSource> getDataSources() {
@@ -38,7 +39,9 @@ public class DataSourceDispatcher implements InitializingBean {
 			Assert.hasText(nativeHandler.getIdentity());
 			Assert.notNull(nativeHandler.getTargetDataSource());
 			DataSource dataSourceToUse = nativeHandler.getTargetDataSource();
-			dataSources.put(nativeHandler.getIdentity(), new LazyConnectionDataSourceProxy(dataSourceToUse));
+			DataSource ds = new LazyConnectionDataSourceProxy(dataSourceToUse);
+			dataSources.put(nativeHandler.getIdentity(), ds);
+			dataSourceSet.add(ds);
 			if(defaultDataSource == null){
 				// TODO default need be setting in spring xml config
 				defaultDataSource = nativeHandler.getTargetDataSource();
@@ -60,5 +63,9 @@ public class DataSourceDispatcher implements InitializingBean {
 
 	public void setNativeDataSourceHandlerSet(Set<NativeDataSourceHandler> nativeDataSourceHandlerSet) {
 		this.nativeDataSourceHandlerSet = nativeDataSourceHandlerSet;
+	}
+
+	public Set<DataSource> getDataSourceSet() {
+		return dataSourceSet;
 	}
 }
