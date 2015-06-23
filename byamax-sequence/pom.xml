@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>baymax-sequence</artifactId>
-	<name>byamax-sequence</name>
+	<name>baymax-sequence</name>
 	<url>http://maven.apache.org</url>
 	
 	<properties>
@@ -19,7 +19,7 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>baymax</groupId>
+			<groupId>com.tongbanjie.baymax</groupId>
 			<artifactId>baymax-core</artifactId>
 			<version>${baymax.version}</version>
 		</dependency>

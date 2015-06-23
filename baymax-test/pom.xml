@@ -21,8 +21,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>baymax</groupId>
-			<artifactId>byamax-sequence</artifactId>
+			<groupId>com.tongbanjie.baymax</groupId>
+			<artifactId>baymax-sequence</artifactId>
 			<version>${baymax.version}</version>
 		</dependency>
 	
