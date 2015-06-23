@@ -101,4 +101,12 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<name>Nexus Release Repository</name>
+			<url>http://192.168.1.6:8081/nexus/content/repositories/releases/</url>
+		</repository>
+	</distributionManagement>
 </project>
