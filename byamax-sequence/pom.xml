@@ -9,7 +9,7 @@
 		<version>2.0.0</version>
 	</parent>
 	
-	<artifactId>byamax-sequence</artifactId>
+	<artifactId>baymax-sequence</artifactId>
 	<name>byamax-sequence</name>
 	<url>http://maven.apache.org</url>
 	
