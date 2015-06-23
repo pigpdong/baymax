@@ -33,7 +33,7 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			<!-- 构建�?jar 的附带源�? -->
+			<!-- 构建�?jar 的附带源�? -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -59,4 +59,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<name>Nexus Release Repository</name>
+			<url>http://192.168.1.6:8081/nexus/content/repositories/releases/</url>
+		</repository>
+	</distributionManagement>
 </project>
