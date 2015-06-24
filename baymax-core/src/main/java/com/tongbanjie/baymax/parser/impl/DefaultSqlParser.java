@@ -41,7 +41,10 @@ public class DefaultSqlParser implements SqlParser{
 		}
 		int start = sql.indexOf("@@");
 		String tableNameStr = sql.substring(start + 2);
-		tableNameStr = tableNameStr.substring(0, tableNameStr.indexOf(" ")).trim();
+		int index = tableNameStr.indexOf(" ");
+		if(index != -1){
+			tableNameStr = tableNameStr.substring(0, index).trim();
+		}
 		return new Pair<String, SqlType>(tableNameStr, SqlType.OTHER);
 	}
 	
@@ -53,7 +56,7 @@ public class DefaultSqlParser implements SqlParser{
 	 * @return new Sql
 	 */
 	public String replaceTableName(String sql, String logicTableName, String phyTableName){
-		return sql.replaceFirst("@@"+logicTableName, phyTableName);
+		return sql.replaceAll("@@"+logicTableName, phyTableName);
 	}
 
 	/**
@@ -254,9 +257,9 @@ public class DefaultSqlParser implements SqlParser{
 //		sqls.add("failed:select u.id from (table(str2numlist(:1))) n join et_airsupply_users u on n.column_value = u.id"); // join
 //		sqls.add("replace into t (i,c,d,ui) values (?,?,?,?)");
 //		sqls.add(" SELECT /*+ ordered use_nl(acc,rb) */ rb.ID,rb.USER_ID,rb.DATABASE_CODE,EVENT_EXTEND FROM (SELECT /*+index(crb,IDX_RA_SC_BILL_STAT) */ crb.USER_ID, min(crb.id) dt FROM RA_SC_BILL crb  WHERE crb.status = 1 and crb.process_mode = 0 and rownum <= 20000 and DATABASE_CODE in (1, 2, 3) GROUP BY crb.USER_ID) acc, RA_SC_BILL rb WHERE rb.Id = acc.dt  and rownum <= 123  and not exists (select 1 from RA_SC_BILL up where up.status = 2 and up.USER_ID = acc.USER_ID)");
-		sqls.add("SELECT "+ 
+		sqls.add("(SELECT "+ 
 				"id, user_id, platform, style_type, bussniss_type, items, label, dead_line, create_time"+
-			" FROM usermng_user_msg"+
+			" FROM @@usermng_user_msg"+
 			" WHERE 1=1"+
 					" AND user_id = ? "+
 			" order by create_time desc limit ?"+

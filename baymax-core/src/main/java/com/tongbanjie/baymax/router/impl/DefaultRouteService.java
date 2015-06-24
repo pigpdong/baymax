@@ -135,7 +135,7 @@ public class DefaultRouteService implements RouteService{
 						actionSql.setLogicTableName(logicTableName);
 						actionSql.setSqlReWrite(true);
 						actionSql.setOriginalSql(sql);
-						actionSql.setTargetSql(parser.replaceTableName(actionSql.getTargetSql(), logicTableName, pt.getObject2()));//逻辑表名替换为实际表名
+						actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName, pt.getObject2()));//逻辑表名替换为实际表名
 						actionSql.setTargetTableName(pt.getObject2());
 						actionSql.setReWriteParameter(null);
 						plan.addSql(actionSql);
@@ -163,7 +163,7 @@ public class DefaultRouteService implements RouteService{
 				actionSql.setLogicTableName(logicTableName);
 				actionSql.setSqlReWrite(true);
 				actionSql.setOriginalSql(sql);
-				actionSql.setTargetSql(parser.replaceTableName(actionSql.getTargetSql(), logicTableName,target.getObject2()));//逻辑表名替换为实际表名
+				actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName,target.getObject2()));//逻辑表名替换为实际表名
 				actionSql.setTargetTableName(target.getObject2());
 				actionSql.setReWriteParameter(null); // TODO 暂时不实现参数重写,所以这里继续使用Mybatis的参数，只有一条SQL被路由到不同的分区才需要参数重写.
 				routeResult.addSql(actionSql);

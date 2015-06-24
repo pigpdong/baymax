@@ -18,15 +18,15 @@
 
 
 	<select id="getById" parameterType="TradeOrder" resultMap="TradeOrderMap">
-		select * from trade_order where id=#{id}
+		select * from @@trade_order where id=#{id}
 	</select>
 	
 	<select id="getCount" resultType="int">
-		select count(*) from trade_order
+		select count(*) from @@trade_order
 	</select>
 	
 	<select id="listByExample" parameterType="TradeOrder" resultMap="TradeOrderMap">
-		select * from trade_order
+		select * from @@trade_order
 		<where>
 			<if test="id != null">
 				<!-- 测试多分区键 -->
@@ -44,7 +44,7 @@
 	</select>	
 	
 	<update id="updateById" parameterType="TradeOrder">
-		update trade_order set amount=#{amount} 
+		update @@trade_order set amount=#{amount} 
 		<where>
 			<if test="id != null">
 				id=#{id}
@@ -54,7 +54,7 @@
 	
 	<insert id="insert" parameterType="TradeOrder">
 		INSERT INTO
-		trade_order (
+		@@trade_order (
 			id,
 			product_id,
 			amount,
@@ -80,7 +80,7 @@
 	</insert>
 	
 	<delete id="deleteByExample" parameterType="TradeOrder">
-		delete from trade_order
+		delete from @@trade_order
 		<where>
 			<if test="id != null">
 				<!-- 测试多分区键 -->
