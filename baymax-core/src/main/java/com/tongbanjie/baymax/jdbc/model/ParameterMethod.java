@@ -38,7 +38,7 @@ public enum ParameterMethod {
 	setFloat,
 	setInt,
 	setLong, //
-	setNull1, 
+	setNull1,
 	setNull2, 
 	setObject1,
 	setObject2, 

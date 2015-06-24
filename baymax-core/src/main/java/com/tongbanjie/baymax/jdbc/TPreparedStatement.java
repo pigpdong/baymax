@@ -128,13 +128,9 @@ public class TPreparedStatement extends TStatement implements PreparedStatement 
 		this.parameterSettings.clear();
 	}
 
-	public void setNull(int parameterIndex, Object o) throws SQLException {
-		parameterSettings.put(parameterIndex, new ParameterCommand(ParameterMethod.setNull1, new Object[] { parameterIndex, null }));
-	}
-
 	@Override
 	public void setNull(int parameterIndex, int sqlType) throws SQLException {
-		parameterSettings.put(parameterIndex, new ParameterCommand(ParameterMethod.setNull1, new Object[] { parameterIndex, null }));
+		parameterSettings.put(parameterIndex, new ParameterCommand(ParameterMethod.setNull1, new Object[] { parameterIndex, sqlType }));
 	}
 
 	@Override
