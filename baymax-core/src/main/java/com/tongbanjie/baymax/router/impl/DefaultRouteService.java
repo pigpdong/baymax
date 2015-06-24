@@ -75,12 +75,19 @@ public class DefaultRouteService implements RouteService{
 	@Override
 	public ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand){
 		Pair<String/*tableName*/, SqlType/*sqlType*/> sqlParseDate = parser.findTableName(sql); 
-		if(sqlParseDate == null || sqlParseDate.getObject1() == null || sqlParseDate.getObject2() == null){
-			throw new BayMaxException("not support sqlType:" + sql);//不支持的SQL类型
+		
+		String logicTableName = null;
+		SqlType sqlType = null;
+		TableRule rule = null;
+		if(sqlParseDate != null){
+			// 需要路由
+			logicTableName = sqlParseDate.getObject1();
+			sqlType = sqlParseDate.getObject2();
+			rule = tableRuleMapping.get(logicTableName);
+			if(sqlParseDate.getObject1() == null || sqlParseDate.getObject2() == null){
+				throw new BayMaxException("not support sql:" + sql);//不支持的SQL类型
+			}
 		}
-		String logicTableName = sqlParseDate.getObject1();
-		SqlType sqlType = sqlParseDate.getObject2();
-		TableRule rule = tableRuleMapping.get(logicTableName);
 		if(rule == null){
 			// 不需要路由
 			ExecutePlan plan = new ExecutePlan();
