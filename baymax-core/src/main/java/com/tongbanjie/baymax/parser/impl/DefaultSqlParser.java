@@ -25,8 +25,8 @@ import com.tongbanjie.baymax.utils.Pair;
  */
 public class DefaultSqlParser implements SqlParser{
 	// TODO 1.TABLE_NAME,2.SQL_TYPE,3.INSER_VALUE
-	private static Pattern kv_parameters = Pattern.compile("\\s+`*(\\w+){1}`*\\s*=\\s*'*(\\w|\\.|\\?)*'*(;|\\s*)");// where中的查询条件
-	private static Pattern insertColumns = Pattern.compile("\\s+into\\s+(\\w)+\\s+\\((\\w|,|\\s)+\\)");//提取insert中的列名
+	private static Pattern kv_parameters = Pattern.compile("\\s+`*@*(\\w+){1}`*\\s*=\\s*'*(\\w|\\.|\\?)*'*(;|\\s*)");// where中的查询条件
+	private static Pattern insertColumns = Pattern.compile("\\s+into\\s+@*(\\w)+\\s+\\((\\w|,|\\s)+\\)");//提取insert中的列名
 	private static Pattern insertValues = Pattern.compile("\\s+values\\s+\\((\\w|,|\\s|\\?)+\\)");//提取insert中的列值
 
 	/**
@@ -39,13 +39,34 @@ public class DefaultSqlParser implements SqlParser{
 		if(sql == null || sql.length() == 0 || sql.indexOf("@@") == -1){
 			return null; // null表示无需解析
 		}
+		sql = sql.trim();
 		int start = sql.indexOf("@@");
 		String tableNameStr = sql.substring(start + 2);
 		int index = tableNameStr.indexOf(" ");
 		if(index != -1){
 			tableNameStr = tableNameStr.substring(0, index).trim();
 		}
-		return new Pair<String, SqlType>(tableNameStr, SqlType.OTHER);
+		
+		while(true){
+			if(sql.startsWith("(")){
+				sql = sql.substring(1).trim();
+			}else{
+				break;
+			}
+		}
+		sql = sql.toLowerCase();
+		SqlType sqlType = SqlType.OTHER;
+		if(sql.startsWith("select")){
+			sqlType = SqlType.SELECT;
+		}else if(sql.startsWith("update")){
+			sqlType = SqlType.UPDATE;
+		}else if(sql.startsWith("insert")){
+			sqlType = SqlType.INSERT;
+		}else if(sql.startsWith("delete")){
+			sqlType = SqlType.DELETE;
+		}
+		
+		return new Pair<String, SqlType>(tableNameStr, sqlType);
 	}
 	
 	/**
@@ -160,7 +181,6 @@ public class DefaultSqlParser implements SqlParser{
 		}else{
 			kvs = parseWhereSql(sql, sqlType);
 		}
-		// TODO 替换为JDBC的参数
 		return buildDate(kvs.getObject1(), kvs.getObject2(), patameterContext);
 	}
 

@@ -14,6 +14,9 @@ import com.tongbanjie.baymax.router.model.SqlType;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
+ * 
+ * 废弃的类 之前用来解析表名和参数的
+ * 
  * 使用SQL路由必须遵循以下限制,否则进行全表扫描. 1. SQL中不能有?符号. 2. 分区列只能是等值条件如where user_id =
  * '123'.且key,value都不能使用函数 3. value只能是Long,String,Date类型。 3.
  * 子查询中请不要出现分区列,否则会把他当成路由参数而出现路由结果错误!
