@@ -74,10 +74,11 @@ public class TResultSet implements ResultSet {
 			return false;
 		}
 		currentResultSet = resultSet.get(index);
-		index++;
 		boolean next = currentResultSet.next();
 		if (next) {
 			return true;
+		}else{
+			index++;
 		}
 		return next();
 	}
