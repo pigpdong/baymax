@@ -64,7 +64,6 @@ public class DefaultSequence implements Sequence {
 		if (value < 0) {
 			throw new SequenceException("Sequence value overflow, value = " + value);
 		}
-		System.out.println("-------------seq: " + value);
 		return value;
 	}
 
