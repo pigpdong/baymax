@@ -11,7 +11,7 @@ public class Functions {
 	public int subInt(Object source, int length){
 		String s = String.valueOf(source);
 		if(s.length() > length){
-			s.substring(s.length() - 2);
+			s = s.substring(s.length() - 2);
 		}
 		return Integer.valueOf(s);
 	}

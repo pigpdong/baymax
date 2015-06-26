@@ -26,8 +26,8 @@ import com.tongbanjie.baymax.utils.Pair;
 public class DefaultSqlParser implements SqlParser{
 	// TODO 1.TABLE_NAME,2.SQL_TYPE,3.INSER_VALUE
 	private static Pattern kv_parameters = Pattern.compile("\\s+`*@*(\\w+){1}`*\\s*=\\s*'*(\\w|\\.|\\?)*'*(;|\\s*)");// where中的查询条件
-	private static Pattern insertColumns = Pattern.compile("\\s+into\\s+@*(\\w)+\\s+\\((\\w|,|\\s)+\\)");//提取insert中的列名
-	private static Pattern insertValues = Pattern.compile("\\s+values\\s+\\((\\w|,|\\s|\\?)+\\)");//提取insert中的列值
+	private static Pattern insertColumns = Pattern.compile("\\s*insert+\\s+(into)?\\s+@*(\\w)+\\s+\\((\\w|,|\\s)+\\)");//提取insert中的列名
+	private static Pattern insertValues = Pattern.compile("\\s+values\\s+\\((\\w|,|\\s|\\?|\\(|\\))+\\)");//提取insert中的列值
 
 	/**
 	 * @return 返回sql中第一个表明的小写/sql类型
@@ -218,7 +218,11 @@ public class DefaultSqlParser implements SqlParser{
 					data.setValue(date);
 				}
 			} else {
-				data.setValue(Long.valueOf(columnValue));// 数字
+				if(columnValue.indexOf("(") != -1){
+					// now()等函数
+				}else{
+					data.setValue(Long.valueOf(columnValue));// 数字
+				}
 			}
 			sqlParseDateList.add(data);
 		}
