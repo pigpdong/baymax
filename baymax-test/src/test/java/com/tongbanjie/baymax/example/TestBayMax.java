@@ -1,10 +1,9 @@
 package com.tongbanjie.baymax.example;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +20,18 @@ public class TestBayMax {
 	private MultipleDataSource dataSource;
 	
 	@Test
-	public void testGetById() throws SQLException, InterruptedException{
-		Connection c = dataSource.getConnection();
-		Statement stmt = c.createStatement();
-		ResultSet res = stmt.executeQuery("select * from trade_order");
+	public void test() throws SQLException, InterruptedException{
+		Connection conn = dataSource.getConnection();
+		PreparedStatement stmt = conn.prepareStatement("select * from @@trade_order where id=?");
+		stmt.setString(1, "0003");
+		ResultSet res = stmt.executeQuery();
 		while(res.next()){
-			String id = res.getString(1);
+			String id = res.getString("id");
+			String productId = res.getString("product_id");
 			System.out.println(id);
+			System.out.println(productId);
 		}
+		stmt.close();
+		conn.close();
 	}
 }

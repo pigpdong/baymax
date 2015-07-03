@@ -97,15 +97,15 @@ public class TConnection implements Connection {
 				openedConnection.put(targetDataSource, conn);			// 保存Connection
 			}
 			Statement targetStatement = null;
-			if(!userPreparedStatement){
-				targetStatement = createCommand.prepareStatement(conn);	// 打开Statement
-			}else{
+			if(userPreparedStatement){
 				Object[] args = createCommand.getArgs();
 				args[0] = target.getTargetSql();
-				targetStatement = createCommand.getMethod().prepareStatement(conn, args); //打开PrepareadStatement
-				for(ParameterCommand command : parameterCommand.values()){	// 设置SQL参数
+				targetStatement = createCommand.getMethod().prepareStatement(conn, args); 	//打开PrepareadStatement
+				for(ParameterCommand command : parameterCommand.values()){					// 设置SQL参数
 					command.getParameterMethod().setParameter((PreparedStatement)targetStatement, command.getArgs());
 				}
+			}else{
+				targetStatement = conn.createStatement();				// 打开普通Statement
 			}
 			stmt.addOpenedStatement(targetStatement);					// 保存Statement
 			ExecuteMethod method = executeCommand.getMethod(); 
