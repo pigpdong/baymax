@@ -37,14 +37,6 @@ public class DataSourceGroup {
 	 */
 	private DataSource standbyDetectorDataSource;
 
-	/**
-	 * we will initialize proper thread pools which stand in front of data
-	 * sources as per connection pool size. <br>
-	 * usually, they will have same number of objects.<br>
-	 * you have to set a proper size for this attribute as per your data source
-	 * attributes. In case you forget it, we set a default value with
-	 * "number of CPU" * 5.
-	 */
 	private int poolSize = Runtime.getRuntime().availableProcessors() * 5;
 
 	public String getIdentity() {
