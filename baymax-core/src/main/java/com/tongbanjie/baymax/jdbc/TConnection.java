@@ -78,8 +78,8 @@ public class TConnection implements Connection {
 		try{
 			plan = routeService.doRoute(sql, parameterCommand);	// 路由
 		}catch(Exception e){
-			logger.error("do Route in Connection error! sql{},parameterCommands{}", sql, parameterCommand);
-			throw new BayMaxException("do Route in Connection error!");
+			logger.error("do Route in Connection error! sql{"+sql+"},parameterCommands{"+parameterCommand+"}", e);
+			throw new BayMaxException("do Route in Connection error!", e);
 		}
 		if(logger.isDebugEnabled()){
 			logger.debug("BayMax execute SQL:" + plan.toString());
