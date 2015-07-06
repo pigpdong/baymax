@@ -74,8 +74,13 @@ public class TConnection implements Connection {
 		}else{
 			sql = (String) executeCommand.getArgs()[0];
 		}
-				
-		ExecutePlan plan = routeService.doRoute(sql, parameterCommand);	// 路由
+		ExecutePlan plan = null;
+		try{
+			plan = routeService.doRoute(sql, parameterCommand);	// 路由
+		}catch(Exception e){
+			logger.error("do Route in Connection error! sql{},parameterCommands{}", sql, parameterCommand);
+			throw new BayMaxException("do Route in Connection error!");
+		}
 		if(logger.isDebugEnabled()){
 			logger.debug("BayMax execute SQL:" + plan.toString());
 		}
