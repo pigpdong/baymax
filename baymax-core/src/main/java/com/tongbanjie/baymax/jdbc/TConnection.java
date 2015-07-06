@@ -246,7 +246,6 @@ public class TConnection implements Connection {
 			return;
 		}
 		SQLException sqlException = null;
-		boolean first = true;
 		for(Connection conn : openedConnection.values()){
 			try{
 				conn.rollback();
@@ -254,12 +253,7 @@ public class TConnection implements Connection {
 				if(sqlException == null){
 					sqlException = e;
 				}
-				if(first){
-					// 第一次Commit就抛异常了,直接break
-					break;
-				}
 			}
-			first = false;
 		}
 		// 3.metaData
         if(connectionForMetaData != null){
