@@ -69,10 +69,12 @@ public class ParameterCommand {
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(parameterMethod).append("(");
-		for (int i = 0; i < args.length; ++i) {
-			buffer.append(args[i]);
-			if (i != args.length - 1) {
-				buffer.append(", ");
+		if(args != null && args.length > 0){
+			for (int i = 0; i < args.length; ++i) {
+				buffer.append(args[i]);
+				if (i != args.length - 1) {
+					buffer.append(", ");
+				}
 			}
 		}
 		buffer.append(")");

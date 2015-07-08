@@ -35,4 +35,19 @@ public class StatementCreateCommand {
 	public void setArgs(Object[] args) {
 		this.args = args;
 	}
+	
+	public String toString() {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(method).append("(");
+		if(args != null && args.length > 0){
+			for (int i = 0; i < args.length; ++i) {
+				buffer.append(args[i]);
+				if (i != args.length - 1) {
+					buffer.append(", ");
+				}
+			}
+		}
+		buffer.append(")");
+		return buffer.toString();
+	}
 }

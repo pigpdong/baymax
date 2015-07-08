@@ -19,7 +19,7 @@
 		</property>
 		<property name="dbRuleArray">
 			<list>
-				<value>func.subInt(id, 2) % 4 / 2</value>
+				<value>func.subInt(id, 2) % 4 / 0</value>
 				<value>func.subInt(user_id, 2) % 4 / 2</value><!-- 路由到哪个数据库结果为库的索引,2表示每个库里有几张表 -->
 			</list>
 		</property>
