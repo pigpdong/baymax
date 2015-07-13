@@ -8,12 +8,12 @@ public class Functions {
 	 * @param length
 	 * @return
 	 */
-	public int subInt(Object source, int length){
+	public String subInt(Object source, int length){
 		String s = String.valueOf(source);
 		if(s.length() > length){
 			s = s.substring(s.length() - 2);
 		}
-		return Integer.valueOf(s);
+		return s;
 	}
 	
 }
