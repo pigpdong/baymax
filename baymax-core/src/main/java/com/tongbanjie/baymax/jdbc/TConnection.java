@@ -80,21 +80,17 @@ public class TConnection implements Connection {
 		trace.setCreateCommand(createCommand);
 		trace.setExecuteCommand(executeCommand);
 		trace.setParameterCommand(parameterCommand);
+
+		ExecutePlan plan = routeService.doRoute(sql, parameterCommand);	// 路由
 		
-		ExecutePlan plan = null;
-		try{
-			plan = routeService.doRoute(sql, parameterCommand);	// 路由
-		}catch(Exception e){
-			BayMaxException exception = new BayMaxException("do Route in Connection error!", e, trace);
-			logger.error("", exception);
-			throw exception;
-		}
 		if(logger.isDebugEnabled()){
 			logger.debug("BayMax execute SQL:" + plan.toString());
 		}
+
 		if (plan.getExecuteType() != ExecuteType.ALL && plan.getExecuteType() != ExecuteType.PARTITION && plan.getExecuteType() != ExecuteType.NO) {
 			throw new SQLException("执行计划不正确" + plan.toString());	// 检查执行计划
 		}
+		
 		ResultSetHandler resultSetHandler = new ResultSetHandler();
 		List<TargetSql> sqlList = plan.getSqlList();					// 所有要执行的SQL
 		List<ResultSet> resultSet = new ArrayList<ResultSet>(sqlList.size());
