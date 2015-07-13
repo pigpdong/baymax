@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tongbanjie.baymax.datasource.MultipleDataSource;
 import com.tongbanjie.baymax.exception.BayMaxException;
+import com.tongbanjie.baymax.exception.TraceContext;
 import com.tongbanjie.baymax.jdbc.model.ExecuteCommand;
 import com.tongbanjie.baymax.jdbc.model.ExecuteMethod;
 import com.tongbanjie.baymax.jdbc.model.ResultSetHandler;
@@ -65,7 +66,7 @@ public class TConnection implements Connection {
 		this.multipleDataSource = multipleDataSource;
 	}
 
-	public ResultSetHandler loggerExecuteSql(StatementCreateCommand createCommand, ExecuteCommand executeCommand, Map<Integer, ParameterCommand> parameterCommand, TStatement stmt) throws SQLException {
+	public ResultSetHandler loggerExecuteSql(StatementCreateCommand createCommand, ExecuteCommand executeCommand, Map<Integer, ParameterCommand> parameterCommand, TStatement stmt, TraceContext trace) throws SQLException {
 		checkClosed();
 		boolean userPreparedStatement = createCommand.getMethod() != StatementCreateMethod.createStatement ? true : false;
 		String sql = null;
@@ -74,11 +75,17 @@ public class TConnection implements Connection {
 		}else{
 			sql = (String) executeCommand.getArgs()[0];
 		}
+		
+		trace.setSql(sql);
+		trace.setCreateCommand(createCommand);
+		trace.setExecuteCommand(executeCommand);
+		trace.setParameterCommand(parameterCommand);
+		
 		ExecutePlan plan = null;
 		try{
 			plan = routeService.doRoute(sql, parameterCommand);	// 路由
 		}catch(Exception e){
-			BayMaxException exception = new BayMaxException("do Route in Connection error!", e, sql, createCommand, executeCommand, parameterCommand);
+			BayMaxException exception = new BayMaxException("do Route in Connection error!", e, trace);
 			logger.error("", exception);
 			throw exception;
 		}
@@ -151,10 +158,11 @@ public class TConnection implements Connection {
 	}
 	
 	public ResultSetHandler executeSql(StatementCreateCommand createCommand, ExecuteCommand executeCommand, Map<Integer, ParameterCommand> parameterCommand, TStatement stmt) throws SQLException {
+		TraceContext trace = new TraceContext();
 		try{
-			return loggerExecuteSql(createCommand, executeCommand, parameterCommand, stmt);
+			return loggerExecuteSql(createCommand, executeCommand, parameterCommand, stmt, trace);
 		}catch(SQLException e){
-			logger.error("BayMax Execute SQL Error : " ,e);
+			logger.error("BayMax Execute SQL Error : trace{"+trace.toString()+"}" ,e);
 			throw e;
 		}
 	}
