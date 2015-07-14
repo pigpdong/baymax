@@ -232,13 +232,6 @@ public class TConnection implements Connection {
 			}
 			first = false;
 		}
-		if(connectionForMetaData != null){
-			try{
-				connectionForMetaData.commit();
-			}catch(SQLException e){
-				sqlException = e;
-			}
-		}
 		if(sqlException != null){
 			throw sqlException;
 		}
@@ -258,14 +251,6 @@ public class TConnection implements Connection {
 				if(sqlException == null){
 					sqlException = e;
 				}
-			}
-		}
-		// 3.metaData
-        if(connectionForMetaData != null){
-			try{
-				connectionForMetaData.rollback();
-			}catch(SQLException e){
-				sqlException = e;
 			}
 		}
 		if(sqlException != null){
