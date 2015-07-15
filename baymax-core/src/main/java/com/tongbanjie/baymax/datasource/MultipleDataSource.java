@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
-
 import com.tongbanjie.baymax.jdbc.TConnection;
 import com.tongbanjie.baymax.router.RouteService;
 import com.tongbanjie.baymax.router.impl.DefaultRouteService;
@@ -20,6 +19,9 @@ import com.tongbanjie.baymax.router.impl.DefaultRouteService;
  *
  */
 public class MultipleDataSource extends DataSourceDispatcher implements DataSource{
+	
+	//private final static Logger logger = LoggerFactory.getLogger(MultipleDataSource.class);
+	
 	private RouteService routeService;
 	
 	public void init() throws Exception{
@@ -92,27 +94,19 @@ public class MultipleDataSource extends DataSourceDispatcher implements DataSour
 	 * 在这个分区对应的数据源上打开一个Connection
 	 * @param parttionName
 	 * @return
+	 * @throws SQLException 
 	 */
-	public Connection getRealConnection(String parttionName){
-		try {
-			return getDataSourceByName(parttionName).getConnection();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public Connection getRealConnection(String parttionName) throws SQLException{
+		return getDataSourceByName(parttionName).getConnection();
 	}
 	
 	/**
 	 * 在默认数据源上打开一个Connection
 	 * @return
+	 * @throws SQLException 
 	 */
-	public Connection getDefaultConnection(){
-		try {
-			return super.getDefaultDataSource().getConnection();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public Connection getDefaultConnection() throws SQLException{
+		return super.getDefaultDataSource().getConnection();
 	}
 
 }
