@@ -17,7 +17,6 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
@@ -54,7 +54,7 @@ public class TConnection implements Connection {
 	private RouteService routeService;
 	private MultipleDataSource multipleDataSource;
 	
-	private Map<DataSource, Connection> openedConnection = new HashMap<DataSource, Connection>(2);
+	private Map<DataSource, Connection> openedConnection = new ConcurrentHashMap<DataSource, Connection>(2);
 	private Connection connectionForMetaData;
 	private Set<TStatement> openedStatements = new HashSet<TStatement>(2);
 	private boolean isAutoCommit = true; // jdbc规范，新连接为true
@@ -274,9 +274,10 @@ public class TConnection implements Connection {
                 } catch (SQLException e) {
                     exceptions.add(e);
                 }
-        		stmtIte.remove();
         	}
-        } finally {
+        } catch(Exception e){
+        	logger.error("关闭Tconnection 关闭TStatement异常", e);
+        }finally {
             openedStatements.clear();
         }
         // 2.connections
@@ -292,6 +293,7 @@ public class TConnection implements Connection {
         if(connectionForMetaData != null && !connectionForMetaData.isClosed()){
 			try{
 				connectionForMetaData.close();
+				connectionForMetaData = null;
 			}catch(SQLException e){
 				exceptions.add(e);
 			}
