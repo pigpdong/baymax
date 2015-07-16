@@ -17,7 +17,6 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tongbanjie.baymax.datasource.MultipleDataSource;
 import com.tongbanjie.baymax.exception.BayMaxException;
+import com.tongbanjie.baymax.exception.TraceContext;
 import com.tongbanjie.baymax.jdbc.model.ExecuteCommand;
 import com.tongbanjie.baymax.jdbc.model.ExecuteMethod;
 import com.tongbanjie.baymax.jdbc.model.ResultSetHandler;
