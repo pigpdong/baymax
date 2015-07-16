@@ -13,6 +13,11 @@
 				<ref local="trade_order_monthly"/>
 			</list>
 		</property>
+		<property name="functions">
+			<list>
+				<bean class="com.tongbanjie.baymax.support.impl.SubInt"/>
+			</list>
+		</property>
 	</bean>
 	
 	<bean id="trade_order_simple" class="com.tongbanjie.baymax.router.impl.SimpleTable">
@@ -22,8 +27,8 @@
 		<property name="disableFullScan" 	value="true"/>
 		<property name="rules">
 			<list>
-				<value>func.subInt(id, 2) % 4 + 1</value>
-				<value>func.subInt(user_id, 2) % 4 + 1</value>
+				<value>subInt.apply(id, 2) % 4 + 1</value>
+				<value>subInt.apply(user_id, 2) % 4 + 1</value>
 			</list>
 		</property>
 		<property name="tableMapping">
@@ -36,15 +41,15 @@
 		</property>
 	</bean>
 	
-	<bean id="trade_order_virtual" class="com.tongbanjie.baymax.router.impl.VirtualTable">
+	<!-- <bean id="trade_order_virtual" class="com.tongbanjie.baymax.router.impl.VirtualTable">
 		<property name="logicTableName" 	value="trade_order_t1"/>
 		<property name="shardingKeys"		value="user_id,id"/>
 		<property name="patten" 			value="trade_order_{00}"/>
 		<property name="disableFullScan" 	value="true"/>
 		<property name="rules">
 			<list>
-				<value>func.subInt(id, 2) % 4 + 1</value>
-				<value>func.subInt(user_id, 2) % 4 + 1</value>
+				<value>subInt.apply(id, 2) % 4 + 1</value>
+				<value>subInt.apply(user_id, 2) % 4 + 1</value>
 			</list>
 		</property>
 		<property name="tableMapping">
@@ -65,8 +70,8 @@
 		<property name="tableLike"			value="trade_order_01"/>
 		<property name="rules">
 			<list>
-				<value>func.subInt(id, 2) % 4 + 1</value>
-				<value>func.subInt(user_id, 2) % 4 + 1</value>
+				<value>subInt.apply(id, 2) % 4 + 1</value>
+				<value>subInt.apply(user_id, 2) % 4 + 1</value>
 			</list>
 		</property>
 		<property name="tableMapping">
@@ -75,5 +80,5 @@
 				<value>p2:201503-000000</value>
 			</list>
 		</property>
-	</bean>
+	</bean> -->
 </beans>

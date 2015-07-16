@@ -44,7 +44,7 @@ public class SimpleTable extends TableRule{
 				if(!rule.checkParam(param)){
 					continue;
 				}
-				Object ruleResult = rule.execute(param, null);
+				Object ruleResult = rule.execute(param, null, super.functionsMap);
 				if (Boolean.class == ruleResult.getClass() || Boolean.class.isAssignableFrom(ruleResult.getClass())) {
 					// boolean
 					if ((Boolean) ruleResult == false) {

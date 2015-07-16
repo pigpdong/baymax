@@ -9,7 +9,7 @@ import org.mvel2.MVEL;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 
-import com.tongbanjie.baymax.support.Functions;
+import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -22,15 +22,6 @@ public class Rule {
 	private String el;
 	
 	private List<String> argNames;
-	
-	protected static Map<String, Object> functionMap;					// 函数
-
-	static {
-		if (functionMap == null) {
-			functionMap = new HashMap<String, Object>();// TODO
-			functionMap.put("func", new Functions());
-		}
-	}
 	
 	/**
 	 * 或取一个EL使用了ShardingKeys中的哪些字段
@@ -107,11 +98,12 @@ public class Rule {
 	/**
 	 * 执行EL表达式,结果只能返回Integer或Boolean类型
 	 * 
-	 * @param expression
-	 * @param param
+	 * @param expression	EL表达式
+	 * @param param			EL表达式参数
+	 * @param functionMap	函数 
 	 * @return
 	 */
-	public <T> Object execute(Object param, Class<T> toType) {
+	public <T> Object execute(Object param, Class<T> toType, Map<String, Function> functionMap) {
 		Map<String, Object> vrs = new HashMap<String, Object>();
 		vrs.putAll(functionMap);// 拓展函数
 		vrs.put("$ROOT", param);

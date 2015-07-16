@@ -16,6 +16,7 @@ import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.SqlArgEntity;
 import com.tongbanjie.baymax.router.model.SqlType;
 import com.tongbanjie.baymax.router.model.TargetSql;
+import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
 
@@ -49,6 +50,8 @@ public class DefaultRouteService implements RouteService{
 	 * 主要用来提取SQL中的表名,Where中的KEY=VALUE形式的参数
 	 */
 	private SqlParser parser = new DefaultSqlParser();
+	
+	private Map<String, Function> functionsMap = new HashMap<String, Function>();
 	
 	/**
 	 * 对一条SQL进行路由运算,返回路由结果
@@ -145,13 +148,13 @@ public class DefaultRouteService implements RouteService{
 	public void init() {
 		// 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
 		// 2. 初始化自动建表程序
-		for(TableRule rule : tableRules){
-			rule.init();
-			if(!tableRuleMapping.containsKey(rule.getLogicTableName())){
-				tableRuleMapping.put(rule.getLogicTableName(), rule);
-				tableCreaters.add(rule.getTableCreater());
+		for(TableRule table : tableRules){
+			table.init(functionsMap);
+			if(!tableRuleMapping.containsKey(table.getLogicTableName())){
+				tableRuleMapping.put(table.getLogicTableName(), table);
+				tableCreaters.add(table.getTableCreater());
 			}else{
-				throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + rule.getLogicTableName());
+				throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + table.getLogicTableName());
 			}
 		}
 	}
@@ -168,4 +171,16 @@ public class DefaultRouteService implements RouteService{
 		return tableCreaters;
 	}
 
+	public void setFunctions(List<Function> functions) {
+		if(functions == null){
+			return;
+		}
+		for(Function f : functions){
+			functionsMap.put(f.getFunctionName(), f);
+		}
+	}
+
+	public Map<String, Function> getFunctionsMap() {
+		return functionsMap;
+	}
 }

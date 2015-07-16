@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tongbanjie.baymax.router.model.Rule;
+import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
 
@@ -55,6 +56,8 @@ public abstract class TableRule {
 	 * @return
 	 */
 	public abstract List<Pair<String/* partion */, String/* table */>> getAllTableNames();
+	
+	protected Map<String, Function> functionsMap;
 	
 	protected String getTargetPartition(String suffix){
 		return tableMapping.get(suffix);
@@ -110,8 +113,13 @@ public abstract class TableRule {
 		configHolder.tableMappings = tableMappings;
 	}
 	
-	public void init(){
+	public void init(Map<String, Function> functionsMap) {
 		/*------------------------------init------------------------------*/
+		this.functionsMap = functionsMap;
+		init();
+	}
+	
+	public void init(){
 		initRules(configHolder.rules);
 		initTableMapping(configHolder.tableMappings);
 	}
