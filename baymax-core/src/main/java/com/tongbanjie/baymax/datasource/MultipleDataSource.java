@@ -26,15 +26,16 @@ public class MultipleDataSource extends DataSourceDispatcher implements DataSour
 	
 	public void init() throws Exception{
 		super.init();
+		if(routeService == null){
+			throw new RuntimeException("routeService can't be null!");
+		}
 		// 创建自动建表程序
 		List<TableCreater> tableCreaters = routeService.getTableCreaters();
 		for(TableCreater creater : tableCreaters){
-			creater.init(this);
+			if(creater != null){
+				creater.init(this);
+			}
 		}
-	}
-
-	public RouteService getRouteService() {
-		return routeService;
 	}
 
 	//----------------------------------------------------------------//
@@ -111,6 +112,16 @@ public class MultipleDataSource extends DataSourceDispatcher implements DataSour
 	 */
 	public Connection getDefaultConnection() throws SQLException{
 		return super.getDefaultDataSource().getConnection();
+	}
+
+	/*----------------------------getters and setters-------------------------------*/
+	
+	public RouteService getRouteService() {
+		return routeService;
+	}
+	
+	public void setRouteService(RouteService routeService) {
+		this.routeService = routeService;
 	}
 
 }
