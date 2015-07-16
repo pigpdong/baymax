@@ -11,6 +11,15 @@ import com.tongbanjie.baymax.router.model.Rule;
 import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
 
+/**
+ * 基础Table描述
+ * <p>
+ * 子类必须实现{@code executeRule()} {@code getAllTableNames()}方法
+ * <p>
+ * 这个类描述了对某个特定逻辑表的分区规则
+ * @author dawei
+ *
+ */
 public abstract class TableRule {
 	
 	protected ConfigHolder configHolder = new ConfigHolder();
@@ -21,7 +30,7 @@ public abstract class TableRule {
 		
 	protected String prefix;				// 物理表明格式化模式trade_order_
 	
-	protected int suffixLength;				// 
+	protected int suffixLength;				// 后缀的位数 
 	
 	protected boolean disableFullScan;		// 关闭全表扫描
 	
