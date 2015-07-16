@@ -1,7 +1,5 @@
 package com.tongbanjie.baymax.router.model;
 
-import javax.sql.DataSource;
-
 /**
  * 路由后用于执行的SQL
  * 
@@ -10,8 +8,9 @@ import javax.sql.DataSource;
  */
 public class TargetSql {
 	
-	private DataSource dataSource;
-	
+	/**
+	 * 如果partition == null 表示在默认分区上执行
+	 */
 	private String partition;
 	
 	private String logicTableName;
@@ -24,31 +23,12 @@ public class TargetSql {
 	
 	private SqlType sqlType;
 	
-	/**
-	 * 只有{@link sqlReWrite==true} 控制Statement拦截器是否使用targetSQL。
-	 * 只有{@link sqlReWrite==true} 控制statement是否使用{@link reWriteParameter}
-	 */
-	private boolean sqlReWrite;
-	
-	/**
-	 * 是有{@link sqlReWrite==true} && {@link reWriteParameter!=null}才会替换parameter
-	 */
-	private Object reWriteParameter;
-	
 	@Override
 	public String toString() {
 		return new StringBuffer()
 		.append(String.format("[partition:%s]\n[logicTableName:%s]\n[targetTableName:%s]\n[originalSql:%s]\n[targetSql:%s]\n",
 				new Object[]{partition, logicTableName, targetTableName, originalSql, targetSql})).toString();
 				
-	}
-
-	public DataSource getDataSource() {
-		return dataSource;
-	}
-
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
 	}
 
 	public String getLogicTableName() {
@@ -89,22 +69,6 @@ public class TargetSql {
 
 	public void setPartition(String partition) {
 		this.partition = partition;
-	}
-
-	public boolean isSqlReWrite() {
-		return sqlReWrite;
-	}
-
-	public void setSqlReWrite(boolean sqlReWrite) {
-		this.sqlReWrite = sqlReWrite;
-	}
-
-	public Object getReWriteParameter() {
-		return reWriteParameter;
-	}
-
-	public void setReWriteParameter(Object reWriteParameter) {
-		this.reWriteParameter = reWriteParameter;
 	}
 
 	public SqlType getSqlType() {

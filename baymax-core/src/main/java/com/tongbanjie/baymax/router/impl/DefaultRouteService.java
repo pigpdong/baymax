@@ -1,10 +1,10 @@
 package com.tongbanjie.baymax.router.impl;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.tongbanjie.baymax.datasource.MultipleDataSource;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.SqlParser;
@@ -13,9 +13,10 @@ import com.tongbanjie.baymax.router.RouteService;
 import com.tongbanjie.baymax.router.TableRule;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
-import com.tongbanjie.baymax.router.model.ParameterEntity;
+import com.tongbanjie.baymax.router.model.SqlArgEntity;
 import com.tongbanjie.baymax.router.model.SqlType;
 import com.tongbanjie.baymax.router.model.TargetSql;
+import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -39,9 +40,9 @@ public class DefaultRouteService implements RouteService{
 	private Map<String/*TableName*/, TableRule> tableRuleMapping = new HashMap<String, TableRule>();
 	
 	/**
-	 * 数据源分发器,可用过数据源的唯一标识名称获取对应的数据源实例
+	 * 自动建表器
 	 */
-	private MultipleDataSource dataSourceDispatcher;
+	List<TableCreater> tableCreaters = new LinkedList<TableCreater>();
 	
 	/**
 	 * SQL解析器
@@ -50,41 +51,23 @@ public class DefaultRouteService implements RouteService{
 	private SqlParser parser = new DefaultSqlParser();
 	
 	/**
-	 * 构造
-	 * @param tableRules
-	 * @param dataSourceDispatcher
-	 */
-	public DefaultRouteService(List<TableRule> tableRules, MultipleDataSource dataSourceDispatcher){
-		this.tableRules = tableRules;
-		this.dataSourceDispatcher = dataSourceDispatcher;
-		// 初始化路由规则的MAP,表名为KEY
-		for(TableRule rule : tableRules){
-			if(!tableRuleMapping.containsKey(rule.getLogicTableName())){
-				tableRuleMapping.put(rule.getLogicTableName(), rule);
-			}else{
-				throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + rule.getLogicTableName());
-			}
-		}
-	}
-	
-	/**
 	 * 对一条SQL进行路由运算,返回路由结果
 	 * @param boundSql
 	 * @return
 	 */
 	@Override
 	public ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand){
-		Pair<String/*tableName*/, SqlType/*sqlType*/> sqlParseDate = parser.findTableName(sql); 
+		Pair<String/*tableName*/, SqlType/*sqlType*/> tableName = parser.findTableName(sql); 
 		
 		String logicTableName = null;
 		SqlType sqlType = null;
 		TableRule rule = null;
-		if(sqlParseDate != null){
+		if(tableName != null){
 			// 需要路由
-			logicTableName = sqlParseDate.getObject1();
-			sqlType = sqlParseDate.getObject2();
+			logicTableName = tableName.getObject1();
+			sqlType = tableName.getObject2();
 			rule = tableRuleMapping.get(logicTableName);
-			if(sqlParseDate.getObject1() == null || sqlParseDate.getObject2() == null){
+			if(tableName.getObject1() == null || tableName.getObject2() == null){
 				throw new BayMaxException("not support sql:" + sql);//不支持的SQL类型
 			}
 		}
@@ -95,29 +78,21 @@ public class DefaultRouteService implements RouteService{
 			TargetSql actionSql = new TargetSql();
 			actionSql.setSqlType(sqlType);
 			actionSql.setPartition(null);
-			actionSql.setDataSource(dataSourceDispatcher.getDefaultDataSource());
 			actionSql.setLogicTableName(logicTableName);
-			actionSql.setSqlReWrite(true);
 			actionSql.setOriginalSql(sql);
 			actionSql.setTargetSql(sql);
 			actionSql.setTargetTableName(logicTableName);
-			actionSql.setReWriteParameter(null);
 			plan.addSql(actionSql);
 			return plan;
 		}else{
 			// 需要路由
 			// SQL解析
-			List<ParameterEntity> sqlParserDate = parser.parse(sql, sqlType, parameterCommand);//SQL中提取的KV参数
+			List<SqlArgEntity> sqlParserDate = parser.parse(sql, sqlType, parameterCommand, rule.getShardingKeys());//SQL中提取的KV参数
 			Map<String, Object> param = new HashMap<String, Object>();//SQL中提取的KV参数,放到MAP中,方便rule中EL调用
 			boolean shardingKeyTouch = false;
-			for(String shardingKey : rule.getShardingColumnsArray()){
-				for(ParameterEntity sqlDate : sqlParserDate){
-					if(shardingKey.equals(sqlDate.getKey())){
-						param.put(shardingKey, sqlDate.getValue());
-						shardingKeyTouch = true;//只要有一个KEY匹配则为true,用于是否全表扫描的判断.
-						break;//一个KEY只要匹配到一次就好了,匹配下一个KEY
-					}
-				}
+			for(SqlArgEntity arg : sqlParserDate){
+				param.put(arg.getKey(), arg.getValue());
+				shardingKeyTouch = true;//只要有一个KEY匹配则为true,用于是否全表扫描的判断.
 			}
 			if(shardingKeyTouch == false){
 				// 没有命中的shardingKey,则全表扫描
@@ -131,13 +106,10 @@ public class DefaultRouteService implements RouteService{
 						TargetSql actionSql = new TargetSql();
 						actionSql.setSqlType(sqlType);
 						actionSql.setPartition(pt.getObject1());
-						actionSql.setDataSource(dataSourceDispatcher.getDataSourceByName(pt.getObject1()));
 						actionSql.setLogicTableName(logicTableName);
-						actionSql.setSqlReWrite(true);
 						actionSql.setOriginalSql(sql);
 						actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName, pt.getObject2()));//逻辑表名替换为实际表名
 						actionSql.setTargetTableName(pt.getObject2());
-						actionSql.setReWriteParameter(null);
 						plan.addSql(actionSql);
 					}
 					plan.setExecuteType(ExecuteType.ALL);
@@ -159,15 +131,27 @@ public class DefaultRouteService implements RouteService{
 				TargetSql actionSql = new TargetSql();
 				actionSql.setSqlType(sqlType);
 				actionSql.setPartition(target.getObject1());
-				actionSql.setDataSource(dataSourceDispatcher.getDataSourceByName(target.getObject1()));
 				actionSql.setLogicTableName(logicTableName);
-				actionSql.setSqlReWrite(true);
 				actionSql.setOriginalSql(sql);
 				actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName,target.getObject2()));//逻辑表名替换为实际表名
 				actionSql.setTargetTableName(target.getObject2());
-				actionSql.setReWriteParameter(null); // TODO 暂时不实现参数重写,所以这里继续使用Mybatis的参数，只有一条SQL被路由到不同的分区才需要参数重写.
 				routeResult.addSql(actionSql);
 				return routeResult;
+			}
+		}
+	}
+
+	@Override
+	public void init() {
+		// 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
+		// 2. 初始化自动建表程序
+		for(TableRule rule : tableRules){
+			rule.init();
+			if(!tableRuleMapping.containsKey(rule.getLogicTableName())){
+				tableRuleMapping.put(rule.getLogicTableName(), rule);
+				tableCreaters.add(rule.getTableCreater());
+			}else{
+				throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + rule.getLogicTableName());
 			}
 		}
 	}
@@ -180,12 +164,8 @@ public class DefaultRouteService implements RouteService{
 		this.tableRules = tableRules;
 	}
 
-	public MultipleDataSource getDataSourceDispatcher() {
-		return dataSourceDispatcher;
-	}
-
-	public void setDataSourceDispatcher(MultipleDataSource dataSourceDispatcher) {
-		this.dataSourceDispatcher = dataSourceDispatcher;
+	public List<TableCreater> getTableCreaters() {
+		return tableCreaters;
 	}
 
 }

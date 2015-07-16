@@ -49,11 +49,13 @@
 				</bean>
 			</set>
 		</property>
+		<property name="routeService">
+			<ref local="baymaxRouteService"/>
+		</property>
 	</bean>
 
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
 
-	<!-- 多数据源事务管理器 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="multipleDataSource" />
 	</bean>

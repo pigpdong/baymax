@@ -1,30 +1,36 @@
 package com.tongbanjie.baymax.router;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.tongbanjie.baymax.router.model.Rule;
+import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
 
-/**
- * 路由规则的公共抽象 {@link DefaultTableRule}默认实现了基于Spring XML配置文件配置的路由规则.
- * 如果你的路由规则很复杂,不能再XML配置文件中定义
- * ,那么你可以继承这个类并实现抽象方法,让后把你实现了路由规则器注册到Spring上下文（可用配置或@Service等）。
- * BayMax上下文会自动发现你注册的路由规则器并在执行对应TableName的SQL时使用你配置的路由规则器。
- * 一个TableName只能注册一个对应的路由规则器，后注册的会把先注册的替换掉，应为规则器会使用TableName作为KEY保存在HashMap中。、
- * 
- * @author dawei
- *
- */
 public abstract class TableRule {
+	
+	protected ConfigHolder configHolder = new ConfigHolder();
 
-	// 配置
-	protected String logicTableName;
+	protected String logicTableName;		// 逻辑表明
 
-	/**
-	 * 解析{@link shardingKeys}
-	 */
-	private String[] shardingColumnsArray;
-
+	protected String[] shardingKeys;		// 分区键
+		
+	protected String prefix;				// 物理表明格式化模式trade_order_
+	
+	protected int suffixLength;				// 
+	
+	protected boolean disableFullScan;		// 关闭全表扫描
+	
+	protected List<Rule> rules;				// 路由规则
+	
+	protected Map<String/*suffix*/, String/*partition*/> tableMapping = new ConcurrentHashMap<String, String>(); 	// 所有表到分区的映射
+	
+	protected String autoCreatePartition;	// 自动建表分区 000000所在分区
+	
 	/**
 	 * 路由方法
 	 * 
@@ -40,6 +46,14 @@ public abstract class TableRule {
 	 * @return
 	 */
 	public abstract List<Pair<String/* partion */, String/* table */>> getAllTableNames();
+	
+	protected String getTargetPartition(String suffix){
+		return tableMapping.get(suffix);
+	}
+	
+	public String format(String suffix){
+		return prefix + suffix;
+	}
 
 	public String getLogicTableName() {
 		return logicTableName;
@@ -49,16 +63,103 @@ public abstract class TableRule {
 		this.logicTableName = logicTableName;
 	}
 
-	public String[] getShardingColumnsArray() {
-		return shardingColumnsArray;
+	public String[] getShardingKeys() {
+		return shardingKeys;
 	}
 
-	public void setShardingColumnsArray(String[] shardingColumnsArray) {
-		this.shardingColumnsArray = shardingColumnsArray;
+	public void setShardingKeys(String shardingKeysStr) {
+		// TODO 校验
+		this.shardingKeys = shardingKeysStr.split(",");
 	}
 
-	public void init() throws Exception {
-		
+	//trade_order_{00}
+	public void setPatten(String patten) {
+		// TODO 校验
+		int start = patten.indexOf("{");
+		int end = patten.indexOf("}");
+		this.prefix = patten.substring(0, start);
+		this.suffixLength = patten.substring(start+1, end).length();
 	}
 
+	public boolean isDisableFullScan() {
+		return disableFullScan;
+	}
+
+	public void setDisableFullScan(boolean disableFullScan) {
+		this.disableFullScan = disableFullScan;
+	}
+
+	public List<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(List<String> rules) {
+		configHolder.rules = rules;
+	}
+
+	public void setTableMapping(List<String> tableMappings){
+		configHolder.tableMappings = tableMappings;
+	}
+	
+	public void init(){
+		/*------------------------------init------------------------------*/
+		initRules(configHolder.rules);
+		initTableMapping(configHolder.tableMappings);
+	}
+	
+	protected void initRules(List<String> rules){
+		if(rules == null || rules.size() == 0){
+			throw new RuntimeException(String.format("rules must not be empty! table{%s}", logicTableName));
+		}
+		this.rules = new ArrayList<Rule>(rules.size());
+		if(this.shardingKeys == null || this.shardingKeys.length == 0){
+			throw new RuntimeException(String.format("shardingKeys must not be empty! table{%s}", this.logicTableName));
+		}
+		Arrays.sort(this.shardingKeys, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				if (o1.length() < o2.length()) {
+					return 1;
+				} else if (o1.length() > o2.length()) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+
+		});// 排序,比较长的列先匹配,便于字符串匹配提取,user_id把id匹配掉了,再用id来匹配中不行了
+
+		for(String ruleStr : rules){
+			this.rules.add(new Rule(ruleStr, this.shardingKeys));
+		}
+	}
+	
+	protected abstract void initTableMapping(List<String> rules);
+	
+	/**
+	 * 根据int类型的suffix获取固定长度的完整表明后缀。
+	 * @param suffix
+	 * @return
+	 */
+	public String getSuffix(int suffix){
+		// TODO init suffixlength
+		String sfx = String.valueOf(suffix);
+		if(sfx.length() > suffixLength){
+			throw new RuntimeException("suffix is too long then config "+suffix);
+		}
+		while(sfx.length() < suffixLength){
+			sfx = "0"+sfx;
+		}
+		return sfx;
+	}
+	
+	public TableCreater getTableCreater(){
+		return null;
+	}
+
+	
+	private class ConfigHolder{
+		public List<String> rules;
+		public List<String> tableMappings;
+	}
 }

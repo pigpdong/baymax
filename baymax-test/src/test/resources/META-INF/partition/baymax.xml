@@ -1,34 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:baymax="http://baymax.tongbanjie.com/schema/baymax" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
 	   http://www.springframework.org/schema/beans 
-	   http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-	   http://baymax.tongbanjie.com/schema/baymax
-	   http://baymax.tongbanjie.com/schema/baymax.xsd">
-
-	<!-- SQL中使用逻辑表名 trade_order -->
-	<!-- 路由后的实际表名(trade_order_0000)=物理表名前缀(trade_order_)+后缀(0001) -->
-	<baymax:rule id="trade_order_rule" logicTableName="trade_order"
-		physicsTablePrefix="trade_order_" shardingColumns="user_id,id">
-		<property name="partition">
+	   http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
+	
+	<bean id="baymaxRouteService" class="com.tongbanjie.baymax.router.impl.DefaultRouteService" init-method="init">
+		<property name="tableRules">
 			<list>
-				<value>p1:[01-02]</value><!-- 分两个数据库,第一个数据库每个数据库10张表,第一个库的表名+后缀为trade_order_0000到trade_order_0009 -->
-				<value>p2:[03-04]</value><!-- 第二个库的表名+后缀为trade_order_0010到trade_order_0019 -->
+				<ref local="trade_order_simple"/>
+				<ref local="trade_order_virtual"/>
+				<ref local="trade_order_monthly"/>
 			</list>
 		</property>
-		<property name="dbRuleArray">
+	</bean>
+	
+	<bean id="trade_order_simple" class="com.tongbanjie.baymax.router.impl.SimpleTable">
+		<property name="logicTableName" 	value="trade_order"/>
+		<property name="shardingKeys"		value="user_id,id"/>
+		<property name="patten" 			value="trade_order_{00}"/>
+		<property name="disableFullScan" 	value="true"/>
+		<property name="rules">
 			<list>
-				<value>func.subInt(id, 2) % 4 / 0</value>
-				<value>func.subInt(user_id, 2) % 4 / 2</value><!-- 路由到哪个数据库结果为库的索引,2表示每个库里有几张表 -->
-			</list>
-		</property>
-		<property name="tbRuleArray">
-			<list>
-				<!-- <value>id > 1 ? false:false</value> -->
 				<value>func.subInt(id, 2) % 4 + 1</value>
-				<value>func.subInt(user_id, 2) % 4 + 1</value><!-- 表名后缀,路由到20张表 -->
+				<value>func.subInt(user_id, 2) % 4 + 1</value>
 			</list>
 		</property>
-	</baymax:rule>
+		<property name="tableMapping">
+			<list>
+				<value>p1:01</value>
+				<value>p1:02</value>
+				<value>p2:03</value>
+				<value>p2:04</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="trade_order_virtual" class="com.tongbanjie.baymax.router.impl.VirtualTable">
+		<property name="logicTableName" 	value="trade_order_t1"/>
+		<property name="shardingKeys"		value="user_id,id"/>
+		<property name="patten" 			value="trade_order_{00}"/>
+		<property name="disableFullScan" 	value="true"/>
+		<property name="rules">
+			<list>
+				<value>func.subInt(id, 2) % 4 + 1</value>
+				<value>func.subInt(user_id, 2) % 4 + 1</value>
+			</list>
+		</property>
+		<property name="tableMapping">
+			<list>
+				<value>p1:02</value>
+				<value>p1:04</value>
+				<value>p2:06</value>
+				<value>p2:08</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="trade_order_monthly" class="com.tongbanjie.baymax.router.impl.MonthlyTable">
+		<property name="logicTableName" 	value="trade_order_t2"/>
+		<property name="shardingKeys"		value="user_id,id"/>
+		<property name="patten" 			value="trade_order_{000000}"/>
+		<property name="disableFullScan" 	value="true"/>
+		<property name="tableLike"			value="trade_order_01"/>
+		<property name="rules">
+			<list>
+				<value>func.subInt(id, 2) % 4 + 1</value>
+				<value>func.subInt(user_id, 2) % 4 + 1</value>
+			</list>
+		</property>
+		<property name="tableMapping">
+			<list>
+				<value>p1:201402-201502</value>
+				<value>p2:201503-000000</value>
+			</list>
+		</property>
+	</bean>
 </beans>

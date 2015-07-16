@@ -2,6 +2,7 @@ package com.tongbanjie.baymax.parser.impl;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -9,8 +10,9 @@ import java.util.regex.Pattern;
 
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.SqlParser;
-import com.tongbanjie.baymax.router.model.ParameterEntity;
+import com.tongbanjie.baymax.router.model.SqlArgEntity;
 import com.tongbanjie.baymax.router.model.SqlType;
+import com.tongbanjie.baymax.router.model.SqlArgEntity.CompareType;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -25,7 +27,8 @@ import com.tongbanjie.baymax.utils.Pair;
  */
 public class DefaultSqlParser implements SqlParser{
 	// TODO 1.TABLE_NAME,2.SQL_TYPE,3.INSER_VALUE
-	private static Pattern kv_parameters = Pattern.compile("\\s+`*@*(\\w+){1}`*\\s*=\\s*'*(\\w|\\.|\\?)*'*(;|\\s*)");// where中的查询条件
+	private static Pattern kv_parameters = Pattern.compile("\\s+`*@*(\\w+){1}`*\\s*=\\s*'*(\\w|\\.|\\?)*'*(;|\\s*)");// where中的条件
+	// private static Pattern kv_parameters = Pattern.compile("\\s+`*@*(\\w+){1}`*\\s*(=|>=|>|<=|<)\\s*'*(\\w|\\.|\\?)*'*(;|\\s*)");// where中的条件
 	private static Pattern insertColumns = Pattern.compile("\\s*insert+\\s+(into)?\\s+@*(\\w)+\\s+\\((\\w|,|\\s)+\\)");//提取insert中的列名
 	private static Pattern insertValues = Pattern.compile("\\s+values\\s+\\((\\w|,|\\s|\\?|\\(|\\))+\\)");//提取insert中的列值
 
@@ -106,7 +109,7 @@ public class DefaultSqlParser implements SqlParser{
 	 * @param sqlType
 	 * @return
 	 */
-	public Pair<String[]/*columnsName*/, String[]/*columnsValue*/> parseInsertSql(String sql, SqlType sqlType) {
+	public List<SqlArgEntity> parseInsertSql(String sql, SqlType sqlType) {
 		if (sql.endsWith(";")) {
 			sql = sql.substring(0, sql.length() - 1);
 		}
@@ -114,6 +117,7 @@ public class DefaultSqlParser implements SqlParser{
 		Matcher m = insertColumns.matcher(sql);
 		String[] columns = null;
 		String[] columnsValue = null;
+		List<SqlArgEntity> args = new ArrayList<SqlArgEntity>();
 		// 提取列名
 		while(m.find()){
 			String str = m.group();
@@ -131,7 +135,16 @@ public class DefaultSqlParser implements SqlParser{
 				break;
 			}
 		}
-		return new Pair<String[], String[]>(columns, columnsValue);
+		if(columns != null){
+			for(int i = 0; i< columns.length; i++){
+				SqlArgEntity arg = new SqlArgEntity();
+				arg.setKey(columns[i]);
+				arg.setOriginalValue(columnsValue[i]);
+				arg.setCompareType(CompareType.eq);
+				args.add(arg);
+			}
+		}
+		return args;
 	}
 	
 	private String[] getColums(String str){
@@ -145,13 +158,12 @@ public class DefaultSqlParser implements SqlParser{
 	 * @param sqlType
 	 * @return
 	 */
-	public Pair<String[]/*columnsName*/, String[]/*columnsValue*/> parseWhereSql(String sql, SqlType sqlType) {
+	public List<SqlArgEntity> parseWhereSql(String sql, SqlType sqlType) {
 		if (sql.endsWith(";")) {
 			sql = sql.substring(0, sql.length() - 1);
 		}
 		Matcher m = kv_parameters.matcher(sql);// 提取where中的 key=value对
-		List<String> columns = new ArrayList<String>();
-		List<String> columnsValue = new ArrayList<String>();
+		List<SqlArgEntity> args = new ArrayList<SqlArgEntity>();
 		while (m.find()) {
 			String kvstr = m.group();
 			String[/* key-value */] kv = kvstr.split("=");
@@ -159,13 +171,15 @@ public class DefaultSqlParser implements SqlParser{
 			kv[1] = kv[1].trim();
 			if (kv[0].startsWith("`") && kv[0].endsWith("`")) {
 				kv[0] = kv[0].substring(1, kv[0].length() - 1);
+				kv[0] = kv[0].trim();
 			}
-			columns.add(kv[0]);
-			columnsValue.add(kv[1]);
+			SqlArgEntity arg = new SqlArgEntity();
+			arg.setKey(kv[0]);
+			arg.setOriginalValue(kv[1]);
+			arg.setCompareType(CompareType.eq);
+			args.add(arg);
 		}
-		String[] col = new String[columns.size()];
-		String[] colValue = new String[columnsValue.size()];
-		return new Pair<String[], String[]>(columns.toArray(col), columnsValue.toArray(colValue));
+		return args;
 	}
 	
 	/**
@@ -174,57 +188,60 @@ public class DefaultSqlParser implements SqlParser{
 	 * @param boundSql
 	 * @return
 	 */
-	public List<ParameterEntity> parse(String sql, SqlType sqlType, Map<Integer, ParameterCommand> patameterContext) {
-		Pair<String[]/*columnsName*/, String[]/*columnsValue*/> kvs = null;
+	public List<SqlArgEntity> parse(String sql, SqlType sqlType, Map<Integer, ParameterCommand> parameterCommands, String[] shardingColumns) {
+		List<SqlArgEntity> kvs = null;
 		if(sqlType == SqlType.INSERT){
 			kvs =  parseInsertSql(sql, sqlType);
 		}else{
 			kvs = parseWhereSql(sql, sqlType);
 		}
-		return buildDate(kvs.getObject1(), kvs.getObject2(), patameterContext);
+		return buildDate(kvs, parameterCommands, shardingColumns);
 	}
 
 	/**
 	 * 把SQL中提取的参数转化为对象,如果参数是?占位符号则从Mybats中获取这个占位符对应的参数对象.
+	 * 
+	 * TODO 取sql中的第一个参数
 	 * @param columnNames
 	 * @param columnValues
 	 * @param parameterCommand
 	 * @return
 	 */
-	private List<ParameterEntity> buildDate(String[] columnNames, String[] columnValues, Map<Integer, ParameterCommand> parameterCommand){
-		List<ParameterEntity> sqlParseDateList = new ArrayList<ParameterEntity>();
-		for(int i = 0; i<columnNames.length; i++){
-			String columnName = columnNames[i].trim();
-			String columnValue = columnValues[i].trim();
-			ParameterEntity data = new ParameterEntity();
-			if (columnName.startsWith("`") && columnName.endsWith("`")) {
-				columnName = columnName.substring(1, columnName.length() - 1);
+	private List<SqlArgEntity> buildDate(List<SqlArgEntity> args, Map<Integer, ParameterCommand> parameterCommands, String[] shardingColumns){
+		List<SqlArgEntity> sqlParseDateList = new ArrayList<SqlArgEntity>();
+		if(args == null || args.size() == 0){
+			return sqlParseDateList;
+		}
+		List<String> shardingColumnsList = Arrays.asList(shardingColumns);
+		for(int i = 0; i<args.size(); i++){
+			SqlArgEntity arg = args.get(i);
+			String originalValue = arg.getOriginalValue();
+			if(!shardingColumnsList.contains(arg.getKey())){
+				continue;// 只取需要的参数
 			}
-			data.setKey(columnName);
-			data.setOriginalValue(columnValue);
-
-			if (columnValue.startsWith("'") && columnValue.endsWith("'")) {
+			/**
+			 * 1. 不能对分区键使用函数
+			 * 2. 只能是字符串 数字 时间 三种类型
+			 * 3. 如果是字符串类型的时间 必须是yyyy-MM-dd HH:mm:ss的格式
+			 */
+			if (originalValue.startsWith("'") && originalValue.endsWith("'")) {
 				// TODO ''内的也可能是时间,对时间怎么处理,统一转为String?
-				data.setValue(columnValue);// String
-			} else if ("?".equals(columnValue)) {
+				arg.setValue(originalValue);// String
+			} else if ("?".equals(originalValue)) {
 				// 获取i之前已经有几个?号了
 				// JDBC规范第一列是从1开始的
-				ParameterCommand command = parameterCommand.get(getPlaceholderIndex(columnValues, i) + 1);
+				ParameterCommand command = parameterCommands.get(getPlaceholderIndex(args, i) + 1);
 				Object value = command == null ? null : command.getParttionArg();
 				if(value instanceof String || value instanceof Integer || value instanceof Long){
-					data.setValue(value);
+					arg.setValue(value);
 				}else if(value instanceof Date){
 					java.util.Date date = new java.util.Date(((Date) value).getTime());
-					data.setValue(date);
+					arg.setValue(date);
 				}
 			} else {
-				if(columnValue.indexOf("(") != -1){
-					// now()等函数
-				}else{
-					data.setValue(Long.valueOf(columnValue));// 数字
-				}
+				arg.setValue(Long.valueOf(originalValue));// 数字
 			}
-			sqlParseDateList.add(data);
+			sqlParseDateList.add(arg);
 		}
 		return sqlParseDateList;
 	}
@@ -236,10 +253,10 @@ public class DefaultSqlParser implements SqlParser{
 	 * @param str
 	 * @return
 	 */
-	public int getPlaceholderIndex(String[] columnsValue, int thisIndex) {
+	public int getPlaceholderIndex(List<SqlArgEntity> args, int thisIndex) {
 		int count = 0;
-		for(int i = 0; i<columnsValue.length && i<thisIndex; i ++){
-			if(columnsValue[i].trim().equals("?")){
+		for(int i = 0; i<args.size() && i<thisIndex; i ++){
+			if(args.get(i).getOriginalValue().equals("?")){
 				count++;
 			}
 		}

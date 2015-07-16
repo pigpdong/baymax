@@ -3,7 +3,7 @@ package com.tongbanjie.baymax.parser;
 import java.util.List;
 import java.util.Map;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.router.model.ParameterEntity;
+import com.tongbanjie.baymax.router.model.SqlArgEntity;
 import com.tongbanjie.baymax.router.model.SqlType;
 import com.tongbanjie.baymax.utils.Pair;
 
@@ -59,7 +59,7 @@ public interface SqlParser {
 	 * @param sqlType
 	 * @return
 	 */
-	public Pair<String[]/*columnsName*/, String[]/*columnsValue*/> parseInsertSql(String sql, SqlType sqlType);
+	public List<SqlArgEntity> parseInsertSql(String sql, SqlType sqlType);
 	
 	
 	/**
@@ -68,7 +68,7 @@ public interface SqlParser {
 	 * @param sqlType
 	 * @return
 	 */
-	public Pair<String[]/*columnsName*/, String[]/*columnsValue*/> parseWhereSql(String sql, SqlType sqlType);
+	public List<SqlArgEntity> parseWhereSql(String sql, SqlType sqlType);
 	
 	/**
 	 * SQL解析,提取条件中的KEY,VALUE
@@ -76,6 +76,6 @@ public interface SqlParser {
 	 * @param boundSql
 	 * @return
 	 */
-	public List<ParameterEntity> parse(String sql, SqlType sqlType, Map<Integer, ParameterCommand> patameterContext);
+	public List<SqlArgEntity> parse(String sql, SqlType sqlType, Map<Integer, ParameterCommand> parameterCommands, String[] shardingColumns);
 
 }
