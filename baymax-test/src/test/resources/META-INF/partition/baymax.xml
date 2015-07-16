@@ -9,8 +9,8 @@
 		<property name="tableRules">
 			<list>
 				<ref local="trade_order_simple"/>
-				<ref local="trade_order_virtual"/>
-				<ref local="trade_order_monthly"/>
+				<!-- <ref local="trade_order_virtual"/>
+				<ref local="trade_order_monthly"/> -->
 			</list>
 		</property>
 		<property name="functions">
