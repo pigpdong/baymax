@@ -17,6 +17,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import com.tongbanjie.baymax.datasource.MultipleDataSource;
 import com.tongbanjie.baymax.exception.BayMaxException;
-import com.tongbanjie.baymax.exception.TraceContext;
 import com.tongbanjie.baymax.jdbc.model.ExecuteCommand;
 import com.tongbanjie.baymax.jdbc.model.ExecuteMethod;
 import com.tongbanjie.baymax.jdbc.model.ResultSetHandler;
@@ -97,7 +96,8 @@ public class TConnection implements Connection {
 		stmt.closeOpenedStatement();									// 关闭上一个SQL打开的Statement,一个JDBC规范的Statement只能保持最近一个开发的ResultSet,所以如果用户在同一个Statement上执行SQL,意味着前面的ResultSet可以被关闭了。
 		boolean resultType = false;
 		for (TargetSql target : sqlList) {
-			DataSource targetDataSource = target.getDataSource();
+			String targetPartition = target.getPartition();
+			DataSource targetDataSource = targetPartition == null ? multipleDataSource.getDefaultDataSource() : multipleDataSource.getDataSourceByName(targetPartition);
 			Connection conn = openedConnection.get(targetDataSource);	// 尝试获取一个已经打开的Connection
 			if (conn == null) {
 				conn = targetDataSource.getConnection();				// 打开一个Connection
@@ -232,6 +232,13 @@ public class TConnection implements Connection {
 			}
 			first = false;
 		}
+//		if(connectionForMetaData != null){
+//			try{
+//				connectionForMetaData.commit();
+//			}catch(SQLException e){
+//				sqlException = e;
+//			}
+//		}
 		if(sqlException != null){
 			throw sqlException;
 		}
@@ -253,6 +260,14 @@ public class TConnection implements Connection {
 				}
 			}
 		}
+		// 3.metaData
+//        if(connectionForMetaData != null){
+//			try{
+//				connectionForMetaData.rollback();
+//			}catch(SQLException e){
+//				sqlException = e;
+//			}
+//		}
 		if(sqlException != null){
 			throw sqlException;
 		}

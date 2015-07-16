@@ -3,11 +3,13 @@ package com.tongbanjie.baymax.datasource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
+
 import com.tongbanjie.baymax.jdbc.TConnection;
 import com.tongbanjie.baymax.router.RouteService;
-import com.tongbanjie.baymax.router.impl.DefaultRouteService;
+import com.tongbanjie.baymax.support.TableCreater;
 
 /**
  * DataSource分发器
@@ -20,13 +22,15 @@ import com.tongbanjie.baymax.router.impl.DefaultRouteService;
  */
 public class MultipleDataSource extends DataSourceDispatcher implements DataSource{
 	
-	//private final static Logger logger = LoggerFactory.getLogger(MultipleDataSource.class);
-	
 	private RouteService routeService;
 	
 	public void init() throws Exception{
 		super.init();
-		routeService = new DefaultRouteService(super.getTableRules(), this);
+		// 创建自动建表程序
+		List<TableCreater> tableCreaters = routeService.getTableCreaters();
+		for(TableCreater creater : tableCreaters){
+			creater.init(this);
+		}
 	}
 
 	public RouteService getRouteService() {
