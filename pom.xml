@@ -6,7 +6,7 @@
 	<groupId>com.tongbanjie.baymax</groupId>
 	<artifactId>baymax</artifactId>
 	<!-- <version>2.0.0-SNAPSHOT</version> -->
-	<version>2.0.0</version>
+	<version>2.0.1</version>
 	<packaging>pom</packaging>
 
 	<name>baymax</name>
@@ -14,13 +14,13 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<baymax.version>2.0.0</baymax.version>
+		<baymax.version>2.0.1</baymax.version>
 	</properties>
 
 	<modules>
 		<module>baymax-core</module>
 		<module>baymax-test</module>
-		<module>byamax-sequence</module>
+		<module>baymax-sequence</module>
 	</modules>
 
 	<build>
