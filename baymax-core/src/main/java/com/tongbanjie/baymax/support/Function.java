@@ -5,14 +5,14 @@ package com.tongbanjie.baymax.support;
  * @author dawei
  *
  */
-public interface Function {
+public interface Function<I,O> {
 	
 	/**
 	 * 执行自定义函数
 	 * @param params
 	 * @return
 	 */
-	Object apply(Object... params);
+    O apply(I input);
 	
 	/**
 	 * 获取自定义函数在EL表达式中被使用的关键字

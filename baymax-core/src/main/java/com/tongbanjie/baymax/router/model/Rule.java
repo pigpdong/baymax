@@ -103,7 +103,7 @@ public class Rule {
 	 * @param functionMap	函数 
 	 * @return
 	 */
-	public <T> Object execute(Object param, Class<T> toType, Map<String, Function> functionMap) {
+	public <T> Object execute(Object param, Class<T> toType, Map<String, Function<?,?>> functionMap) {
 		Map<String, Object> vrs = new HashMap<String, Object>();
 		vrs.putAll(functionMap);// 拓展函数
 		vrs.put("$ROOT", param);

@@ -57,7 +57,7 @@ public abstract class TableRule {
 	 */
 	public abstract List<Pair<String/* partion */, String/* table */>> getAllTableNames();
 	
-	protected Map<String, Function> functionsMap;
+	protected Map<String, Function<?,?>> functionsMap;
 	
 	protected String getTargetPartition(String suffix){
 		return tableMapping.get(suffix);
@@ -113,7 +113,7 @@ public abstract class TableRule {
 		configHolder.tableMappings = tableMappings;
 	}
 	
-	public void init(Map<String, Function> functionsMap) {
+	public void init(Map<String, Function<?,?>> functionsMap) {
 		/*------------------------------init------------------------------*/
 		this.functionsMap = functionsMap;
 		init();

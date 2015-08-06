@@ -7,25 +7,34 @@ import com.tongbanjie.baymax.support.Function;
  * @author dawei
  *
  */
-public class SubInt implements Function{
+public class SubInt implements Function<String, String>{
 
-	@Override
-	public Object apply(Object... params) {
-		Object source = params[0];
-		int length = (Integer) params[1];
-		String s = String.valueOf(source);
-		if(s.length() > length){
-			s = s.substring(s.length() - length);
-		}
-		return s;
-	}
-
+//	@Override
+//	public Object apply(Object... params) {
+//		Object source = params[0];
+//		int length = (Integer) params[1];
+//		String s = String.valueOf(source);
+//		if(s.length() > length){
+//			s = s.substring(s.length() - length);
+//		}
+//		return s;
+//	}
+	
 	@Override
 	public String getFunctionName() {
 		return "subInt";
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(new SubInt().apply(123456,3));
+		//System.out.println(new SubInt().apply(123456,3));
+	}
+	
+	@Override
+	public String apply(String input) {
+		String s = String.valueOf(input);
+		if(s.length() > 2){
+			s = s.substring(s.length() - 2);
+		}
+		return s;
 	}
 }

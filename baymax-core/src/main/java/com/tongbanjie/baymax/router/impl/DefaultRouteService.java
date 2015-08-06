@@ -51,7 +51,7 @@ public class DefaultRouteService implements RouteService{
 	 */
 	private SqlParser parser = new DefaultSqlParser();
 	
-	private Map<String, Function> functionsMap = new HashMap<String, Function>();
+	private Map<String, Function<?,?>> functionsMap = new HashMap<String, Function<?,?>>();
 	
 	/**
 	 * 对一条SQL进行路由运算,返回路由结果
@@ -171,16 +171,16 @@ public class DefaultRouteService implements RouteService{
 		return tableCreaters;
 	}
 
-	public void setFunctions(List<Function> functions) {
+	public void setFunctions(List<Function<?,?>> functions) {
 		if(functions == null){
 			return;
 		}
-		for(Function f : functions){
+		for(Function<?,?> f : functions){
 			functionsMap.put(f.getFunctionName(), f);
 		}
 	}
 
-	public Map<String, Function> getFunctionsMap() {
+	public Map<String, Function<?,?>> getFunctionsMap() {
 		return functionsMap;
 	}
 }

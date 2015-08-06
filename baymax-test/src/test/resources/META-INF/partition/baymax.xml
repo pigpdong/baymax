@@ -27,8 +27,8 @@
 		<property name="disableFullScan" 	value="true"/>
 		<property name="rules">
 			<list>
-				<value>subInt.apply(id, 2) % 4 + 1</value>
-				<value>subInt.apply(user_id, 2) % 4 + 1</value>
+				<value>subInt.apply(id) % 4 + 1</value>
+				<value>subInt.apply(user_id) % 4 + 1</value>
 			</list>
 		</property>
 		<property name="tableMapping">
