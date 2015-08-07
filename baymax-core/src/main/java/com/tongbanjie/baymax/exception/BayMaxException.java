@@ -26,7 +26,7 @@ public class BayMaxException extends RuntimeException {
 	
 	@Override
 	public String getMessage() {
-		return super.getMessage() + trade.toString();
+		return super.getMessage() + (trade!=null?trade.toString():"");
 	}
 
 }

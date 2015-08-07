@@ -216,7 +216,10 @@ public class DefaultSqlParser implements SqlParser{
 		for(int i = 0; i<args.size(); i++){
 			SqlArgEntity arg = args.get(i);
 			String originalValue = arg.getOriginalValue();
-			if(!shardingColumnsList.contains(arg.getKey())){
+			if(originalValue != null){
+				originalValue = originalValue.trim();
+			}
+			if(arg.getKey() == null || !shardingColumnsList.contains(arg.getKey().trim())){
 				continue;// 只取需要的参数
 			}
 			/**
