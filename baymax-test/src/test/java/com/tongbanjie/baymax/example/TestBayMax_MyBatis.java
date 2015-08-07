@@ -30,7 +30,7 @@ public class TestBayMax_MyBatis {
 	@Test
 	public void testGetById(){
 		System.out.println("--test start--");
-		TradeOrder orders = dao.getById("000138");
+		TradeOrder orders = dao.getById("0003");
 		System.out.println(JSON.toJSONString(orders, true));
 	}
 	

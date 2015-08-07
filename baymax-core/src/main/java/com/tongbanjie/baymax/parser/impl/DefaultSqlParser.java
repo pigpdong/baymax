@@ -138,8 +138,8 @@ public class DefaultSqlParser implements SqlParser{
 		if(columns != null){
 			for(int i = 0; i< columns.length; i++){
 				SqlArgEntity arg = new SqlArgEntity();
-				arg.setKey(columns[i]);
-				arg.setOriginalValue(columnsValue[i]);
+				arg.setKey(columns[i].trim());
+				arg.setOriginalValue(columnsValue[i].trim());
 				arg.setCompareType(CompareType.eq);
 				args.add(arg);
 			}
@@ -216,10 +216,7 @@ public class DefaultSqlParser implements SqlParser{
 		for(int i = 0; i<args.size(); i++){
 			SqlArgEntity arg = args.get(i);
 			String originalValue = arg.getOriginalValue();
-			if(originalValue != null){
-				originalValue = originalValue.trim();
-			}
-			if(arg.getKey() == null || !shardingColumnsList.contains(arg.getKey().trim())){
+			if(!shardingColumnsList.contains(arg.getKey())){
 				continue;// 只取需要的参数
 			}
 			/**
