@@ -1,9 +1,4 @@
-package com.tongbanjie.baymax.parser.druid.impl;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package com.tongbanjie.baymax.parser.druid;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
@@ -11,48 +6,58 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.parser.druid.DruidSqlParser;
+import com.tongbanjie.baymax.parser.druid.impl.MycatSchemaStatVisitor;
 import com.tongbanjie.baymax.parser.druid.model.RangeValue;
 import com.tongbanjie.baymax.parser.druid.model.RouteCalculateUnit;
-import com.tongbanjie.baymax.parser.druid.model.SqlParseResult;
+import com.tongbanjie.baymax.parser.druid.model.ParseResult;
+import com.tongbanjie.baymax.partition.PartitionCaculate;
+import com.tongbanjie.baymax.router.model.ExecutePlan;
 
-public class DefaultDruidSqlParser implements DruidSqlParser{
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public abstract class AbstractDruidSqlParser implements DruidSqlParser{
 	
 	private Map<String,String> tableAliasMap = new HashMap<String,String>();
 
 	@Override
-	public SqlParseResult parse(String sql) {
+	public ExecutePlan parse(String sql) {
 		
 		SQLStatementParser 		parser 			= new MySqlStatementParser(sql); 
-		MycatSchemaStatVisitor 	visitor 		= new MycatSchemaStatVisitor();
+		MycatSchemaStatVisitor  visitor 		= new MycatSchemaStatVisitor();
 		SQLStatement 			statement 		= parser.parseStatement();
 		
-		SqlParseResult 			result 			= new SqlParseResult();
+		ParseResult             result 			= new ParseResult();
 		
-//		//通过visitor解析
+		// 通过visitor解析
 		visitorParse(statement, visitor, result);
-//		//通过Statement解析
+
+        // 路由
+        ExecutePlan plan = route(result, statement);
+
+		// 通过Statement解析
 		statementParse(statement, result);
-//		
-//		//改写sql：如insert语句主键自增长的可以
+
+		// 改写sql：如insert语句主键自增长的可以
 		changeSql(result, statement);
 		
-		return result;
+		return plan;
 		
 		//statement.accept(outv);
 		//List<Condition> conditions = visitor.getConditions();
 	}
 
-	private void changeSql(SqlParseResult result, SQLStatement statement) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected abstract void changeSql(ParseResult result, SQLStatement statement);
 
-	private void statementParse(SQLStatement statement, SqlParseResult result) {
-		// TODO Auto-generated method stub
-		
-	}
+    protected ExecutePlan route(ParseResult result, SQLStatement statement){
+        return PartitionCaculate.caculate(result);
+    }
 
-	private void visitorParse(SQLStatement stmt, MycatSchemaStatVisitor visitor, SqlParseResult result) {
+    protected abstract void statementParse(SQLStatement statement, ParseResult result);
+
+	private void visitorParse(SQLStatement stmt, MycatSchemaStatVisitor visitor, ParseResult result) {
 
 		stmt.accept(visitor);
 		

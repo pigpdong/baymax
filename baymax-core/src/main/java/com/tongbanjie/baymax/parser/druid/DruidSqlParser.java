@@ -1,10 +1,10 @@
 package com.tongbanjie.baymax.parser.druid;
 
-import com.tongbanjie.baymax.parser.druid.model.SqlParseResult;
+import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 
 public interface DruidSqlParser {
 
-	SqlParseResult parse(String sql);
+    ExecutePlan parse(String sql);
 	
 }

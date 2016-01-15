@@ -63,7 +63,7 @@
 		</property>
 	</bean>
 	
-	<bean id="trade_order_simple" class="com.tongbanjie.baymax.router.impl.SimpleTable" init-method="init">
+	<bean id="trade_order_simple" class="com.tongbanjie.baymax.partition.impl.SimpleTable" init-method="init">
 		<property name="logicTableName" 	value="trade_order"/>
 		<property name="shardingKeys"		value="user_id,id"/>
 		<property name="patten" 			value="trade_order_{00}"/>

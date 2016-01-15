@@ -1,5 +1,7 @@
 package com.tongbanjie.baymax.router.model;
 
+import com.tongbanjie.baymax.parser.model.SqlType;
+
 /**
  * 路由后用于执行的SQL
  * 

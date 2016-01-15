@@ -3,8 +3,8 @@ package com.tongbanjie.baymax.parser;
 import java.util.List;
 import java.util.Map;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.router.model.SqlArgEntity;
-import com.tongbanjie.baymax.router.model.SqlType;
+import com.tongbanjie.baymax.parser.model.SqlArgEntity;
+import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**

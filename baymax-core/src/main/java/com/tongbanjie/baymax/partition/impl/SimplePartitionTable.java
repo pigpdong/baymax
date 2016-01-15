@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.impl;
+package com.tongbanjie.baymax.partition.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import com.tongbanjie.baymax.exception.BayMaxException;
-import com.tongbanjie.baymax.router.TableRule;
-import com.tongbanjie.baymax.router.model.Rule;
+import com.tongbanjie.baymax.partition.PartitionTable;
+import com.tongbanjie.baymax.partition.Rule;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -16,7 +16,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
-public class SimpleTable extends TableRule{
+public class SimplePartitionTable extends PartitionTable {
 
 	/**
 	 * 返回所有分区-表的映射 格式: p1-order001 p1-order002 p2-order003 p3-order004

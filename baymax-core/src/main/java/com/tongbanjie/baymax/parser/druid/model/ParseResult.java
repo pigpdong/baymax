@@ -5,12 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SqlParseResult {
-	/**
-	 * 一个sql中可能有多个WhereUnit（如子查询中的where可能导致多个）
-	 */
-	private List<WhereUnit> whereUnits = new ArrayList<WhereUnit>();
-	
+public class ParseResult {
+
 	private List<RouteCalculateUnit> routeCalculateUnits = new ArrayList<RouteCalculateUnit>();
 	
 	/**

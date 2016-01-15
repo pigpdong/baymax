@@ -8,13 +8,14 @@ import java.util.Map;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.SqlParser;
+import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.parser.impl.DefaultSqlParser;
 import com.tongbanjie.baymax.router.RouteService;
-import com.tongbanjie.baymax.router.TableRule;
+import com.tongbanjie.baymax.partition.PartitionTable;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
-import com.tongbanjie.baymax.router.model.SqlArgEntity;
-import com.tongbanjie.baymax.router.model.SqlType;
+import com.tongbanjie.baymax.parser.model.SqlArgEntity;
+import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.router.model.TargetSql;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.support.TableCreater;
@@ -31,27 +32,27 @@ import com.tongbanjie.baymax.utils.Pair;
 public class DefaultRouteService implements RouteService{
 	
 	/**
-	 * 上下文中所有的路由规则列表
-	 */
-	private List<TableRule> tableRules;
-	
-	/**
-	 * 上下文中所有路由规则的MAP，方便使用表名查找到对应的路由规则
-	 */
-	private Map<String/*TableName*/, TableRule> tableRuleMapping = new HashMap<String, TableRule>();
-	
-	/**
-	 * 自动建表器
-	 */
-	List<TableCreater> tableCreaters = new LinkedList<TableCreater>();
-	
-	/**
-	 * SQL解析器
-	 * 主要用来提取SQL中的表名,Where中的KEY=VALUE形式的参数
-	 */
-	private SqlParser parser = new DefaultSqlParser();
-	
-	private Map<String, Function<?,?>> functionsMap = new HashMap<String, Function<?,?>>();
+     * 上下文中所有的路由规则列表
+     */
+    private List<PartitionTable> partitionTables;
+
+    /**
+     * 上下文中所有路由规则的MAP，方便使用表名查找到对应的路由规则
+     */
+    private Map<String/*TableName*/, PartitionTable> tableRuleMapping = new HashMap<String, PartitionTable>();
+
+    /**
+     * 自动建表器
+     */
+    List<TableCreater> tableCreaters = new LinkedList<TableCreater>();
+
+    /**
+     * SQL解析器
+     * 主要用来提取SQL中的表名,Where中的KEY=VALUE形式的参数
+     */
+    private SqlParser parser = new DefaultSqlParser();
+
+    private Map<String, Function<?,?>> functionsMap = new HashMap<String, Function<?,?>>();
 	
 	/**
 	 * 对一条SQL进行路由运算,返回路由结果
@@ -64,7 +65,7 @@ public class DefaultRouteService implements RouteService{
 		
 		String logicTableName = null;
 		SqlType sqlType = null;
-		TableRule rule = null;
+		PartitionTable rule = null;
 		if(tableName != null){
 			// 需要路由
 			logicTableName = tableName.getObject1();
@@ -144,11 +145,11 @@ public class DefaultRouteService implements RouteService{
 		}
 	}
 
-	@Override
+    @Override
 	public void init() {
 		// 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
 		// 2. 初始化自动建表程序
-		for(TableRule table : tableRules){
+		for(PartitionTable table : partitionTables){
 			table.init(functionsMap);
 			if(!tableRuleMapping.containsKey(table.getLogicTableName())){
 				tableRuleMapping.put(table.getLogicTableName(), table);
@@ -159,12 +160,12 @@ public class DefaultRouteService implements RouteService{
 		}
 	}
 	
-	public List<TableRule> getTableRules() {
-		return tableRules;
+	public List<PartitionTable> getPartitionTables() {
+		return partitionTables;
 	}
 
-	public void setTableRules(List<TableRule> tableRules) {
-		this.tableRules = tableRules;
+	public void setPartitionTables(List<PartitionTable> partitionTables) {
+		this.partitionTables = partitionTables;
 	}
 
 	public List<TableCreater> getTableCreaters() {

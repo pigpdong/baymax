@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.model;
+package com.tongbanjie.baymax.parser.model;
 
 /**
  * SQL解析后的Statement参数

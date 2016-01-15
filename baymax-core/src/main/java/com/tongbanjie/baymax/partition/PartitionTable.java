@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router;
+package com.tongbanjie.baymax.partition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.tongbanjie.baymax.router.model.Rule;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
@@ -21,7 +20,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
-public abstract class TableRule {
+public abstract class PartitionTable {
 	
 	protected ConfigHolder configHolder = new ConfigHolder();
 

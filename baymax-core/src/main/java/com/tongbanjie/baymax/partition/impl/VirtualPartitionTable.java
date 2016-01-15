@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.impl;
+package com.tongbanjie.baymax.partition.impl;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,14 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 在{@link SimpleTable}之上映射一层虚拟表
+ * 在{@link SimplePartitionTable}之上映射一层虚拟表
  * 
  * @author dawei
  *
  */
-public class VirtualTable extends SimpleTable{
+public class VirtualPartitionTable extends SimplePartitionTable {
 	
-	private final static Logger logger = LoggerFactory.getLogger(VirtualTable.class);
+	private final static Logger logger = LoggerFactory.getLogger(VirtualPartitionTable.class);
 	
 	private Map<String/*virtualSuffix*/, String/*phySuffix*/> virtualTables;// 所有虚拟表 el表达式直接匹配的表
 	

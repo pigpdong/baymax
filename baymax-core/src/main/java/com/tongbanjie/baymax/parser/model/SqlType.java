@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.model;
+package com.tongbanjie.baymax.parser.model;
 
 /**
  * 目前只支持SELECT,INSERT,UPDATE,DELETE,SELECT_FOR_UPDATE

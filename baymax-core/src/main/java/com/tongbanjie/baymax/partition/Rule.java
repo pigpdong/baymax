@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.model;
+package com.tongbanjie.baymax.partition;
 
 import java.util.ArrayList;
 import java.util.HashMap;

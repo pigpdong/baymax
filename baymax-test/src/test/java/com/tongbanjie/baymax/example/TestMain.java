@@ -12,7 +12,7 @@ import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.druid.AP;
 import com.tongbanjie.baymax.parser.druid.impl.DefaultDruidSqlParser;
-import com.tongbanjie.baymax.parser.druid.model.SqlParseResult;
+import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 
 public class TestMain {
 	
@@ -53,7 +53,7 @@ public class TestMain {
 	@Test
 	public void t2(){
 		DefaultDruidSqlParser parser = new DefaultDruidSqlParser();
-		SqlParseResult result = parser.parse("select * from t1 where t1.id = 1");
+		ParseResult result = parser.parse("select * from t1 where t1.id = 1");
 		System.out.print(result);
 	}
 }

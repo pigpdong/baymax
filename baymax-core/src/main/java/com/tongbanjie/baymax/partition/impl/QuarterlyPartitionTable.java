@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.impl;
+package com.tongbanjie.baymax.partition.impl;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -18,7 +18,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
-public class QuarterlyTable extends MonthlyTable {
+public class QuarterlyPartitionTable extends MonthlyPartitionTable {
 
 	@Override
 	public void initTableMapping(List<String> tableMappings) {
@@ -190,6 +190,6 @@ public class QuarterlyTable extends MonthlyTable {
 	}
 	
 	public static void main(String[] args) throws ParseException {
-		System.out.println(new QuarterlyTable().listSuffix("20142", "00000", null));
+		System.out.println(new QuarterlyPartitionTable().listSuffix("20142", "00000", null));
 	}
 }

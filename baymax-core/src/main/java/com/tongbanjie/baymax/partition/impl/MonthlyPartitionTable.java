@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.impl;
+package com.tongbanjie.baymax.partition.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,9 +23,9 @@ import com.tongbanjie.baymax.support.TableCreater;
  * @author dawei
  *
  */
-public class MonthlyTable extends SimpleTable {
+public class MonthlyPartitionTable extends SimplePartitionTable {
 
-	private final static Logger logger = LoggerFactory.getLogger(MonthlyTable.class);
+	private final static Logger logger = LoggerFactory.getLogger(MonthlyPartitionTable.class);
 
 	protected String likeTableName; 					// 自动创建表时使用哪个表作为模板
 	protected volatile String nextCreateTableSuffix; 	// 下一个要自动创建表的后缀启动时赋值，当前时间的下一张表
@@ -223,6 +223,6 @@ public class MonthlyTable extends SimpleTable {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		Date start = sdf.parse("201405");
 		Date end = new Date();
-		System.out.println(new MonthlyTable().listSuffix(start, end));
+		System.out.println(new MonthlyPartitionTable().listSuffix(start, end));
 	}
 }

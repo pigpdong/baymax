@@ -6,7 +6,7 @@
 	   http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
 	
 	<bean id="baymaxRouteService" class="com.tongbanjie.baymax.router.impl.DefaultRouteService" init-method="init">
-		<property name="tableRules">
+		<property name="partitionTables">
 			<list>
 				<ref local="trade_order_simple"/>
 				<!-- <ref local="trade_order_virtual"/>
@@ -20,7 +20,7 @@
 		</property>
 	</bean>
 	
-	<bean id="trade_order_simple" class="com.tongbanjie.baymax.router.impl.SimpleTable">
+	<bean id="trade_order_simple" class="com.tongbanjie.baymax.partition.impl.SimplePartitionTable">
 		<property name="logicTableName" 	value="trade_order"/>
 		<property name="shardingKeys"		value="user_id,id"/>
 		<property name="patten" 			value="trade_order_{00}"/>
@@ -41,7 +41,7 @@
 		</property>
 	</bean>
 	
-	<!-- <bean id="trade_order_virtual" class="com.tongbanjie.baymax.router.impl.VirtualTable">
+	<!-- <bean id="trade_order_virtual" class="com.tongbanjie.baymax.partition.impl.VirtualTable">
 		<property name="logicTableName" 	value="trade_order_t1"/>
 		<property name="shardingKeys"		value="user_id,id"/>
 		<property name="patten" 			value="trade_order_{00}"/>
@@ -62,7 +62,7 @@
 		</property>
 	</bean>
 	
-	<bean id="trade_order_monthly" class="com.tongbanjie.baymax.router.impl.MonthlyTable">
+	<bean id="trade_order_monthly" class="com.tongbanjie.baymax.partition.impl.MonthlyTable">
 		<property name="logicTableName" 	value="trade_order_t2"/>
 		<property name="shardingKeys"		value="user_id,id"/>
 		<property name="patten" 			value="trade_order_{000000}"/>
