@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tongbanjie.baymax.support.Function;
-import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -168,11 +167,6 @@ public abstract class PartitionTable {
 		}
 		return sfx;
 	}
-	
-	public TableCreater getTableCreater(){
-		return null;
-	}
-
 	
 	private class ConfigHolder{
 		public List<String> rules;

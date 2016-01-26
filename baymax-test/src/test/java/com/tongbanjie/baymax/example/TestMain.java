@@ -1,5 +1,6 @@
 package com.tongbanjie.baymax.example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -11,7 +12,6 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.druid.AP;
-import com.tongbanjie.baymax.parser.druid.impl.DefaultDruidSqlParser;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 
 public class TestMain {
@@ -52,8 +52,17 @@ public class TestMain {
 	
 	@Test
 	public void t2(){
-		DefaultDruidSqlParser parser = new DefaultDruidSqlParser();
-		ParseResult result = parser.parse("select * from t1 where t1.id = 1");
-		System.out.print(result);
+        SQLStatementParser parser = new MySqlStatementParser("select a,(select b from t2 where b=?) from t1 where a=?");
+
+        MycatSchemaStatVisitor visitor = null;
+        SQLStatement statement = null;
+        //解析出现问题统一抛SQL语法错误
+        try {
+            statement = parser.parseStatement();
+            visitor = new MycatSchemaStatVisitor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        statement.accept(visitor);
 	}
 }

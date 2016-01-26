@@ -21,7 +21,9 @@
  * https://code.google.com/p/opencloudb/.
  *
  */
-package com.tongbanjie.baymax.parser.druid.model;
+package com.tongbanjie.baymax.router;
+
+import com.tongbanjie.baymax.parser.druid.model.ServerParse;
 
 import java.io.Serializable;
 

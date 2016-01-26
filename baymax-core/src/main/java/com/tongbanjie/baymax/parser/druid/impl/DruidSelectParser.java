@@ -1,6 +1,8 @@
 package com.tongbanjie.baymax.parser.druid.impl;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
+import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.tongbanjie.baymax.parser.druid.AbstractDruidSqlParser;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
@@ -11,19 +13,12 @@ import com.tongbanjie.baymax.router.model.ExecutePlan;
 public class DruidSelectParser extends AbstractDruidSqlParser {
 
     @Override
-    protected ExecutePlan route(ParseResult result, SQLStatement statement){
-
-        return null;
-    }
-
-    @Override
-    protected void statementParse(SQLStatement statement, ParseResult result) {
+    public void changeSql(ParseResult result) {
 
     }
 
     @Override
-    protected void changeSql(ParseResult result, SQLStatement statement) {
+    public void statementParse(ParseResult result) {
 
     }
-
 }

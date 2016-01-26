@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import com.tongbanjie.baymax.datasource.MultipleDataSource;
-import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -126,50 +125,6 @@ public class QuarterlyPartitionTable extends MonthlyPartitionTable {
 		} else {
 			throw new RuntimeException("it can't be happen" + c);
 		}
-	}
-	
-	@Override
-	public TableCreater getTableCreater() {
-		if (likeTableName == null || likeTableName.trim().length() == 0 || autoCreatePartition == null || autoCreatePartition.trim().length() == 0) {
-			return null;
-		}
-		tableCreater = new TableCreater() {
-
-			@Override
-			public void init(MultipleDataSource dataSource) {
-				super.init(dataSource);
-				initNextCreateTableSuffix(); // 初始化下张需要创建的表
-			}
-
-			private void initNextCreateTableSuffix() {
-				if (tableCreater != null) {
-					// 需要自动建表
-					if (nextCreateTableSuffix == null) {
-						// 启动的时候取当前时间下个季度
-						nextCreateTableSuffix = getNextQuarterSuffix(Calendar.getInstance());
-					} else {
-						nextCreateTableSuffix = getNextQuarterSuffix(nextCreateTableSuffix);
-					}
-				}
-			}
-
-			@Override
-			public void createTable(String suffix) {
-				if (suffix.equals(nextCreateTableSuffix)) {
-					String table = format(suffix);
-					String partition = tableMapping.get(table);
-					if (partition == null) {
-						partition = autoCreatePartition; // 使用00000所在分区
-					}
-					boolean succ = createTableInDB(table, likeTableName, partition);
-					if (succ) {
-						// 创建成功或已经存在
-						initNextCreateTableSuffix();
-					}
-				}
-			}
-		};
-		return tableCreater;
 	}
 	
 	private String getNextQuarterSuffix(Calendar c){

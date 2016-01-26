@@ -1,4 +1,5 @@
 import com.tongbanjie.baymax.parser.druid.impl.DruidSelectParser;
+import com.tongbanjie.baymax.router.impl.DruidSelectRouteService;
 import org.junit.Test;
 
 /**
@@ -8,8 +9,8 @@ public class TestDruidSelectParser {
 
     @Test
     public void testParse(){
-        DruidSelectParser parser = new DruidSelectParser();
-        parser.parse("select * from t1 where a = 1 and (b = 2 or c = 3)");
+        DruidSelectRouteService routeService = new DruidSelectRouteService();
+        routeService.doRoute("select * from t1 where a = 1 and (b = 2 or c = 3)", null);
     }
 
 }

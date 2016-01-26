@@ -8,7 +8,6 @@ import java.util.Map;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.SqlParser;
-import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.parser.impl.DefaultSqlParser;
 import com.tongbanjie.baymax.router.RouteService;
 import com.tongbanjie.baymax.partition.PartitionTable;
@@ -18,7 +17,6 @@ import com.tongbanjie.baymax.parser.model.SqlArgEntity;
 import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.router.model.TargetSql;
 import com.tongbanjie.baymax.support.Function;
-import com.tongbanjie.baymax.support.TableCreater;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -42,11 +40,6 @@ public class DefaultRouteService implements RouteService{
     private Map<String/*TableName*/, PartitionTable> tableRuleMapping = new HashMap<String, PartitionTable>();
 
     /**
-     * 自动建表器
-     */
-    List<TableCreater> tableCreaters = new LinkedList<TableCreater>();
-
-    /**
      * SQL解析器
      * 主要用来提取SQL中的表名,Where中的KEY=VALUE形式的参数
      */
@@ -56,7 +49,7 @@ public class DefaultRouteService implements RouteService{
 	
 	/**
 	 * 对一条SQL进行路由运算,返回路由结果
-	 * @param boundSql
+	 * @param
 	 * @return
 	 */
 	@Override
@@ -98,6 +91,7 @@ public class DefaultRouteService implements RouteService{
 				param.put(arg.getKey(), arg.getValue());
 				shardingKeyTouch = true;//只要有一个KEY匹配则为true,用于是否全表扫描的判断.
 			}
+            // 全表扫描
 			if(shardingKeyTouch == false){
 				// 没有命中的shardingKey,则全表扫描
 				ExecutePlan plan = new ExecutePlan();
@@ -123,6 +117,7 @@ public class DefaultRouteService implements RouteService{
 				return plan;
 				
 			}else{
+                // 分区路由
 				// TODO 有shardingKey命中,目前只支持路由到一个分区,一个表.以后改进.比如 whre id in()
 				// 后面的执行器已经支持执行多条SQL了,要支持路由打多个分区只要返回多个target就行了.
 				Pair<String/*targetDB*/, String/*targetTable*/> target = rule.executeRule(param);
@@ -153,7 +148,6 @@ public class DefaultRouteService implements RouteService{
 			table.init(functionsMap);
 			if(!tableRuleMapping.containsKey(table.getLogicTableName())){
 				tableRuleMapping.put(table.getLogicTableName(), table);
-				tableCreaters.add(table.getTableCreater());
 			}else{
 				throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + table.getLogicTableName());
 			}
@@ -166,10 +160,6 @@ public class DefaultRouteService implements RouteService{
 
 	public void setPartitionTables(List<PartitionTable> partitionTables) {
 		this.partitionTables = partitionTables;
-	}
-
-	public List<TableCreater> getTableCreaters() {
-		return tableCreaters;
 	}
 
 	public void setFunctions(List<Function<?,?>> functions) {

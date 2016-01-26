@@ -21,7 +21,7 @@
  * https://code.google.com/p/opencloudb/.
  *
  */
-package com.tongbanjie.baymax.parser.druid.model;
+package com.tongbanjie.baymax.router;
 
 /**
  * column ->node index

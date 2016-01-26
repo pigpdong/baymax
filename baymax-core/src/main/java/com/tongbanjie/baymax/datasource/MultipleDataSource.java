@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 
 import com.tongbanjie.baymax.jdbc.TConnection;
 import com.tongbanjie.baymax.router.RouteService;
-import com.tongbanjie.baymax.support.TableCreater;
 
 /**
  * DataSource分发器
@@ -28,13 +27,6 @@ public class MultipleDataSource extends DataSourceDispatcher implements DataSour
 		super.init();
 		if(routeService == null){
 			throw new RuntimeException("routeService can't be null!");
-		}
-		// 创建自动建表程序
-		List<TableCreater> tableCreaters = routeService.getTableCreaters();
-		for(TableCreater creater : tableCreaters){
-			if(creater != null){
-				creater.init(this);
-			}
 		}
 	}
 

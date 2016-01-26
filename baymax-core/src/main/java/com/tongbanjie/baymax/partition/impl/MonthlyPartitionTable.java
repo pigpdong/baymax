@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tongbanjie.baymax.datasource.MultipleDataSource;
-import com.tongbanjie.baymax.support.TableCreater;
 
 /**
  * 按月分表
@@ -29,7 +28,6 @@ public class MonthlyPartitionTable extends SimplePartitionTable {
 
 	protected String likeTableName; 					// 自动创建表时使用哪个表作为模板
 	protected volatile String nextCreateTableSuffix; 	// 下一个要自动创建表的后缀启动时赋值，当前时间的下一张表
-	protected TableCreater tableCreater;
 
 	/**
 	 * 把配置中的tableMapping转换为对象
@@ -109,7 +107,7 @@ public class MonthlyPartitionTable extends SimplePartitionTable {
 	 * 枚举出两个时间点之间的所有月
 	 * <p>
 	 * 
-	 * @param datart
+	 * @param
 	 * @param end
 	 * @return
 	 */
@@ -147,68 +145,9 @@ public class MonthlyPartitionTable extends SimplePartitionTable {
 	protected String getTargetPartition(String suffix) {
 		String partition = super.getTargetPartition(suffix);
 		if (partition == null) {
-			synchronized (this) { 							// 一个表同时只能有一个线程去建表
-				tableCreater.createTable(suffix); 			// 触发自动建表
-			}
 			partition = super.getTargetPartition(suffix); 	// 重新获取
 		}
 		return partition;
-	}
-
-	/**
-	 * 返回一个自动建表对象，由Roureservice来收集各个表中的建表对象
-	 * <p>
-	 * 由MultipleDataSource来负责初始化
-	 * <p>
-	 * {@code getTableCreater()}需要在TableRule的{@code init()}方法调用之后才能调用
-	 */
-	@Override
-	public TableCreater getTableCreater() {
-		if (likeTableName == null || likeTableName.trim().length() == 0 || autoCreatePartition == null || autoCreatePartition.trim().length() == 0) {
-			return null;
-		}
-		tableCreater = new TableCreater() {
-
-			@Override
-			public void init(MultipleDataSource dataSource) {
-				super.init(dataSource);
-				initNextCreateTableSuffix(); // 初始化下张需要创建的表
-			}
-
-			private void initNextCreateTableSuffix() {
-				if (tableCreater != null) {
-					// 需要自动建表
-					Calendar now = Calendar.getInstance();
-					if (nextCreateTableSuffix == null) {
-						// 启动的时候取当前时间下个月的时间
-						now.add(Calendar.MONTH, 1);
-					} else {
-						// 一张表创建成功，初始化下一张表的时候
-						Date nextDate = parseToDate(nextCreateTableSuffix, "yyyyMM", null);
-						now.setTime(nextDate);
-						now.add(Calendar.MONTH, 1);
-					}
-					nextCreateTableSuffix = String.valueOf(now.get(Calendar.YEAR)) + String.valueOf(now.get(Calendar.MONTH) + 1);
-				}
-			}
-
-			@Override
-			public void createTable(String suffix) {
-				if (suffix.equals(nextCreateTableSuffix)) {
-					String table = format(suffix);
-					String partition = tableMapping.get(table);
-					if (partition == null) {
-						partition = autoCreatePartition; // 使用00000所在分区
-					}
-					boolean succ = createTableInDB(table, likeTableName, partition);
-					if (succ) {
-						// 创建成功或已经存在
-						initNextCreateTableSuffix();
-					}
-				}
-			}
-		};
-		return tableCreater;
 	}
 
 	protected String getTableLike() {

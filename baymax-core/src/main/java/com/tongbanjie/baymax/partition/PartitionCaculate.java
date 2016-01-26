@@ -1,14 +1,12 @@
 package com.tongbanjie.baymax.partition;
 
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
-import com.tongbanjie.baymax.parser.druid.model.RouteCalculateUnit;
+import com.tongbanjie.baymax.router.RouteCalculateUnit;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.TargetSql;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * Created by sidawei on 16/1/15.

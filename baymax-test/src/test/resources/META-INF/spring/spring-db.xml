@@ -19,6 +19,7 @@
 		<property name="password">
 			<value>${jdbc.druid.password}</value>
 		</property>
+        <property name="filters" value="stat,wall" />
 	</bean>
 
 	<bean id="dataSource_p2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
@@ -33,6 +34,7 @@
 		<property name="password">
 			<value>${jdbc.druid.p2.password}</value>
 		</property>
+        <property name="filters" value="stat,wall" />
 	</bean>
 		
 	<!-- 数据源分发器 -->

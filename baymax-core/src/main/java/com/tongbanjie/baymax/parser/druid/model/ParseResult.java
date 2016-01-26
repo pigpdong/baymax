@@ -1,5 +1,7 @@
 package com.tongbanjie.baymax.parser.druid.model;
 
+import com.tongbanjie.baymax.router.RouteCalculateUnit;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,12 +19,14 @@ public class ParseResult {
 	//tables为路由计算共享属性，多组RouteCalculateUnit使用同样的tables
 	private List<String> tables = new ArrayList<String>();
 	
-//	private RouteCalculateUnit routeCalculateUnit = new RouteCalculateUnit(this); 
+    //private RouteCalculateUnit routeCalculateUnit = new RouteCalculateUnit(this);
 
 	/**
 	 * key table alias, value talbe realname;
 	 */
 	private Map<String, String> tableAliasMap = new LinkedHashMap<String, String>();
+
+    /*---------------------------------------------------------------------------------------*/
 
 	public Map<String, String> getTableAliasMap() {
 		return tableAliasMap;
@@ -63,7 +67,6 @@ public class ParseResult {
 	public void addRouteCalculateUnit(RouteCalculateUnit routeCalculateUnit) {
 		this.routeCalculateUnits.add(routeCalculateUnit);
 	}
-	
 
 	public void clear() {
 		for(RouteCalculateUnit unit : routeCalculateUnits ) {

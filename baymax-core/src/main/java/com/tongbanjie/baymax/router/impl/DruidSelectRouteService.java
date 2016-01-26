@@ -5,25 +5,40 @@ import com.tongbanjie.baymax.parser.druid.impl.DruidSelectParser;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.router.RouteService;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
-import com.tongbanjie.baymax.support.TableCreater;
 
 import java.util.List;
 import java.util.Map;
 
-public abstract class SelectDruidRouteService implements RouteService{
+public class DruidSelectRouteService implements RouteService{
 
     public ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand) {
 
-
-        // select
         DruidSelectParser parser = new DruidSelectParser();
 
-        return parser.parse(sql);
+        ParseResult result = new ParseResult();
+
+        parser.initParse(sql, parameterCommand);
+
+        // 通过visitor解析
+        parser.visitorParse(result);
+
+        // 路由
+        //ExecutePlan plan = route(result, statement);
+
+        // 通过Statement解析
+        parser.statementParse(result);
+
+        // 改写sql：如insert语句主键自增长的可以
+        parser.changeSql(result);
+
+        //return plan;
+
+
+        return null;
 
     }
 
-    public List<TableCreater> getTableCreaters() {
-        // TODO Auto-generated method stub
+    private ExecutePlan route(ParseResult parseResult){
         return null;
     }
 
