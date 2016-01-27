@@ -24,6 +24,10 @@ public class TargetSql {
 	private String targetSql;
 	
 	private SqlType sqlType;
+
+    private int limitStart;
+
+    private int limitSize;
 	
 	@Override
 	public String toString() {
@@ -81,4 +85,19 @@ public class TargetSql {
 		this.sqlType = sqlType;
 	}
 
+    public int getLimitStart() {
+        return limitStart;
+    }
+
+    public void setLimitStart(int limitStart) {
+        this.limitStart = limitStart;
+    }
+
+    public int getLimitSize() {
+        return limitSize;
+    }
+
+    public void setLimitSize(int limitSize) {
+        this.limitSize = limitSize;
+    }
 }

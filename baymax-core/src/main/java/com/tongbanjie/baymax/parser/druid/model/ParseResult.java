@@ -1,6 +1,6 @@
 package com.tongbanjie.baymax.parser.druid.model;
 
-import com.tongbanjie.baymax.router.RouteCalculateUnit;
+import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -9,7 +9,9 @@ import java.util.Map;
 
 public class ParseResult {
 
-	private List<RouteCalculateUnit> routeCalculateUnits = new ArrayList<RouteCalculateUnit>();
+	//private List<RouteCalculateUnit> routeCalculateUnits = new ArrayList<RouteCalculateUnit>();
+
+    private List/*or*/<List/*and*/<SQLBinaryOpExpr>> conditions;
 	
 	/**
 	 * （共享属性）
@@ -52,25 +54,11 @@ public class ParseResult {
 		this.tables.add(tableName);
 	}
 
-	public RouteCalculateUnit getRouteCalculateUnit() {
-		return routeCalculateUnits.get(0);
-	}
-	
-	public List<RouteCalculateUnit> getRouteCalculateUnits() {
-		return routeCalculateUnits;
-	}
-	
-	public void setRouteCalculateUnits(List<RouteCalculateUnit> routeCalculateUnits) {
-		this.routeCalculateUnits = routeCalculateUnits;
-	}
-	
-	public void addRouteCalculateUnit(RouteCalculateUnit routeCalculateUnit) {
-		this.routeCalculateUnits.add(routeCalculateUnit);
-	}
+    public List<List<SQLBinaryOpExpr>> getConditions() {
+        return conditions;
+    }
 
-	public void clear() {
-		for(RouteCalculateUnit unit : routeCalculateUnits ) {
-			unit.clear();
-		}
-	}
+    public void setConditions(List<List<SQLBinaryOpExpr>> conditions) {
+        this.conditions = conditions;
+    }
 }

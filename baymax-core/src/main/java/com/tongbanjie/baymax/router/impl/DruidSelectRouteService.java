@@ -1,19 +1,18 @@
 package com.tongbanjie.baymax.router.impl;
 
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.parser.druid.impl.DruidSelectParser;
+import com.tongbanjie.baymax.parser.druid.IDruidSelectParser;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.router.RouteService;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 
-import java.util.List;
 import java.util.Map;
 
 public class DruidSelectRouteService implements RouteService{
 
     public ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand) {
 
-        DruidSelectParser parser = new DruidSelectParser();
+        IDruidSelectParser parser = new IDruidSelectParser();
 
         ParseResult result = new ParseResult();
 

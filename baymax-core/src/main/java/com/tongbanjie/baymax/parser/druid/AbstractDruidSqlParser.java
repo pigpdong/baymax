@@ -5,8 +5,6 @@ import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.parser.druid.impl.MycatSchemaStatVisitor;
-import com.tongbanjie.baymax.parser.druid.utils.RouteCalculateUnitUtil;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 
 import java.util.ArrayList;
@@ -14,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractDruidSqlParser implements DruidSqlParser{
+public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
 
     protected SQLStatementParser        parser;
     protected MycatSchemaStatVisitor    visitor;
@@ -43,7 +41,7 @@ public abstract class AbstractDruidSqlParser implements DruidSqlParser{
         }
 
         alisMapFix(result);
-        result.setRouteCalculateUnits(RouteCalculateUnitUtil.buildRouteCalculateUnits(visitor, mergedConditionList));
+        //result.setRouteCalculateUnits(RouteCalculateUnitUtil.buildRouteCalculateUnits(visitor, mergedConditionList));
     }
 
     /**

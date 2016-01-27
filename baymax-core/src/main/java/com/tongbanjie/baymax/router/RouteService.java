@@ -1,10 +1,9 @@
 package com.tongbanjie.baymax.router;
 
-import java.util.List;
-import java.util.Map;
-
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
+
+import java.util.Map;
 
 /**
  * SQL路由服务

@@ -1,7 +1,6 @@
 package com.tongbanjie.baymax.partition;
 
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
-import com.tongbanjie.baymax.router.RouteCalculateUnit;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.TargetSql;
 

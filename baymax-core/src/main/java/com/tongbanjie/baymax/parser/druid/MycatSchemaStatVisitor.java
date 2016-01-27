@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.parser.druid.impl;
+package com.tongbanjie.baymax.parser.druid;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
@@ -88,13 +88,7 @@ public class MycatSchemaStatVisitor extends MySqlSchemaStatVisitor {
         return true;
     }
 
-	public static boolean isConditionAlwaysTrue(SQLExpr expr) {
-		Object o = WallVisitorUtils.getValue(expr);
-		if(Boolean.TRUE.equals(o)) {
-			return true;
-		}
-		return false;
-	}
+
 
     @Override
     public boolean visit(MySqlDeleteStatement x) {
@@ -166,9 +160,17 @@ public class MycatSchemaStatVisitor extends MySqlSchemaStatVisitor {
      * @param expr
      * @return
      */
-    private boolean isConditionAlwaysFalse(SQLExpr expr) {
+    public boolean isConditionAlwaysFalse(SQLExpr expr) {
         Object o = WallVisitorUtils.getValue(expr);
         if(Boolean.FALSE.equals(o)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isConditionAlwaysTrue(SQLExpr expr) {
+        Object o = WallVisitorUtils.getValue(expr);
+        if(Boolean.TRUE.equals(o)) {
             return true;
         }
         return false;

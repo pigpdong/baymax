@@ -5,7 +5,7 @@ import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 
 import java.util.Map;
 
-public interface DruidSqlParser {
+public interface IDruidSqlParser {
 
     void initParse(String sql, Map<Integer, ParameterCommand> parameterCommand);
 	
