@@ -51,7 +51,7 @@
 				</bean>
 			</set>
 		</property>
-		<property name="routeService">
+		<property name="IRouteService">
 			<ref local="baymaxRouteService"/>
 		</property>
 	</bean>

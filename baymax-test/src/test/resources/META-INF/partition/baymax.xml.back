@@ -32,7 +32,7 @@
 		</property>
 	</baymax:rule>
 	
-	<bean id="baymaxRouteService" class="com.tongbanjie.baymax.router.impl.DefaultRouteService">
+	<bean id="baymaxRouteService" class="com.tongbanjie.baymax.router.DefaultRouteService">
 		<property name="tables">
 			<list>
 				<ref local="trade_order_urle"/>

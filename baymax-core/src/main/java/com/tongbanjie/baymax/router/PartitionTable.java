@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.partition;
+package com.tongbanjie.baymax.router;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.tongbanjie.baymax.router.Rule;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
@@ -15,6 +16,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * <p>
  * 子类必须实现{@code executeRule()} {@code getAllTableNames()}方法
  * <p>
+ *    TODO 启动的时候打印下配置，留底
  * 这个类描述了对某个特定逻辑表的分区规则
  * @author dawei
  *

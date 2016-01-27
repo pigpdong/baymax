@@ -42,7 +42,7 @@ import com.tongbanjie.baymax.jdbc.model.ExecuteMethod.MethodReturnType;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.jdbc.model.StatementCreateCommand;
 import com.tongbanjie.baymax.jdbc.model.StatementCreateMethod;
-import com.tongbanjie.baymax.router.RouteService;
+import com.tongbanjie.baymax.router.IRouteService;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
@@ -51,7 +51,7 @@ public class TConnection implements Connection {
 	
 	private final static Logger logger = LoggerFactory.getLogger(TConnection.class);
 
-	private RouteService routeService;
+	private IRouteService IRouteService;
 	private MultipleDataSource multipleDataSource;
 	
 	private Map<DataSource, Connection> openedConnection = new ConcurrentHashMap<DataSource, Connection>(2);
@@ -61,8 +61,8 @@ public class TConnection implements Connection {
 	private boolean closed;
 	private int transactionIsolation = TRANSACTION_READ_COMMITTED;
 
-	public TConnection(RouteService routeService, MultipleDataSource multipleDataSource) {
-		this.routeService = routeService;
+	public TConnection(IRouteService IRouteService, MultipleDataSource multipleDataSource) {
+		this.IRouteService = IRouteService;
 		this.multipleDataSource = multipleDataSource;
 	}
 
@@ -81,7 +81,7 @@ public class TConnection implements Connection {
 		trace.setExecuteCommand(executeCommand);
 		trace.setParameterCommand(parameterCommand);
 
-		ExecutePlan plan = routeService.doRoute(sql, parameterCommand);	// 路由
+		ExecutePlan plan = IRouteService.doRoute(sql, parameterCommand);	// 路由
 		
 		if(logger.isDebugEnabled()){
 			logger.debug("BayMax execute SQL:" + plan.toString());

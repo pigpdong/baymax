@@ -5,7 +5,7 @@
 	   http://www.springframework.org/schema/beans 
 	   http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
 	
-	<bean id="baymaxRouteService" class="com.tongbanjie.baymax.router.impl.DefaultRouteService" init-method="init">
+	<bean id="baymaxRouteService" class="com.tongbanjie.baymax.router.DefaultRouteService" init-method="init">
 		<property name="partitionTables">
 			<list>
 				<ref local="trade_order_simple"/>
@@ -20,7 +20,7 @@
 		</property>
 	</bean>
 	
-	<bean id="trade_order_simple" class="com.tongbanjie.baymax.partition.impl.SimplePartitionTable">
+	<bean id="trade_order_simple" class="com.tongbanjie.baymax.router.table.ELPartitionTable">
 		<property name="logicTableName" 	value="trade_order"/>
 		<property name="shardingKeys"		value="user_id,id"/>
 		<property name="patten" 			value="trade_order_{00}"/>

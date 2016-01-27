@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.partition.impl;
+package com.tongbanjie.baymax.router.table;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,12 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 在{@link SimplePartitionTable}之上映射一层虚拟表
+ * 在{@link ELPartitionTable}之上映射一层虚拟表
  * 
  * @author dawei
  *
  */
-public class VirtualPartitionTable extends SimplePartitionTable {
+public class VirtualPartitionTable extends ELPartitionTable {
 	
 	private final static Logger logger = LoggerFactory.getLogger(VirtualPartitionTable.class);
 	

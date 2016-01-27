@@ -3,12 +3,11 @@ package com.tongbanjie.baymax.datasource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.sql.DataSource;
 
 import com.tongbanjie.baymax.jdbc.TConnection;
-import com.tongbanjie.baymax.router.RouteService;
+import com.tongbanjie.baymax.router.IRouteService;
 
 /**
  * DataSource分发器
@@ -21,11 +20,11 @@ import com.tongbanjie.baymax.router.RouteService;
  */
 public class MultipleDataSource extends DataSourceDispatcher implements DataSource{
 	
-	private RouteService routeService;
+	private IRouteService IRouteService;
 	
 	public void init() throws Exception{
 		super.init();
-		if(routeService == null){
+		if(IRouteService == null){
 			throw new RuntimeException("routeService can't be null!");
 		}
 	}
@@ -71,7 +70,7 @@ public class MultipleDataSource extends DataSourceDispatcher implements DataSour
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		return new TConnection(routeService, this);
+		return new TConnection(IRouteService, this);
 	}
 
 	@Override
@@ -108,12 +107,12 @@ public class MultipleDataSource extends DataSourceDispatcher implements DataSour
 
 	/*----------------------------getters and setters-------------------------------*/
 	
-	public RouteService getRouteService() {
-		return routeService;
+	public IRouteService getIRouteService() {
+		return IRouteService;
 	}
 	
-	public void setRouteService(RouteService routeService) {
-		this.routeService = routeService;
+	public void setIRouteService(IRouteService IRouteService) {
+		this.IRouteService = IRouteService;
 	}
 
 }

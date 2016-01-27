@@ -1,6 +1,6 @@
 package com.tongbanjie.baymax.druid;
 
-import com.tongbanjie.baymax.router.impl.DruidSelectRouteService;
+import com.tongbanjie.baymax.router.DruidRouteService;
 import org.junit.Test;
 
 /**
@@ -10,7 +10,7 @@ public class TestDruidSelectRouteService {
 
     @Test
     public void test_1(){
-        DruidSelectRouteService service = new DruidSelectRouteService();
+        DruidRouteService service = new DruidRouteService();
         // druid不支持这类sql，这类sql拿到的所有条件的table都是最后一个表
         //String sql = "select sort,(select id from abort_batch where id='33') as name from prod_product where id='exp0002'";
         // 支持这类的子查询

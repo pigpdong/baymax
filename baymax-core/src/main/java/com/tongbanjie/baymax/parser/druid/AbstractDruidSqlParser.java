@@ -6,6 +6,7 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
+import com.tongbanjie.baymax.parser.druid.visitor.MycatSchemaStatVisitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
     }
 
     @Override
-    public void visitorParse(ParseResult result) {
+    public void parse(ParseResult result) {
 
         statement.accept(visitor);
 

@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.partition.impl;
+package com.tongbanjie.baymax.router.table;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,8 +10,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tongbanjie.baymax.datasource.MultipleDataSource;
-
 /**
  * 按月分表
  * <p>
@@ -22,7 +20,7 @@ import com.tongbanjie.baymax.datasource.MultipleDataSource;
  * @author dawei
  *
  */
-public class MonthlyPartitionTable extends SimplePartitionTable {
+public class MonthlyPartitionTable extends ELPartitionTable {
 
 	private final static Logger logger = LoggerFactory.getLogger(MonthlyPartitionTable.class);
 

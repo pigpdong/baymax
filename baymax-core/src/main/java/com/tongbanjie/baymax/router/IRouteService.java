@@ -10,7 +10,7 @@ import java.util.Map;
  * @author dawei
  *
  */
-public interface RouteService {
+public interface IRouteService {
 
 	ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand);
 
