@@ -7,6 +7,7 @@ import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.parser.druid.visitor.MycatSchemaStatVisitor;
+import com.tongbanjie.baymax.parser.druid.calculate.CalculateUnitUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,12 +21,16 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
     protected SQLStatement              statement;
 
     @Override
-    public void initParse(String sql, Map<Integer, ParameterCommand> parameterCommand) {
+    public void init(String sql, Map<Integer, ParameterCommand> parameterCommand) {
         parser 			= new MySqlStatementParser(sql);
         visitor 		= new MycatSchemaStatVisitor();
         statement 		= parser.parseStatement();
     }
 
+    /**
+     * 默认通过visitor解析 之类可以覆盖
+     * @param result
+     */
     @Override
     public void parse(ParseResult result) {
 
@@ -42,7 +47,7 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
         }
 
         alisMapFix(result);
-        //result.setRouteCalculateUnits(RouteCalculateUnitUtil.buildRouteCalculateUnits(visitor, mergedConditionList));
+        result.setCalculateUnits(CalculateUnitUtil.buildCalculateUnits(result.getTableAliasMap(), mergedConditionList));
     }
 
     /**

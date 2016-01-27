@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.table;
+package com.tongbanjie.baymax.router.strategy;
 
 import java.util.Collections;
 import java.util.Comparator;

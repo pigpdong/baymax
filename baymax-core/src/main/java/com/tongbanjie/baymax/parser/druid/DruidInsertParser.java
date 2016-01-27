@@ -12,9 +12,4 @@ public class DruidInsertParser extends AbstractDruidSqlParser {
     public void changeSql(ParseResult result, ExecutePlan plan) {
 
     }
-
-    @Override
-    public void statementParse(ParseResult result) {
-
-    }
 }

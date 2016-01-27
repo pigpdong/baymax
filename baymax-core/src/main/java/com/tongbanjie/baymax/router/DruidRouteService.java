@@ -2,50 +2,46 @@ package com.tongbanjie.baymax.router;
 
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.parser.SqlParser;
 import com.tongbanjie.baymax.parser.druid.DruidParserFactory;
-import com.tongbanjie.baymax.parser.druid.DruidSelectParser;
 import com.tongbanjie.baymax.parser.druid.IDruidSqlParser;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
-import com.tongbanjie.baymax.parser.def.DefaultSqlParser;
 import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.parser.utils.SqlTypeUtil;
+import com.tongbanjie.baymax.router.model.CalculateUnit;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
+import com.tongbanjie.baymax.router.strategy.IPartitionTable;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DruidRouteService implements IRouteService {
 
     /**
      * 上下文中所有的路由规则列表
      */
-    private List<PartitionTable> partitionTables;
+    private List<IPartitionTable> partitionTables;
 
     /**
      * 上下文中所有路由规则的MAP，方便使用表名查找到对应的路由规则
      */
-    private Map<String/*TableName*/, PartitionTable> tableRuleMapping = new HashMap<String, PartitionTable>();
+    private Map<String/*TableName*/, IPartitionTable> tableRuleMapping = new HashMap<String, IPartitionTable>();
 
     /**
      * SQL解析器
      * 主要用来提取SQL中的表名,Where中的KEY=VALUE形式的参数
      */
-    private SqlParser parser = new DefaultSqlParser();
+    //private SqlParser parser = new DefaultSqlParser();
 
     private Map<String, Function<?,?>> functionsMap = new HashMap<String, Function<?,?>>();
-
 
     public ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand) {
 
         SqlType sqlType = SqlTypeUtil.getSqlType(sql);
 
-        IDruidSqlParser parser = DruidParserFactory.getParser(null);
+        IDruidSqlParser parser = DruidParserFactory.getParser(sqlType);
 
         if (parser == null){
             return buildExecutePlanTypeNo(sql, null, sqlType);
@@ -54,30 +50,28 @@ public class DruidRouteService implements IRouteService {
         ParseResult result = new ParseResult();
 
         // 初始化
-        parser.initParse(sql, parameterCommand);
+        parser.init(sql, parameterCommand);
 
         // 解析
         parser.parse(result);
 
         // 路由
-        ExecutePlan plan = route(result);
+        ExecutePlan plan = route(result, sqlType);
 
-        // 改写sql：如insert语句主键自增长的可以
+        // 改写sql
         parser.changeSql(result, plan);
 
         return plan;
-
     }
 
-    private ExecutePlan route(ParseResult result){
+    private ExecutePlan route(ParseResult result, SqlType sqlType){
         List<String> tables = result.getTables();
         // 判断是否解析到表名
         if (tables == null || tables.size() == 0){
-            // TODO SqlType.SELECT
-            return buildExecutePlanTypeNo(result.getSql(), null, SqlType.SELECT);
+            return buildExecutePlanTypeNo(result.getSql(), null, sqlType);
         }
         // 查找逻辑表对应的分区规则
-        PartitionTable partitionTable = null;
+        IPartitionTable partitionTable = null;
         for (String tableName : tables){
             if (tableRuleMapping.get(tableName) != null){
                 if (partitionTable == null){
@@ -89,12 +83,32 @@ public class DruidRouteService implements IRouteService {
         }
         // 没有规则 无需路由
         if (partitionTable == null){
-            // TODO SqlType.SELECT
-            return buildExecutePlanTypeNo(result.getSql(), null, SqlType.SELECT);
+            return buildExecutePlanTypeNo(result.getSql(), null, sqlType);
         }
-        // 查到规则 需要路由
 
-        return null;
+        // 没有计算单元 全表扫描
+        if (result.getCalculateUnits() == null || result.getCalculateUnits().size() == 0){
+            return buildExecutePlanTypeAll(result.getSql(), partitionTable, sqlType);
+        }
+
+        // 路由单元计算-合并
+        Set<Pair<String/* targetDB */, String/* targetTable */>> nodeSet = new LinkedHashSet<Pair<String, String>>();
+        for (CalculateUnit unit : result.getCalculateUnits()) {
+            Pair<String/* targetDB */, String/* targetTable */> temp = partitionTable.execute(unit);
+            if (temp == null){
+                // 这个单元没有路由结果 需要全表扫描
+                return buildExecutePlanTypeAll(result.getSql(), partitionTable, sqlType);
+            }else {
+                // TODO 测试相同的是否会覆盖
+                nodeSet.add(temp);
+            }
+        }
+
+        if (nodeSet.size() == 0){
+            return buildExecutePlanTypeNo(result.getSql(), partitionTable.getLogicTableName(), sqlType);
+        }
+
+        return buildExecutePlanTypePartition(result.getSql(), partitionTable, sqlType, nodeSet);
     }
 
     /**
@@ -123,12 +137,11 @@ public class DruidRouteService implements IRouteService {
      * 创建全表扫描执行计划
      * TODO 考虑聚合函数
      * @param sql
-     * @param logicTableName
      * @param partitionTable
      * @param sqlType
      * @return
      */
-    private ExecutePlan buildExecutePlanTypeAll(String sql, String logicTableName, PartitionTable partitionTable, SqlType sqlType){
+    private ExecutePlan buildExecutePlanTypeAll(String sql, IPartitionTable partitionTable, SqlType sqlType){
         // 没有命中的shardingKey,则全表扫描
         ExecutePlan plan = new ExecutePlan();
         List<Pair<String/*partion*/, String/*table*/>> mappings = partitionTable.getAllTableNames();
@@ -140,9 +153,10 @@ public class DruidRouteService implements IRouteService {
                 TargetSql actionSql = new TargetSql();
                 actionSql.setSqlType(sqlType);
                 actionSql.setPartition(pt.getObject1());
-                actionSql.setLogicTableName(logicTableName);
+                actionSql.setLogicTableName(partitionTable.getLogicTableName());
                 actionSql.setOriginalSql(sql);
-                actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName, pt.getObject2()));//逻辑表名替换为实际表名
+                // TODO SQL改写
+                //actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName, pt.getObject2()));//逻辑表名替换为实际表名
                 actionSql.setTargetTableName(pt.getObject2());
                 plan.addSql(actionSql);
             }
@@ -153,10 +167,61 @@ public class DruidRouteService implements IRouteService {
         return plan;
     }
 
-    public void init() {
-        // TODO Auto-generated method stub
+    /**
+     * 创建分区执行计划
+     * @param sql
+     * @param partitionTable
+     * @param sqlType
+     * @param nodeSet
+     * @return
+     */
+    private ExecutePlan buildExecutePlanTypePartition(String sql, IPartitionTable partitionTable, SqlType sqlType, Set<Pair<String/* targetDB */, String/* targetTable */>> nodeSet) {
+        ExecutePlan routeResult = new ExecutePlan();
+        routeResult.setExecuteType(ExecuteType.PARTITION);
+        for (Pair<String/* targetDB */, String/* targetTable */> node : nodeSet){
+            TargetSql actionSql = new TargetSql();
+            actionSql.setSqlType(sqlType);
+            actionSql.setPartition(node.getObject1());
+            actionSql.setLogicTableName(partitionTable.getLogicTableName());
+            actionSql.setOriginalSql(sql);
+            // TODO
+            //actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName,target.getObject2()));//逻辑表名替换为实际表名
+            actionSql.setTargetTableName(node.getObject2());
+            routeResult.addSql(actionSql);
+        }
 
+        return routeResult;
     }
 
+    @Override
+    public void init() {
+        // 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
+        // 2. 初始化自动建表程序
+        for(IPartitionTable table : partitionTables){
+            table.init(functionsMap);
+            if(!tableRuleMapping.containsKey(table.getLogicTableName())){
+                tableRuleMapping.put(table.getLogicTableName(), table);
+            }else{
+                throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + table.getLogicTableName());
+            }
+        }
+    }
+
+    public void setPartitionTables(List<IPartitionTable> partitionTables) {
+        this.partitionTables = partitionTables;
+    }
+
+    public void setFunctions(List<Function<?,?>> functions) {
+        if(functions == null){
+            return;
+        }
+        for(Function<?,?> f : functions){
+            functionsMap.put(f.getFunctionName(), f);
+        }
+    }
+
+    public Map<String, Function<?,?>> getFunctionsMap() {
+        return functionsMap;
+    }
 
 }

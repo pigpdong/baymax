@@ -1,13 +1,10 @@
-package com.tongbanjie.baymax.router.table;
+package com.tongbanjie.baymax.router.strategy;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import com.tongbanjie.baymax.exception.BayMaxException;
-import com.tongbanjie.baymax.router.PartitionTable;
-import com.tongbanjie.baymax.router.Rule;
+import com.tongbanjie.baymax.router.model.CalculateUnit;
+import com.tongbanjie.baymax.router.strategy.model.ELRule;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -16,7 +13,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
-public class ELPartitionTable extends PartitionTable {
+public class ELPartitionTable extends AbstractPartitionTable {
 
 	/**
 	 * 返回所有分区-表的映射 格式: p1-order001 p1-order002 p2-order003 p3-order004
@@ -34,13 +31,14 @@ public class ELPartitionTable extends PartitionTable {
 		return allTables;
 	}
 
+
 	@Override
 	public Pair<String/* targetDB */, String/* targetTable */> executeRule(Map<?, ?> param) {
 		String targetDB = null;
 		String targetTable = null;
 		if (super.rules != null) {
 			for (int i = 0; i < rules.size(); i++) {
-				Rule rule = rules.get(i);
+				ELRule rule = rules.get(i);
 				if(!rule.checkParam(param)){
 					continue;
 				}
@@ -89,4 +87,9 @@ public class ELPartitionTable extends PartitionTable {
 			tableMapping.put(str[1].trim(), str[0].trim());
 		}
 	}
+
+    @Override
+    public Pair<String, String> execute(CalculateUnit units) {
+        return null;
+    }
 }

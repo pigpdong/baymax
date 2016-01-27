@@ -13,6 +13,7 @@ import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.parser.model.SqlArgEntity;
 import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.router.model.TargetSql;
+import com.tongbanjie.baymax.router.strategy.AbstractPartitionTable;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
@@ -29,12 +30,12 @@ public class DefaultRouteService implements IRouteService {
 	/**
      * 上下文中所有的路由规则列表
      */
-    private List<PartitionTable> partitionTables;
+    private List<AbstractPartitionTable> partitionTables;
 
     /**
      * 上下文中所有路由规则的MAP，方便使用表名查找到对应的路由规则
      */
-    private Map<String/*TableName*/, PartitionTable> tableRuleMapping = new HashMap<String, PartitionTable>();
+    private Map<String/*TableName*/, AbstractPartitionTable> tableRuleMapping = new HashMap<String, AbstractPartitionTable>();
 
     /**
      * SQL解析器
@@ -55,7 +56,7 @@ public class DefaultRouteService implements IRouteService {
 		
 		String logicTableName = null;
 		SqlType sqlType = null;
-		PartitionTable rule = null;
+		AbstractPartitionTable rule = null;
 		if(tableName != null){
 			// 需要路由
 			logicTableName = tableName.getObject1();
@@ -141,7 +142,7 @@ public class DefaultRouteService implements IRouteService {
 	public void init() {
 		// 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
 		// 2. 初始化自动建表程序
-		for(PartitionTable table : partitionTables){
+		for(AbstractPartitionTable table : partitionTables){
 			table.init(functionsMap);
 			if(!tableRuleMapping.containsKey(table.getLogicTableName())){
 				tableRuleMapping.put(table.getLogicTableName(), table);
@@ -151,11 +152,11 @@ public class DefaultRouteService implements IRouteService {
 		}
 	}
 	
-	public List<PartitionTable> getPartitionTables() {
+	public List<AbstractPartitionTable> getPartitionTables() {
 		return partitionTables;
 	}
 
-	public void setPartitionTables(List<PartitionTable> partitionTables) {
+	public void setPartitionTables(List<AbstractPartitionTable> partitionTables) {
 		this.partitionTables = partitionTables;
 	}
 

@@ -12,6 +12,10 @@ public class DruidParserFactory {
 
     public static IDruidSqlParser getParser(SqlType sqlType){
 
+        if (sqlType == null){
+            return null;
+        }
+
         switch (sqlType){
             case INSERT:
                 break;

@@ -1,9 +1,8 @@
 package com.tongbanjie.baymax.router.model;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import com.tongbanjie.baymax.exception.BayMaxException;
+
+import java.util.*;
 
 /**
  * Created by sidawei on 16/1/26.
@@ -15,13 +14,17 @@ import java.util.Set;
  */
 public class CalculateUnit {
 
-    private Map<String/*table*/, Map<String/*column*/, Set<String>/*value*/>> tablesAndConditions = new LinkedHashMap<String, Map<String, Set<String>>>();
+    /**
+     * set中不会有相同的column 否则会报错
+     * 即一个计算单元内的条件都是用and连接的,所以不可能有 a=1 and a=2
+     */
+    private Map<String/*table*/, Set<ConditionUnit/*column value*/>> tablesAndConditions = new LinkedHashMap<String, Set<ConditionUnit>>();
 
     /**
-     *
+     * get
      * @return
      */
-    public Map<String, Map<String, Set<String>>> getTablesAndConditions() {
+    public Map<String, Set<ConditionUnit>> getTablesAndConditions() {
         return tablesAndConditions;
     }
 
@@ -32,35 +35,68 @@ public class CalculateUnit {
      * @param value
      */
     public void addCondition(String tableName, String columnName, Object value) {
-        Map<String, Set<String>> tableColumnsMap = tablesAndConditions.get(tableName);
 
         if (value == null) {
             // where a=null
             return;
         }
 
-        if (tableColumnsMap == null) {
-            tableColumnsMap = new LinkedHashMap<String, Set<String>>();
-            tablesAndConditions.put(tableName, tableColumnsMap);
+        // 同一个计算单元的所有条件
+        Set<ConditionUnit> conditionUnits = tablesAndConditions.get(tableName);
+
+        if (conditionUnits == null) {
+            conditionUnits = new LinkedHashSet<ConditionUnit>();
+            tablesAndConditions.put(tableName, conditionUnits);
         }
 
+        // 判断是否已经有这个列作为条件
         String uperColName = columnName.toUpperCase();
-        Set<String> columValues = tableColumnsMap.get(uperColName);
+        ConditionUnit unit = new ConditionUnit(uperColName, value.toString());
 
-        if (columValues == null) {
-            columValues = new LinkedHashSet<String>();
-            tablesAndConditions.get(tableName).put(uperColName, columValues);
+        if (conditionUnits.contains(unit)){
+            throw new BayMaxException("同一个计算单元中出现了两次同一个字段:" + columnName + "," + value.toString());
         }
 
-        if (value instanceof Object[]) {
-            for (Object item : (Object[]) value) {
-                if(item == null) {
-                    continue;
-                }
-                columValues.add(item.toString());
-            }
-        } else {
-            columValues.add(value.toString());
+        conditionUnits.add(unit);
+
+    }
+
+    /**
+     * 计算条件 代表 column = value
+     */
+    public static class ConditionUnit{
+        String column;
+        String value;
+
+        public ConditionUnit(String column, String value){
+            this.column = column;
+            this.value = value;
+        }
+
+        @Override
+        public int hashCode() {
+            return column.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return column.equals(o);
+        }
+
+        public String getColumn() {
+            return column;
+        }
+
+        public void setColumn(String column) {
+            this.column = column;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
         }
     }
 }

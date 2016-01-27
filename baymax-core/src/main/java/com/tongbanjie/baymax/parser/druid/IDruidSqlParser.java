@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface IDruidSqlParser {
 
-    void initParse(String sql, Map<Integer, ParameterCommand> parameterCommand);
+    void init(String sql, Map<Integer, ParameterCommand> parameterCommand);
 	
 	void parse(ParseResult result);
 

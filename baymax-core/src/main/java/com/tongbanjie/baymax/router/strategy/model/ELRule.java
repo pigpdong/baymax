@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router;
+package com.tongbanjie.baymax.router.strategy.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
-public class Rule {
+public class ELRule {
 
 	private String el;
 	
@@ -33,7 +33,7 @@ public class Rule {
 	 * @param ruleArray
 	 * @param ruleArrayColumns
 	 */
-	public Rule(String el, String[] shardingKesy) {
+	public ELRule(String el, String[] shardingKesy) {
 		this.el = el;
 		
 		argNames = new ArrayList<String>(shardingKesy.length);

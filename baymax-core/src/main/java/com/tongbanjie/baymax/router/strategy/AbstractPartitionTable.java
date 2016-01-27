@@ -1,13 +1,10 @@
-package com.tongbanjie.baymax.router;
+package com.tongbanjie.baymax.router.strategy;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.tongbanjie.baymax.router.Rule;
+import com.tongbanjie.baymax.router.model.CalculateUnit;
+import com.tongbanjie.baymax.router.strategy.model.ELRule;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
@@ -21,7 +18,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
-public abstract class PartitionTable {
+public abstract class AbstractPartitionTable implements IPartitionTable {
 	
 	protected ConfigHolder configHolder = new ConfigHolder();
 
@@ -35,7 +32,7 @@ public abstract class PartitionTable {
 	
 	protected boolean disableFullScan;		// 关闭全表扫描
 	
-	protected List<Rule> rules;				// 路由规则
+	protected List<ELRule> rules;				// 路由规则
 	
 	protected Map<String/*suffix*/, String/*partition*/> tableMapping = new ConcurrentHashMap<String, String>(); 	// 所有表到分区的映射
 	
@@ -101,7 +98,7 @@ public abstract class PartitionTable {
 		this.disableFullScan = disableFullScan;
 	}
 
-	public List<Rule> getRules() {
+	public List<ELRule> getRules() {
 		return rules;
 	}
 
@@ -126,11 +123,11 @@ public abstract class PartitionTable {
 	
 	protected void initRules(List<String> rules){
 		if(rules == null || rules.size() == 0){
-			throw new RuntimeException(String.format("rules must not be empty! table{%s}", logicTableName));
+			throw new RuntimeException(String.format("rules must not be empty! strategy{%s}", logicTableName));
 		}
-		this.rules = new ArrayList<Rule>(rules.size());
+		this.rules = new ArrayList<ELRule>(rules.size());
 		if(this.shardingKeys == null || this.shardingKeys.length == 0){
-			throw new RuntimeException(String.format("shardingKeys must not be empty! table{%s}", this.logicTableName));
+			throw new RuntimeException(String.format("shardingKeys must not be empty! strategy{%s}", this.logicTableName));
 		}
 		Arrays.sort(this.shardingKeys, new Comparator<String>() {
 			@Override
@@ -147,7 +144,7 @@ public abstract class PartitionTable {
 		});// 排序,比较长的列先匹配,便于字符串匹配提取,user_id把id匹配掉了,再用id来匹配中不行了
 
 		for(String ruleStr : rules){
-			this.rules.add(new Rule(ruleStr, this.shardingKeys));
+			this.rules.add(new ELRule(ruleStr, this.shardingKeys));
 		}
 	}
 	
@@ -174,4 +171,6 @@ public abstract class PartitionTable {
 		public List<String> rules;
 		public List<String> tableMappings;
 	}
+
+    public abstract Pair<String/*targetDB*/, String/*targetTable*/> execute(CalculateUnit units);
 }

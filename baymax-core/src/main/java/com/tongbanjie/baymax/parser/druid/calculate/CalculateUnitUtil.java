@@ -1,19 +1,25 @@
-package com.tongbanjie.baymax.router.utils;
+package com.tongbanjie.baymax.parser.druid.calculate;
 
-import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
 import com.tongbanjie.baymax.router.model.CalculateUnit;
 import com.tongbanjie.baymax.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sidawei on 16/1/25.
  */
 public class CalculateUnitUtil {
 
-    public static List<CalculateUnit> buildCalculateUnits(SchemaStatVisitor visitor, List<List<TableStat.Condition>> conditionList) {
+    /**
+     *
+     * @param tableAliasMap
+     * @param conditionList 这里的conditionList应该是已经用or切分好的计算单元
+     * @return
+     */
+    public static List<CalculateUnit> buildCalculateUnits(Map<String, String> tableAliasMap, List<List<TableStat.Condition>> conditionList) {
         List<CalculateUnit> retList = new ArrayList<CalculateUnit>();
         //遍历condition ，找分片字段
         for(int i = 0; i < conditionList.size(); i++) {
@@ -27,12 +33,12 @@ public class CalculateUnitUtil {
                     String columnName = StringUtil.removeBackquote(condition.getColumn().getName().toUpperCase());
                     String tableName = StringUtil.removeBackquote(condition.getColumn().getTable().toUpperCase());
 
-                    if(visitor.getAliasMap() != null && visitor.getAliasMap().get(tableName) != null
-                            && !visitor.getAliasMap().get(tableName).equals(tableName)) {
-                        tableName = visitor.getAliasMap().get(tableName);
+                    if(tableAliasMap != null && tableAliasMap.get(tableName) != null
+                            && !tableAliasMap.get(tableName).equals(tableName)) {
+                        tableName = tableAliasMap.get(tableName);
                     }
 
-                    if(visitor.getAliasMap() != null && visitor.getAliasMap().get(condition.getColumn().getTable().toUpperCase()) == null) {//子查询的别名条件忽略掉,不参数路由计算，否则后面找不到表
+                    if(tableAliasMap != null && tableAliasMap.get(condition.getColumn().getTable().toUpperCase()) == null) {//子查询的别名条件忽略掉,不参数路由计算，否则后面找不到表
                         continue;
                     }
 
@@ -43,9 +49,13 @@ public class CalculateUnitUtil {
 //                        RangeValue rv = new RangeValue(values.get(0), values.get(1), RangeValue.EE);
 //                        CalculateUnit.addShardingExpr(tableName.toUpperCase(), columnName, rv);
 //                    } else
-                    if(operator.equals("=") || operator.toLowerCase().equals("in")){
+                    //|| operator.toLowerCase().equals("in")
+
+                    // between暂时不支持 需要枚举出between之间的值
+                    // in暂时不支持 a in (1,2,3)要转化为a=1 or a=2 or a=3会导致计算单元的增加
+                    if(operator.equals("=")){
                         //只处理=号和in操作符,其他忽略
-                        calculateUnit.addCondition(tableName.toUpperCase(), columnName, values.toArray());
+                        calculateUnit.addCondition(tableName.toUpperCase(), columnName, values);
                     }
                 }
             }
