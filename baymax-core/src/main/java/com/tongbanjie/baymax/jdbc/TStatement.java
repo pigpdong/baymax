@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.tongbanjie.baymax.jdbc.adapter.UnsupportedPreparedStatementAdapter;
+import com.tongbanjie.baymax.jdbc.adapter.UnsupportedStatementAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +20,7 @@ import com.tongbanjie.baymax.jdbc.model.ExecuteMethod;
 import com.tongbanjie.baymax.jdbc.model.ResultSetHandler;
 import com.tongbanjie.baymax.jdbc.model.StatementCreateCommand;
 
-public class TStatement implements Statement {
+public class TStatement extends UnsupportedStatementAdapter {
 	
 	private Logger logger = LoggerFactory.getLogger(TStatement.class);
 
@@ -282,16 +284,6 @@ public class TStatement implements Statement {
 	public int getUpdateCount() throws SQLException {
 		return this.currentUpdateCount;
 	}
-	/*-------------------------------------------*/
-	@Override
-	public void setEscapeProcessing(boolean enable) throws SQLException {
-		 throw new UnsupportedOperationException("setEscapeProcessing");
-	}
-
-	@Override
-	public void cancel() throws SQLException {
-		throw new UnsupportedOperationException("cancel");
-	}
 
 	@Override
 	public SQLWarning getWarnings() throws SQLException {
@@ -301,16 +293,6 @@ public class TStatement implements Statement {
 	@Override
 	public void clearWarnings() throws SQLException {
 		return;
-	}
-
-	@Override
-	public void setCursorName(String name) throws SQLException {
-		 throw new UnsupportedOperationException("setCursorName");
-	}
-
-	@Override
-	public boolean getMoreResults() throws SQLException {
-		 throw new UnsupportedOperationException("getMoreResults");
 	}
 
 	@Override
@@ -377,11 +359,6 @@ public class TStatement implements Statement {
 		return this.connection;
 	}
 
-	@Override
-	public boolean getMoreResults(int current) throws SQLException {
-		throw new UnsupportedOperationException("getMoreResults");
-	}
-
 	/**
 	 * 获取此 Statement 对象生成的 ResultSet 对象的结果集合可保存性。
 	 * ResultSet.HOLD_CURSORS_OVER_COMMIT 或 ResultSet.CLOSE_CURSORS_AT_COMMIT
@@ -394,16 +371,6 @@ public class TStatement implements Statement {
 	@Override
 	public boolean isClosed() throws SQLException {
 		return this.closed;
-	}
-
-	@Override
-	public void setPoolable(boolean poolable) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public boolean isPoolable() throws SQLException {
-		throw new SQLException("not support exception");
 	}
 
 	protected void setCurrentResultSet(TResultSet currentResultSet) {

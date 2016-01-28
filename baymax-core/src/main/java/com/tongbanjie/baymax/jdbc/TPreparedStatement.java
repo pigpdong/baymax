@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tongbanjie.baymax.jdbc.adapter.UnsupportedPreparedStatementAdapter;
 import com.tongbanjie.baymax.jdbc.model.ExecuteCommand;
 import com.tongbanjie.baymax.jdbc.model.ExecuteMethod;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
@@ -30,7 +31,7 @@ import com.tongbanjie.baymax.jdbc.model.ParameterMethod;
 import com.tongbanjie.baymax.jdbc.model.ResultSetHandler;
 import com.tongbanjie.baymax.jdbc.model.StatementCreateCommand;
 
-public class TPreparedStatement extends TStatement implements PreparedStatement {
+public class TPreparedStatement extends UnsupportedPreparedStatementAdapter {
 
 	protected Map<Integer/*第几个?占位符*/, ParameterCommand/*占位符的值*/> parameterSettings = new HashMap<Integer, ParameterCommand>();
 	protected String sql;
@@ -253,125 +254,4 @@ public class TPreparedStatement extends TStatement implements PreparedStatement 
 			throw new SQLException(e);
 		}
 	}
-
-	// ----------------- 不支持的方法 ------------------
-
-	/**
-	 * 不支持
-	 */
-	@Override
-	public ResultSetMetaData getMetaData() throws SQLException {
-		throw new UnsupportedOperationException("getMetaData");
-	}
-
-	@Override
-	public boolean isClosed() throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setPoolable(boolean poolable) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public boolean isPoolable() throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setRowId(int parameterIndex, RowId x) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setNString(int parameterIndex, String value) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setNCharacterStream(int parameterIndex, Reader value, long length) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setNClob(int parameterIndex, NClob value) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setClob(int parameterIndex, Reader reader, long length) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setNCharacterStream(int parameterIndex, Reader value) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setClob(int parameterIndex, Reader reader) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public void setNClob(int parameterIndex, Reader reader) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public ParameterMetaData getParameterMetaData() throws SQLException {
-		throw new UnsupportedOperationException("getParameterMetaData");
-	}
-
 }

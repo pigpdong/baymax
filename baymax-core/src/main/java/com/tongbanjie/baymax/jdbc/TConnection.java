@@ -1,53 +1,25 @@
 package com.tongbanjie.baymax.jdbc;
 
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLClientInfoException;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.sql.DataSource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.tongbanjie.baymax.datasource.MultipleDataSource;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.exception.TraceContext;
-import com.tongbanjie.baymax.jdbc.model.ExecuteCommand;
-import com.tongbanjie.baymax.jdbc.model.ExecuteMethod;
-import com.tongbanjie.baymax.jdbc.model.ResultSetHandler;
+import com.tongbanjie.baymax.jdbc.adapter.UnsupportedConnectionAdapter;
+import com.tongbanjie.baymax.jdbc.model.*;
 import com.tongbanjie.baymax.jdbc.model.ExecuteMethod.MethodReturnType;
-import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.jdbc.model.StatementCreateCommand;
-import com.tongbanjie.baymax.jdbc.model.StatementCreateMethod;
 import com.tongbanjie.baymax.router.IRouteService;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TConnection implements Connection {
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class TConnection extends UnsupportedConnectionAdapter {
 	
 	private final static Logger logger = LoggerFactory.getLogger(TConnection.class);
 
@@ -429,26 +401,6 @@ public class TConnection implements Connection {
 	/************************************************/
 
 	@Override
-	public String nativeSQL(String sql) throws SQLException {
-		throw new UnsupportedOperationException("nativeSQL");
-	}
-
-	@Override
-	public CallableStatement prepareCall(String sql) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setCatalog(String catalog) throws SQLException {
-		throw new UnsupportedOperationException("setCatalog");
-	}
-
-	@Override
-	public String getCatalog() throws SQLException {
-		throw new UnsupportedOperationException("getCatalog");
-	}
-
-	@Override
 	public SQLWarning getWarnings() throws SQLException {
 		return null;
 	}
@@ -459,129 +411,7 @@ public class TConnection implements Connection {
 	}
 
 	@Override
-	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Map<String, Class<?>> getTypeMap() throws SQLException {
-		throw new UnsupportedOperationException("getTypeMap");
-	}
-
-	@Override
-	public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
-		throw new UnsupportedOperationException("setTypeMap");
-	}
-
-	@Override
-	public void setHoldability(int holdability) throws SQLException {
-		throw new UnsupportedOperationException("setHoldability");
-	}
-
-	@Override
-	public Savepoint setSavepoint() throws SQLException {
-		throw new UnsupportedOperationException("setSavepoint");
-	}
-
-	@Override
-	public Savepoint setSavepoint(String name) throws SQLException {
-		throw new UnsupportedOperationException("setSavepoint");
-	}
-
-	@Override
-	public void rollback(Savepoint savepoint) throws SQLException {
-		throw new UnsupportedOperationException("rollback savepoint");
-	}
-
-	@Override
-	public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-		throw new UnsupportedOperationException("releaseSavepoint");
-	}
-
-	@Override
-	public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Clob createClob() throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public Blob createBlob() throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public NClob createNClob() throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public SQLXML createSQLXML() throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
 	public boolean isValid(int timeout) throws SQLException {
 		return isClosed();
 	}
-
-	@Override
-	public void setClientInfo(String name, String value) throws SQLClientInfoException {
-		throw new RuntimeException("not support exception");
-	}
-
-	@Override
-	public void setClientInfo(Properties properties) throws SQLClientInfoException {
-		throw new RuntimeException("not support exception");
-	}
-
-	@Override
-	public String getClientInfo(String name) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public Properties getClientInfo() throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-	@Override
-	public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
-		throw new SQLException("not support exception");
-	}
-
-
 }
