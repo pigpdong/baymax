@@ -9,12 +9,4 @@ import com.tongbanjie.baymax.router.model.ExecuteType;
  */
 public class DruidSelectParser extends AbstractDruidSqlParser {
 
-    @Override
-    public void changeSql(ParseResult result, ExecutePlan plan) {
-
-        if (plan.getExecuteType() == ExecuteType.PARTITION || plan.getExecuteType() == ExecuteType.ALL){
-            // 改写SQL
-        }
-
-    }
 }

@@ -8,8 +8,4 @@ import com.tongbanjie.baymax.router.model.ExecutePlan;
  */
 public class DruidInsertParser extends AbstractDruidSqlParser {
 
-    @Override
-    public void changeSql(ParseResult result, ExecutePlan plan) {
-
-    }
 }

@@ -18,11 +18,11 @@ public class DruidParserFactory {
 
         switch (sqlType){
             case INSERT:
-                break;
+                return new DruidInsertParser();
             case DELETE:
-                break;
+                return new DruidDeleteParser();
             case UPDATE:
-                break;
+                return new DruidUpdateParser();
             case SELECT:
                 return new DruidSelectParser();
         }

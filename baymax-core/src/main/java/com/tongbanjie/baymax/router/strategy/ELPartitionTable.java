@@ -90,6 +90,17 @@ public class ELPartitionTable extends AbstractPartitionTable {
 
     @Override
     public Pair<String, String> execute(CalculateUnit units) {
-        return null;
+        Set<CalculateUnit.ConditionUnit/*column value*/> conditionUnits = units.getTablesAndConditions().get(getLogicTableName());
+
+        if (conditionUnits == null || conditionUnits.size() == 0){
+            return null;
+        }
+
+        Map<String, String> args = new HashMap<String, String>();
+        for(CalculateUnit.ConditionUnit unit : conditionUnits){
+            args.put(unit.getColumn(), unit.getValue());
+        }
+
+        return executeRule(args);
     }
 }

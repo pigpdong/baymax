@@ -154,9 +154,6 @@ public class DruidRouteService implements IRouteService {
                 actionSql.setSqlType(sqlType);
                 actionSql.setPartition(pt.getObject1());
                 actionSql.setLogicTableName(partitionTable.getLogicTableName());
-                actionSql.setOriginalSql(sql);
-                // TODO SQL改写
-                //actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName, pt.getObject2()));//逻辑表名替换为实际表名
                 actionSql.setTargetTableName(pt.getObject2());
                 plan.addSql(actionSql);
             }
@@ -183,13 +180,9 @@ public class DruidRouteService implements IRouteService {
             actionSql.setSqlType(sqlType);
             actionSql.setPartition(node.getObject1());
             actionSql.setLogicTableName(partitionTable.getLogicTableName());
-            actionSql.setOriginalSql(sql);
-            // TODO
-            //actionSql.setTargetSql(parser.replaceTableName(actionSql.getOriginalSql(), logicTableName,target.getObject2()));//逻辑表名替换为实际表名
             actionSql.setTargetTableName(node.getObject2());
             routeResult.addSql(actionSql);
         }
-
         return routeResult;
     }
 

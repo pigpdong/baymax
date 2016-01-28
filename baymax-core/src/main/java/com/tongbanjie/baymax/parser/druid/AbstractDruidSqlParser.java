@@ -2,12 +2,17 @@ package com.tongbanjie.baymax.parser.druid;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
+import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
+import com.tongbanjie.baymax.parser.druid.calculate.CalculateUnitUtil;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.parser.druid.visitor.MycatSchemaStatVisitor;
-import com.tongbanjie.baymax.parser.druid.calculate.CalculateUnitUtil;
+import com.tongbanjie.baymax.parser.druid.visitor.ReplaceTableNameVisitor;
+import com.tongbanjie.baymax.router.model.ExecutePlan;
+import com.tongbanjie.baymax.router.model.ExecuteType;
+import com.tongbanjie.baymax.router.model.TargetSql;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,6 +86,28 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
             }
             visitor.getAliasMap().putAll(tableAliasMap);
             result.setTableAliasMap(tableAliasMap);
+        }
+    }
+
+    @Override
+    public void changeSql(ParseResult result, ExecutePlan plan) {
+        if (ExecuteType.NO == plan.getExecuteType()){
+            for (TargetSql sql : plan.getSqlList()){
+                sql.setOriginalSql(result.getSql());
+                sql.setTargetSql(result.getSql());
+            }
+        }else {
+            for (TargetSql sql : plan.getSqlList()){
+                ReplaceTableNameVisitor replaceVisitor = new ReplaceTableNameVisitor(sql.getLogicTableName(), sql.getTargetTableName());
+                StringBuilder out = new StringBuilder();
+                MySqlOutputVisitor outPutVisitor = new MySqlOutputVisitor(out);
+                // 替换表名
+                statement.accept(replaceVisitor);
+                // 输出sql
+                statement.accept(outPutVisitor);
+                sql.setOriginalSql(result.getSql());
+                sql.setTargetSql(out.toString());
+            }
         }
     }
 }
