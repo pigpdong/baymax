@@ -43,7 +43,4 @@ public class ExecutePlan {
 	public void setExecuteType(ExecuteType executeType) {
 		this.executeType = executeType;
 	}
-
-
-
 }

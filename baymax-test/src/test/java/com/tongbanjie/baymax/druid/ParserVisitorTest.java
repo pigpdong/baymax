@@ -18,7 +18,7 @@ import com.tongbanjie.baymax.example.MycatSchemaStatVisitor;
  * @version 0.1.0 
  * @copyright wonhigh.cn
  */
-public class MycatSchemaStatVisitorTest {
+public class ParserVisitorTest {
 	
 	/**
 	 * 3层嵌套or语句

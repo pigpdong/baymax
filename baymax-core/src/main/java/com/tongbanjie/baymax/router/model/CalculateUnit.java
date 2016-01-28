@@ -32,13 +32,17 @@ public class CalculateUnit {
      * 表名，列名 相同的要合并
      * @param tableName
      * @param columnName
-     * @param value
+     * @param values
      */
-    public void addCondition(String tableName, String columnName, Object value) {
+    public void addCondition(String tableName, String columnName, Object[] values) {
 
-        if (value == null) {
+        if (values == null || values.length == 0) {
             // where a=null
             return;
+        }
+
+        if (values.length > 1){
+            throw new BayMaxException("同一个计算单元中出现了两次同一个字段:" + columnName + "," + values.toString());
         }
 
         // 同一个计算单元的所有条件
@@ -51,10 +55,10 @@ public class CalculateUnit {
 
         // 判断是否已经有这个列作为条件
         String uperColName = columnName.toUpperCase();
-        ConditionUnit unit = new ConditionUnit(uperColName, value.toString());
+        ConditionUnit unit = new ConditionUnit(uperColName, values[0].toString());
 
         if (conditionUnits.contains(unit)){
-            throw new BayMaxException("同一个计算单元中出现了两次同一个字段:" + columnName + "," + value.toString());
+            throw new BayMaxException("同一个计算单元中出现了两次同一个字段:" + columnName + "," + values.toString());
         }
 
         conditionUnits.add(unit);

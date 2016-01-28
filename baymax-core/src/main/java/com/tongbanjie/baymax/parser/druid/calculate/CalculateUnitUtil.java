@@ -30,15 +30,15 @@ public class CalculateUnitUtil {
                     break;
                 }
                 if(checkConditionValues(values)) {
-                    String columnName = StringUtil.removeBackquote(condition.getColumn().getName().toUpperCase());
-                    String tableName = StringUtil.removeBackquote(condition.getColumn().getTable().toUpperCase());
+                    String columnName = StringUtil.removeBackquote(condition.getColumn().getName().toLowerCase());
+                    String tableName = StringUtil.removeBackquote(condition.getColumn().getTable().toLowerCase());
 
                     if(tableAliasMap != null && tableAliasMap.get(tableName) != null
                             && !tableAliasMap.get(tableName).equals(tableName)) {
                         tableName = tableAliasMap.get(tableName);
                     }
 
-                    if(tableAliasMap != null && tableAliasMap.get(condition.getColumn().getTable().toUpperCase()) == null) {//子查询的别名条件忽略掉,不参数路由计算，否则后面找不到表
+                    if(tableAliasMap != null && tableAliasMap.get(condition.getColumn().getTable().toLowerCase()) == null) {//子查询的别名条件忽略掉,不参数路由计算，否则后面找不到表
                         continue;
                     }
 
@@ -55,7 +55,7 @@ public class CalculateUnitUtil {
                     // in暂时不支持 a in (1,2,3)要转化为a=1 or a=2 or a=3会导致计算单元的增加
                     if(operator.equals("=")){
                         //只处理=号和in操作符,其他忽略
-                        calculateUnit.addCondition(tableName.toUpperCase(), columnName, values);
+                        calculateUnit.addCondition(tableName.toLowerCase(), columnName, values.toArray());
                     }
                 }
             }

@@ -2,19 +2,21 @@ package com.tongbanjie.baymax.parser.druid.visitor;
 
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.visitor.SQLASTVisitorAdapter;
+import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitorAdapter;
 import com.tongbanjie.baymax.exception.BayMaxException;
 
 /**
  * Created by sidawei on 16/1/27.
  */
-public class ReplaceTableNameVisitor extends SQLASTVisitorAdapter {
+public class ReplaceTableNameVisitor extends MySqlASTVisitorAdapter {
 
     private String originalName;
 
     private String newName;
 
     private boolean isReplase = false;
+
+    private SQLIdentifierExpr node;
 
     public ReplaceTableNameVisitor(String originalName, String newName){
         if (originalName == null || originalName.length() == 0
@@ -31,10 +33,15 @@ public class ReplaceTableNameVisitor extends SQLASTVisitorAdapter {
             if (isReplase){
                 throw new BayMaxException("分区表名在一个Sql中只能出现一次:" + originalName + "," +newName);
             }else {
-                ((SQLIdentifierExpr)astNode.getExpr()).setName(newName);
+                node = (SQLIdentifierExpr) astNode.getExpr();
+                node.setName(newName);
                 isReplase = true;
             }
         }
         return true;
+    }
+
+    public void reset(){
+        node.setName(originalName);
     }
 }

@@ -98,7 +98,7 @@ public class ELPartitionTable extends AbstractPartitionTable {
 
         Map<String, String> args = new HashMap<String, String>();
         for(CalculateUnit.ConditionUnit unit : conditionUnits){
-            args.put(unit.getColumn(), unit.getValue());
+            args.put(unit.getColumn().toLowerCase(), unit.getValue());
         }
 
         return executeRule(args);

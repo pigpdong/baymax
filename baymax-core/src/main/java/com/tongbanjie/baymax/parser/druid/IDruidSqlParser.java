@@ -1,14 +1,13 @@
 package com.tongbanjie.baymax.parser.druid;
 
-import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 
-import java.util.Map;
+import java.util.List;
 
 public interface IDruidSqlParser {
 
-    void init(String sql, Map<Integer, ParameterCommand> parameterCommand);
+    void init(String sql, List<Object> parameters);
 	
 	void parse(ParseResult result);
 

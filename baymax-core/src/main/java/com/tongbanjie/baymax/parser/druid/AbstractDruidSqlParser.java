@@ -5,35 +5,35 @@ import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.stat.TableStat.Condition;
-import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.druid.calculate.CalculateUnitUtil;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
-import com.tongbanjie.baymax.parser.druid.visitor.MycatSchemaStatVisitor;
+import com.tongbanjie.baymax.parser.druid.visitor.ParserVisitor;
 import com.tongbanjie.baymax.parser.druid.visitor.ReplaceTableNameVisitor;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
 
     protected SQLStatementParser        parser;
-    protected MycatSchemaStatVisitor    visitor;
+    protected ParserVisitor visitor;
     protected SQLStatement              statement;
+    protected String                    sql;
 
     @Override
-    public void init(String sql, Map<Integer, ParameterCommand> parameterCommand) {
+    public void init(String sql, List<Object> parameters) {
         parser 			= new MySqlStatementParser(sql);
-        visitor 		= new MycatSchemaStatVisitor();
+        visitor 		= new ParserVisitor(parameters);
         statement 		= parser.parseStatement();
+        this.sql        = sql;
     }
 
     /**
      * 默认通过visitor解析 之类可以覆盖
+     *
+     * 限制:分表的where中不能出现or,分表key只能出现一次且必须是a=1的类型
      * @param result
      */
     @Override
@@ -42,7 +42,8 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
         statement.accept(visitor);
 
         List<List<Condition>> mergedConditionList = new ArrayList<List<Condition>>();
-        if (visitor.hasOrCondition()) {//包含or语句
+        if (visitor.hasOrCondition()) {
+            //包含or语句
             // TODO 拆分为(x and x and x) or (x and x) or x的模式
             // mergedConditionList = visitor.splitConditions();
             throw new RuntimeException("TODO 拆分为(x and x and x) or (x and x) or x的模式");
@@ -52,6 +53,7 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
         }
 
         alisMapFix(result);
+        result.setSql(sql);
         result.setCalculateUnits(CalculateUnitUtil.buildCalculateUnits(result.getTableAliasMap(), mergedConditionList));
     }
 
@@ -80,9 +82,9 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
                 }
 
                 if (key.equals(value)) {
-                    result.addTable(key.toUpperCase());
+                    result.addTable(key.toLowerCase());
                 }
-                tableAliasMap.put(key.toUpperCase(), value);
+                tableAliasMap.put(key.toLowerCase(), value);
             }
             visitor.getAliasMap().putAll(tableAliasMap);
             result.setTableAliasMap(tableAliasMap);
@@ -107,6 +109,8 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
                 statement.accept(outPutVisitor);
                 sql.setOriginalSql(result.getSql());
                 sql.setTargetSql(out.toString());
+                // 输出sql后要还原statement以便下次替换表名
+                replaceVisitor.reset();
             }
         }
     }

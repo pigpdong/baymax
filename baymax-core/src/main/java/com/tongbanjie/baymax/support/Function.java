@@ -9,7 +9,7 @@ public interface Function<I,O> {
 	
 	/**
 	 * 执行自定义函数
-	 * @param params
+	 * @param
 	 * @return
 	 */
     O apply(I input);

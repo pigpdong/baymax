@@ -167,7 +167,6 @@ public class TestBayMax_MyBatis {
 		System.out.println(2%4);
 		System.out.println(3%4);
 		System.out.println(4%4);
-		
 	}
 	
 }

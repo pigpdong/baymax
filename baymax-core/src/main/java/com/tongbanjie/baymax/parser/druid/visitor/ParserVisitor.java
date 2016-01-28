@@ -12,6 +12,7 @@ import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.stat.TableStat.Mode;
 import com.alibaba.druid.wall.spi.WallVisitorUtils;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,8 +20,13 @@ import java.util.Map;
  * @author wang.dw
  *
  */
-public class MycatSchemaStatVisitor extends MySqlSchemaStatVisitor {
+public class ParserVisitor extends MySqlSchemaStatVisitor {
+
 	private boolean                 hasOrCondition          = false;
+
+    public ParserVisitor(List<Object> parameters){
+        setParameters(parameters);
+    }
 
 	public boolean hasOrCondition() {
 		return hasOrCondition;
@@ -39,7 +45,7 @@ public class MycatSchemaStatVisitor extends MySqlSchemaStatVisitor {
      */
     @Override
 	public boolean visit(SQLBinaryOpExpr x) {
-        System.out.println(String.format("--[%s]:[%s]:[%s]--", new String[]{x.getLeft().toString(),x.getOperator().toString(), x.getRight().toString()}).replaceAll("\n",""));
+        //System.out.println(String.format("--[%s]:[%s]:[%s]--", new String[]{x.getLeft().toString(),x.getOperator().toString(), x.getRight().toString()}).replaceAll("\n",""));
         x.getLeft().setParent(x);
         x.getRight().setParent(x);
 
@@ -48,7 +54,10 @@ public class MycatSchemaStatVisitor extends MySqlSchemaStatVisitor {
             case LessThanOrEqualOrGreaterThan:
             case Is:
             case IsNot:
+                // a=1 and a=2 or a=3
                 handleCondition(x.getLeft(), x.getOperator().name, x.getRight());
+                // a=b 转化为 b=a
+                // a=1 不用转化
                 handleCondition(x.getRight(), x.getOperator().name, x.getLeft());
                 handleRelationship(x.getLeft(), x.getOperator().name, x.getRight());
                 break;
@@ -83,12 +92,8 @@ public class MycatSchemaStatVisitor extends MySqlSchemaStatVisitor {
             default:
                 break;
         }
-
-
         return true;
     }
-
-
 
     @Override
     public boolean visit(MySqlDeleteStatement x) {

@@ -32,7 +32,7 @@ import com.tongbanjie.baymax.jdbc.model.StatementCreateCommand;
 
 public class TPreparedStatement extends TStatement implements PreparedStatement {
 
-	protected Map<Integer, ParameterCommand> parameterSettings = new HashMap<Integer, ParameterCommand>();
+	protected Map<Integer/*第几个?占位符*/, ParameterCommand/*占位符的值*/> parameterSettings = new HashMap<Integer, ParameterCommand>();
 	protected String sql;
 
 	public TPreparedStatement(TConnection connection, StatementCreateCommand statementCreateCommand, String sql) {

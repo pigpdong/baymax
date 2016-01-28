@@ -50,7 +50,7 @@ public class DruidRouteService implements IRouteService {
         ParseResult result = new ParseResult();
 
         // 初始化
-        parser.init(sql, parameterCommand);
+        parser.init(sql, buildParameters(parameterCommand));
 
         // 解析
         parser.parse(result);
@@ -184,6 +184,37 @@ public class DruidRouteService implements IRouteService {
             routeResult.addSql(actionSql);
         }
         return routeResult;
+    }
+
+    /**
+     * 参数排序 TODO 测试
+     * @param commonds
+     * @return
+     */
+    private List<Object> buildParameters(Map<Integer, ParameterCommand> commonds){
+
+        if (commonds == null || commonds.size() == 0){
+            return null;
+        }
+
+        // 排序
+        SortedSet<Map.Entry<Integer, ParameterCommand>> set = new TreeSet<Map.Entry<Integer, ParameterCommand>>(new Comparator<Map.Entry<Integer, ParameterCommand>>() {
+            @Override
+            public int compare(Map.Entry<Integer, ParameterCommand> e1, Map.Entry<Integer, ParameterCommand> e2) {
+                return e1.getKey().compareTo(e2.getKey());
+            }
+        });
+
+        for (Map.Entry entry : commonds.entrySet()){
+            set.add(entry);
+        }
+
+        List<Object> result = new ArrayList<Object>(commonds.size());
+        for (Map.Entry<Integer, ParameterCommand> entry : set){
+            result.add(entry.getValue().getParttionArg());
+        }
+
+        return result;
     }
 
     @Override
