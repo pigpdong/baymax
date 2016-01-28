@@ -31,7 +31,6 @@ public class ELPartitionTable extends AbstractPartitionTable {
 		return allTables;
 	}
 
-
 	@Override
 	public Pair<String/* targetDB */, String/* targetTable */> executeRule(Map<?, ?> param) {
 		String targetDB = null;

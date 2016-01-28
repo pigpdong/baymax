@@ -65,7 +65,7 @@ public class TPreparedStatement extends UnsupportedPreparedStatementAdapter {
 
 	@Override
 	public void setShort(int parameterIndex, short x) throws SQLException {
-		parameterSettings.put(parameterIndex, new ParameterCommand(ParameterMethod.setShort, new Object[] { parameterIndex, x }));
+		parameterSettings.put(parameterIndex, new ParameterCommand(ParameterMethod.setShort, new Object[]{parameterIndex, x}));
 
 	}
 
@@ -131,7 +131,7 @@ public class TPreparedStatement extends UnsupportedPreparedStatementAdapter {
 
 	@Override
 	public void setNull(int parameterIndex, int sqlType) throws SQLException {
-		parameterSettings.put(parameterIndex, new ParameterCommand(ParameterMethod.setNull1, new Object[] { parameterIndex, sqlType }));
+		parameterSettings.put(parameterIndex, new ParameterCommand(ParameterMethod.setNull1, new Object[]{parameterIndex, sqlType}));
 	}
 
 	@Override
@@ -177,11 +177,6 @@ public class TPreparedStatement extends UnsupportedPreparedStatementAdapter {
 	@Override
 	public void setObject(int parameterIndex, Object x) throws SQLException {
 		parameterSettings.put(parameterIndex, new ParameterCommand(ParameterMethod.setObject1, new Object[] { parameterIndex, x }));
-	}
-
-	@Override
-	public void addBatch() throws SQLException {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -254,4 +249,9 @@ public class TPreparedStatement extends UnsupportedPreparedStatementAdapter {
 			throw new SQLException(e);
 		}
 	}
+
+    @Override
+    public void addBatch() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 }

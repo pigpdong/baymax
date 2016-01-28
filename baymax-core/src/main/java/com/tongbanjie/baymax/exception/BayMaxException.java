@@ -4,7 +4,7 @@ public class BayMaxException extends RuntimeException {
 
 	private static final long serialVersionUID = -378533410763590157L;
 
-	private TraceContext trade;
+	private TraceContext trace;
 	
 	public BayMaxException(String message) {
 		super(message);
@@ -16,17 +16,17 @@ public class BayMaxException extends RuntimeException {
 	
 	public BayMaxException(String message, Exception e, String sql){
 		this(message, e);
-		trade = new TraceContext(sql);
+		trace = new TraceContext(sql);
 	}
 	
-	public BayMaxException(String message, Exception e, TraceContext trade){
+	public BayMaxException(String message, Exception e, TraceContext trace){
 		this(message, e);
-		this.trade = trade;
+		this.trace = trace;
 	}
 	
 	@Override
 	public String getMessage() {
-		return super.getMessage() + (trade!=null?trade.toString():"");
+		return super.getMessage() + (trace !=null? trace.toString():"");
 	}
 
 }

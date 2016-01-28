@@ -398,6 +398,7 @@ public class TConnection extends UnsupportedConnectionAdapter {
 	public void setClosed(boolean closed) {
 		this.closed = closed;
 	}
+
 	/************************************************/
 
 	@Override
