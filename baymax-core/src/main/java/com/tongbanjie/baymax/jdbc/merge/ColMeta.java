@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.jdbc.mearge;
+package com.tongbanjie.baymax.jdbc.merge;
 
 public class ColMeta {
     public static final int COL_TYPE_DECIMAL = 0;

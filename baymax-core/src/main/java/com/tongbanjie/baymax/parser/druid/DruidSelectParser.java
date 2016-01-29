@@ -6,7 +6,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
-import com.tongbanjie.baymax.jdbc.mearge.MergeCol;
+import com.tongbanjie.baymax.jdbc.merge.MergeCol;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 

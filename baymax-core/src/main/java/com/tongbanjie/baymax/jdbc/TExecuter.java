@@ -120,7 +120,7 @@ public class TExecuter {
             resultSetHandler.setResultType(resultType);
         }
         // 合并结果集
-        resultSetHandler.setResultSet(TMearger.mearge(plan, resultSet, outStmt));
+        resultSetHandler.setResultSet(TMerger.mearge(plan, resultSet, outStmt));
         // 把resultSetHandler的值直接保存到Statement,减少Statement对他的依赖
         setResultToStatement(resultType, outStmt, resultSetHandler);
         return resultSetHandler;

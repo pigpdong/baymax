@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.jdbc.mearge;
+package com.tongbanjie.baymax.jdbc.merge;
 
 public class MergeCol {
     public static final int MERGE_COUNT = 1;

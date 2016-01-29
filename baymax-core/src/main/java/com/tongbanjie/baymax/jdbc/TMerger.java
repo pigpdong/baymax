@@ -1,6 +1,6 @@
 package com.tongbanjie.baymax.jdbc;
 
-import com.tongbanjie.baymax.jdbc.mearge.MergeCol;
+import com.tongbanjie.baymax.jdbc.merge.MergeCol;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 import java.sql.ResultSet;
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Created by sidawei on 16/1/29.
  */
-public class TMearger {
+public class TMerger {
 
     public static TResultSet mearge(ExecutePlan plan, List<ResultSet> sets, TStatement outStmt) throws SQLException {
 
