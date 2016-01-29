@@ -1,15 +1,9 @@
 package com.tongbanjie.baymax.jdbc;
 
 import com.tongbanjie.baymax.datasource.MultipleDataSource;
-import com.tongbanjie.baymax.exception.BayMaxException;
-import com.tongbanjie.baymax.exception.TraceContext;
 import com.tongbanjie.baymax.jdbc.adapter.UnsupportedConnectionAdapter;
 import com.tongbanjie.baymax.jdbc.model.*;
-import com.tongbanjie.baymax.jdbc.model.ExecuteMethod.MethodReturnType;
 import com.tongbanjie.baymax.router.IRouteService;
-import com.tongbanjie.baymax.router.model.ExecutePlan;
-import com.tongbanjie.baymax.router.model.ExecuteType;
-import com.tongbanjie.baymax.router.model.TargetSql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,117 +17,33 @@ public class TConnection extends UnsupportedConnectionAdapter {
 	
 	private final static Logger logger = LoggerFactory.getLogger(TConnection.class);
 
-	private IRouteService routeService;
-	private MultipleDataSource multipleDataSource;
-	
-	private Map<DataSource, Connection> openedConnection = new ConcurrentHashMap<DataSource, Connection>(2);
-	private Connection connectionForMetaData;
-	private Set<TStatement> openedStatements = new HashSet<TStatement>(2);
-	private boolean isAutoCommit = true; // jdbc规范，新连接为true
-	private boolean closed;
-	private int transactionIsolation = TRANSACTION_READ_COMMITTED;
+	private MultipleDataSource          multipleDataSource;
+	private Map<DataSource, Connection> openedConnection        = new ConcurrentHashMap<DataSource, Connection>(2);
+	private Connection                  connectionForMetaData;
+	private Set<TStatement>             openedStatements        = new HashSet<TStatement>(2);
+	private boolean                     isAutoCommit            = true; // jdbc规范，新连接为true
+	private boolean                     closed;
+	private int                         transactionIsolation    = TRANSACTION_READ_COMMITTED;
+
+    private TExecuter                   executer;
 
 	public TConnection(IRouteService routeService, MultipleDataSource multipleDataSource) {
-		this.routeService = routeService;
-		this.multipleDataSource = multipleDataSource;
-	}
+        this.multipleDataSource = multipleDataSource;
+        executer = new TExecuter(routeService, multipleDataSource, this, openedConnection);
+    }
 
-	public ResultSetHandler loggerExecuteSql(StatementCreateCommand createCommand, ExecuteCommand executeCommand, Map<Integer, ParameterCommand> parameterCommand, TStatement stmt, TraceContext trace) throws SQLException {
-		checkClosed();
-		boolean userPreparedStatement = createCommand.getMethod() != StatementCreateMethod.createStatement ? true : false;
-		String sql = null;
-		if(userPreparedStatement){
-			sql = ((TPreparedStatement)stmt).sql;
-		}else{
-			sql = (String) executeCommand.getArgs()[0];
-		}
-		
-		trace.setSql(sql);
-		trace.setCreateCommand(createCommand);
-		trace.setExecuteCommand(executeCommand);
-		trace.setParameterCommand(parameterCommand);
-
-		ExecutePlan plan = routeService.doRoute(sql, parameterCommand);	// 路由
-		
-		if(logger.isDebugEnabled()){
-			logger.debug("BayMax execute SQL:" + plan.toString());
-		}
-
-		if (plan.getExecuteType() != ExecuteType.ALL && plan.getExecuteType() != ExecuteType.PARTITION && plan.getExecuteType() != ExecuteType.NO) {
-			throw new SQLException("执行计划不正确" + plan.toString());	// 检查执行计划
-		}
-		
-		ResultSetHandler resultSetHandler = new ResultSetHandler();
-		List<TargetSql> sqlList = plan.getSqlList();					// 所有要执行的SQL
-		List<ResultSet> resultSet = new ArrayList<ResultSet>(sqlList.size());
-		stmt.closeOpenedStatement();									// 关闭上一个SQL打开的Statement,一个JDBC规范的Statement只能保持最近一个开发的ResultSet,所以如果用户在同一个Statement上执行SQL,意味着前面的ResultSet可以被关闭了。
-		boolean resultType = false;
-		for (TargetSql target : sqlList) {
-			String targetPartition = target.getPartition();
-			DataSource targetDataSource = targetPartition == null ? multipleDataSource.getDefaultDataSource() : multipleDataSource.getDataSourceByName(targetPartition);
-			Connection conn = openedConnection.get(targetDataSource);	// 尝试获取一个已经打开的Connection
-			if (conn == null) {
-				conn = targetDataSource.getConnection();				// 打开一个Connection
-				conn.setAutoCommit(getAutoCommit());				
-				conn.setTransactionIsolation(transactionIsolation);
-				openedConnection.put(targetDataSource, conn);			// 保存Connection
-			}
-			Statement targetStatement = null;
-			if(userPreparedStatement){
-				Object[] args = createCommand.getArgs();
-				args[0] = target.getTargetSql();
-				targetStatement = createCommand.getMethod().prepareStatement(conn, args); 	//打开PrepareadStatement
-				for(ParameterCommand command : parameterCommand.values()){					// 设置SQL参数
-					command.getParameterMethod().setParameter((PreparedStatement)targetStatement, command.getArgs());
-				}
-			}else{
-				targetStatement = conn.createStatement();				// 打开普通Statement
-			}
-			stmt.addOpenedStatement(targetStatement);					// 保存Statement
-			ExecuteMethod method = executeCommand.getMethod(); 
-			Object[] args = executeCommand.getArgs();
-			if(!userPreparedStatement){
-				args[0] = target.getTargetSql();							// 替换SQL
-			}
-			Object methodResult = method.executeMethod(targetStatement, executeCommand.getArgs());	// 执行SQL
-			MethodReturnType methodReturnType = method.getReturnType();	// 确定方法的返回类型
-			if(methodReturnType == MethodReturnType.int_type){
-				resultType = false;										// executeUpdate
-			}else if(methodReturnType == MethodReturnType.result_set_type){
-				resultType = true;										// executeQueary
-			}else if(methodReturnType == MethodReturnType.boolean_type){
-				resultType = (Boolean) methodResult; 					//
-			}else {
-				throw new BayMaxException("");
-			}
-			if (resultType) {
-				resultSet.add(targetStatement.getResultSet());			// 保存结果集
-			}else{
-				resultSetHandler.addUpdateCount(targetStatement.getUpdateCount());// 保存影响的行数
-				if(createCommand.getMethod().autoGeneratedKeys() || executeCommand.getMethod().autoGeneratedKeys()){
-					// 需要返回自增键
-					stmt.setGeneratedKeysResultSet(targetStatement.getGeneratedKeys());
-				}
-			}
-			resultSetHandler.setResultType(resultType);					// 保存返回类型
-		}
-		resultSetHandler.setResultSet(new TResultSet(resultSet, stmt));
-		if(resultType){
-			stmt.setCurrentResultSet(resultSetHandler.getResultSet());	// 把resultSetHandler的值直接保存到Statement,减少Statement对他的依赖
-		}else{
-			stmt.setCurrentUpdateCount(resultSetHandler.getUpdateCount());
-		}
-		return resultSetHandler;
-	}
-	
+    /**
+     * 执行sql语句
+     * @param createCommand
+     * @param executeCommand
+     * @param parameterCommand
+     * @param stmt
+     * @return
+     * @throws SQLException
+     */
 	public ResultSetHandler executeSql(StatementCreateCommand createCommand, ExecuteCommand executeCommand, Map<Integer, ParameterCommand> parameterCommand, TStatement stmt) throws SQLException {
-		TraceContext trace = new TraceContext();
-		try{
-			return loggerExecuteSql(createCommand, executeCommand, parameterCommand, stmt, trace);
-		}catch(SQLException e){
-			logger.error("BayMax Execute SQL Error : trace{"+trace.toString()+"}" ,e);
-			throw e;
-		}
+        checkClosed();
+        return executer.execute(createCommand, executeCommand, parameterCommand, stmt);
 	}
 
 	@Override

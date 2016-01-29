@@ -34,7 +34,8 @@ import com.tongbanjie.baymax.jdbc.model.StatementCreateCommand;
 public class TPreparedStatement extends UnsupportedPreparedStatementAdapter {
 
 	protected Map<Integer/*第几个?占位符*/, ParameterCommand/*占位符的值*/> parameterSettings = new HashMap<Integer, ParameterCommand>();
-	protected String sql;
+
+    protected String sql;
 
 	public TPreparedStatement(TConnection connection, StatementCreateCommand statementCreateCommand, String sql) {
 		super(connection, statementCreateCommand);
@@ -253,5 +254,9 @@ public class TPreparedStatement extends UnsupportedPreparedStatementAdapter {
     @Override
     public void addBatch() throws SQLException {
         throw new UnsupportedOperationException();
+    }
+
+    public String getSql() {
+        return sql;
     }
 }
