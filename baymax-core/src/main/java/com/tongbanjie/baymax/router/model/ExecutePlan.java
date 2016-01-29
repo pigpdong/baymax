@@ -2,12 +2,24 @@ package com.tongbanjie.baymax.router.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ExecutePlan {
-	
+
+    /**
+     * 执行的类型
+     */
 	private ExecuteType executeType;
-	
+
+    /**
+     * 目标sql
+     */
 	private List<TargetSql> sqlList;
+
+    /**
+     * 需要合并的字段
+     */
+    private Map<String, Integer> mergeColumns;
 	
 	@Override
 	public String toString() {
@@ -43,4 +55,13 @@ public class ExecutePlan {
 	public void setExecuteType(ExecuteType executeType) {
 		this.executeType = executeType;
 	}
+
+    public Map<String, Integer> getMergeColumns() {
+        return mergeColumns;
+    }
+
+    public void setMergeColumns(Map<String, Integer> mergeColumns) {
+        this.mergeColumns = mergeColumns;
+    }
+
 }

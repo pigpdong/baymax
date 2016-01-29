@@ -74,13 +74,13 @@ public class TestBayMax_MyBatis {
 	@Test
 	public void testInsert() {
 		TradeOrder example = new TradeOrder();
-		//example.setId("0003");
+		example.setId("0003");
 		example.setProductId("xs14");
 		example.setAmount(new BigDecimal(10.01));
 		example.setRealPayAmount(new BigDecimal(10.02));
 		example.setCreateTime(new Date());
-		//example.setUserId("9903");
-		//example.setTaId("t10001");
+		example.setUserId("9903");
+		example.setTaId("t10001");
 		int count = dao.insert(example);
 		System.out.println(count);
 	} 

@@ -29,14 +29,13 @@ public class TestBayMax {
 	@Test
 	public void test() throws SQLException, InterruptedException{
 		Connection conn = dataSource.getConnection();
-		PreparedStatement stmt = conn.prepareStatement("select * from @@trade_order where id=?");
-		stmt.setString(1, "0003");
+		PreparedStatement stmt = conn.prepareStatement("select *,count(*) as c from trade_order");
+		//stmt.setString(1, "0003");
 		ResultSet res = stmt.executeQuery();
 		while(res.next()){
 			String id = res.getString("id");
-			String productId = res.getString("product_id");
-			System.out.println(id);
-			System.out.println(productId);
+			Long c = res.getLong("c");
+			System.out.println("---"+id+","+c+"--");
 		}
 		stmt.close();
 		conn.close();

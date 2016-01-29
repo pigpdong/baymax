@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,8 @@ public class TResultSet extends UnsupportedResultSetAdapter {
 
 	private TStatement statement;
 	private boolean isClosed;
+
+    private Map<String, Object> mergedValues;
 
 	public TResultSet(List<ResultSet> listResultSet, TStatement statement) {
 		this.resultSet = listResultSet;
@@ -319,6 +322,9 @@ public class TResultSet extends UnsupportedResultSetAdapter {
 
 	@Override
 	public long getLong(String columnLabel) throws SQLException {
+        if (mergedValues != null && mergedValues.containsKey(columnLabel)){
+            return (Long)mergedValues.get(columnLabel);
+        }
 		return currentResultSet.getLong(columnLabel);
 	}
 
@@ -700,4 +706,12 @@ public class TResultSet extends UnsupportedResultSetAdapter {
 	public Reader getNCharacterStream(String columnLabel) throws SQLException {
 		return currentResultSet.getNCharacterStream(columnLabel);
 	}
+
+    // 合并
+    public void addMeargeValue(String alias, Object value){
+        if (mergedValues == null){
+            mergedValues = new HashMap<String, Object>();
+        }
+        mergedValues.put(alias, value);
+    }
 }
