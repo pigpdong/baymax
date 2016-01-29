@@ -138,7 +138,6 @@ public class DefaultRouteService implements IRouteService {
 		}
 	}
 
-    @Override
 	public void init() {
 		// 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
 		// 2. 初始化自动建表程序

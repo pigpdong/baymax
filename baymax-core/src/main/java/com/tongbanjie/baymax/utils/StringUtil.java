@@ -4,6 +4,7 @@ package com.tongbanjie.baymax.utils;
  * Created by sidawei on 16/1/26.
  */
 public class StringUtil {
+
     public static String removeBackquote(String str){
         //删除名字中的`tablename`和'value'
         if (str.length() > 0) {
@@ -17,5 +18,14 @@ public class StringUtil {
             return sb.toString();
         }
         return "";
+    }
+
+    public static boolean contains(String[] array, String s){
+        for (String temp : array){
+            if (temp.equalsIgnoreCase(s)){
+                return true;
+            }
+        }
+        return false;
     }
 }

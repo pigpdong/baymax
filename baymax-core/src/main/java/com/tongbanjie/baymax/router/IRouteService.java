@@ -14,6 +14,4 @@ public interface IRouteService {
 
 	ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand);
 
-	void init();
-
 }

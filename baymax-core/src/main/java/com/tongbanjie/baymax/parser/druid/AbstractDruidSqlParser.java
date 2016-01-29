@@ -21,13 +21,15 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
     protected ParserVisitor visitor;
     protected SQLStatement              statement;
     protected String                    sql;
+    protected List<Object>              parameters;
 
     @Override
     public void init(String sql, List<Object> parameters) {
-        parser 			= new MySqlStatementParser(sql);
-        visitor 		= new ParserVisitor(parameters);
-        statement 		= parser.parseStatement();
-        this.sql        = sql;
+        this.parser		    = new MySqlStatementParser(sql);
+        this.visitor 		= new ParserVisitor(parameters);
+        this.statement 		= parser.parseStatement();
+        this.parameters     = parameters;
+        this.sql            = sql;
     }
 
     /**

@@ -23,7 +23,7 @@ public class TConnection extends UnsupportedConnectionAdapter {
 	
 	private final static Logger logger = LoggerFactory.getLogger(TConnection.class);
 
-	private IRouteService IRouteService;
+	private IRouteService routeService;
 	private MultipleDataSource multipleDataSource;
 	
 	private Map<DataSource, Connection> openedConnection = new ConcurrentHashMap<DataSource, Connection>(2);
@@ -33,8 +33,8 @@ public class TConnection extends UnsupportedConnectionAdapter {
 	private boolean closed;
 	private int transactionIsolation = TRANSACTION_READ_COMMITTED;
 
-	public TConnection(IRouteService IRouteService, MultipleDataSource multipleDataSource) {
-		this.IRouteService = IRouteService;
+	public TConnection(IRouteService routeService, MultipleDataSource multipleDataSource) {
+		this.routeService = routeService;
 		this.multipleDataSource = multipleDataSource;
 	}
 
@@ -53,7 +53,7 @@ public class TConnection extends UnsupportedConnectionAdapter {
 		trace.setExecuteCommand(executeCommand);
 		trace.setParameterCommand(parameterCommand);
 
-		ExecutePlan plan = IRouteService.doRoute(sql, parameterCommand);	// 路由
+		ExecutePlan plan = routeService.doRoute(sql, parameterCommand);	// 路由
 		
 		if(logger.isDebugEnabled()){
 			logger.debug("BayMax execute SQL:" + plan.toString());

@@ -51,9 +51,6 @@
 				</bean>
 			</set>
 		</property>
-		<property name="IRouteService">
-			<ref local="baymaxRouteService"/>
-		</property>
 	</bean>
 
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />

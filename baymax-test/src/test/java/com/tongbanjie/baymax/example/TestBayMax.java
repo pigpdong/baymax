@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tongbanjie.baymax.router.DruidRouteService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class TestBayMax {
 		Map<Integer, ParameterCommand> args = new HashMap<Integer, ParameterCommand>();
 		ParameterCommand command = new ParameterCommand(ParameterMethod.setString, new Object[]{"10"}, 10);
 		args.put(1, command);
-		ExecutePlan plan = dataSource.getIRouteService().doRoute("select * from @@trade_order where user_id=10", args);
+		ExecutePlan plan = new DruidRouteService().doRoute("select * from @@trade_order where user_id=10", args);
 		System.out.println(plan);
 	}
 }

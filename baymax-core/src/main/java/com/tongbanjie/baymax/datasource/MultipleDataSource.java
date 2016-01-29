@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import com.tongbanjie.baymax.jdbc.TConnection;
+import com.tongbanjie.baymax.router.DruidRouteService;
 import com.tongbanjie.baymax.router.IRouteService;
 
 /**
@@ -20,16 +21,13 @@ import com.tongbanjie.baymax.router.IRouteService;
  */
 public class MultipleDataSource extends DataSourceDispatcher implements DataSource{
 	
-	private IRouteService IRouteService;
+	private IRouteService routeService = new DruidRouteService();
 	
 	public void init() throws Exception{
 		super.init();
-		if(IRouteService == null){
-			throw new RuntimeException("routeService can't be null!");
-		}
 	}
 
-	//----------------------------------------------------------------//
+	/*----------------------------------------------------------------*/
 	
 	@Override
 	public PrintWriter getLogWriter() throws SQLException {
@@ -70,13 +68,14 @@ public class MultipleDataSource extends DataSourceDispatcher implements DataSour
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		return new TConnection(IRouteService, this);
+		return new TConnection(routeService, this);
 	}
 
 	@Override
 	public Connection getConnection(String username, String password) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
+
 	/*----------------------------------------------------------------*/
 	
 	/**
@@ -103,16 +102,6 @@ public class MultipleDataSource extends DataSourceDispatcher implements DataSour
 	 */
 	public Connection getDefaultConnection() throws SQLException{
 		return super.getDefaultDataSource().getConnection();
-	}
-
-	/*----------------------------getters and setters-------------------------------*/
-	
-	public IRouteService getIRouteService() {
-		return IRouteService;
-	}
-	
-	public void setIRouteService(IRouteService IRouteService) {
-		this.IRouteService = IRouteService;
 	}
 
 }

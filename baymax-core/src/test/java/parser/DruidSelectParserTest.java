@@ -1,3 +1,5 @@
+package parser;
+
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
@@ -14,7 +16,7 @@ import java.util.Map;
 /**
  * Created by sidawei on 16/1/15.
  */
-public class TestDruidSelectParser {
+public class DruidSelectParserTest {
 
     protected SQLStatementParser parser;
     protected SQLASTVisitor visitor;

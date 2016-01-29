@@ -7,35 +7,18 @@ import com.tongbanjie.baymax.parser.druid.IDruidSqlParser;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.parser.utils.SqlTypeUtil;
-import com.tongbanjie.baymax.router.model.CalculateUnit;
+import com.tongbanjie.baymax.parser.druid.model.CalculateUnit;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
 import com.tongbanjie.baymax.router.strategy.IPartitionTable;
+import com.tongbanjie.baymax.support.BaymaxContext;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
 import java.util.*;
 
 public class DruidRouteService implements IRouteService {
-
-    /**
-     * 上下文中所有的路由规则列表
-     */
-    private List<IPartitionTable> partitionTables;
-
-    /**
-     * 上下文中所有路由规则的MAP，方便使用表名查找到对应的路由规则
-     */
-    private Map<String/*TableName*/, IPartitionTable> tableRuleMapping = new HashMap<String, IPartitionTable>();
-
-    /**
-     * SQL解析器
-     * 主要用来提取SQL中的表名,Where中的KEY=VALUE形式的参数
-     */
-    //private SqlParser parser = new DefaultSqlParser();
-
-    private Map<String, Function<?,?>> functionsMap = new HashMap<String, Function<?,?>>();
 
     public ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand) {
 
@@ -73,9 +56,9 @@ public class DruidRouteService implements IRouteService {
         // 查找逻辑表对应的分区规则
         IPartitionTable partitionTable = null;
         for (String tableName : tables){
-            if (tableRuleMapping.get(tableName) != null){
+            if (BaymaxContext.isPartitionTable(tableName)){
                 if (partitionTable == null){
-                    partitionTable = tableRuleMapping.get(tableName);
+                    partitionTable = BaymaxContext.getPartitionTable(tableName);
                 }else {
                     throw new BayMaxException("sql中包含了两个分区表");
                 }
@@ -217,35 +200,6 @@ public class DruidRouteService implements IRouteService {
         return result;
     }
 
-    @Override
-    public void init() {
-        // 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
-        // 2. 初始化自动建表程序
-        for(IPartitionTable table : partitionTables){
-            table.init(functionsMap);
-            if(!tableRuleMapping.containsKey(table.getLogicTableName())){
-                tableRuleMapping.put(table.getLogicTableName(), table);
-            }else{
-                throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + table.getLogicTableName());
-            }
-        }
-    }
 
-    public void setPartitionTables(List<IPartitionTable> partitionTables) {
-        this.partitionTables = partitionTables;
-    }
-
-    public void setFunctions(List<Function<?,?>> functions) {
-        if(functions == null){
-            return;
-        }
-        for(Function<?,?> f : functions){
-            functionsMap.put(f.getFunctionName(), f);
-        }
-    }
-
-    public Map<String, Function<?,?>> getFunctionsMap() {
-        return functionsMap;
-    }
 
 }

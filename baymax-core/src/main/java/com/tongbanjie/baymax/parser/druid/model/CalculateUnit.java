@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.router.model;
+package com.tongbanjie.baymax.parser.druid.model;
 
 import com.tongbanjie.baymax.exception.BayMaxException;
 
@@ -62,7 +62,6 @@ public class CalculateUnit {
         }
 
         conditionUnits.add(unit);
-
     }
 
     /**

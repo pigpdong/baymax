@@ -1,8 +1,5 @@
 package com.tongbanjie.baymax.parser.druid.model;
 
-import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
-import com.tongbanjie.baymax.router.model.CalculateUnit;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

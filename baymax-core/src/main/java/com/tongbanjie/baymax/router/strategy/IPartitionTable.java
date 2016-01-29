@@ -1,12 +1,11 @@
 package com.tongbanjie.baymax.router.strategy;
 
-import com.tongbanjie.baymax.router.model.CalculateUnit;
+import com.tongbanjie.baymax.parser.druid.model.CalculateUnit;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface IPartitionTable {
 
