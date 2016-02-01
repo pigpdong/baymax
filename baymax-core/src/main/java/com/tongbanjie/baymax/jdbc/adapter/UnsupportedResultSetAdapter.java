@@ -573,4 +573,20 @@ public abstract class UnsupportedResultSetAdapter implements ResultSet{
     public String getCursorName() throws SQLException {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * SQL ROWID 值在 Java 编程语言中的表示形式（映射）。 SQL ROWID
+     * 是一种内置类型，其值可视为它标识的行在数据库表中的一个地址。 该地址是逻辑的还是物理的（在某些方面）取决于它的原始数据源。
+     */
+    @Override
+    public RowId getRowId(int columnIndex) throws SQLException {
+        // TODO logger
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public RowId getRowId(String columnLabel) throws SQLException {
+        // TODO what?
+        throw new UnsupportedOperationException();
+    }
 }

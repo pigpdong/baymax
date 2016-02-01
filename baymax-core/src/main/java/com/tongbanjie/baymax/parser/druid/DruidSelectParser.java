@@ -6,7 +6,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
-import com.tongbanjie.baymax.jdbc.merge.MergeCol;
+import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
 import com.tongbanjie.baymax.parser.druid.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 
@@ -51,7 +51,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
 
     private void parseMysqlQueary(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
         Map<String, String>     aliaColumns         = new HashMap<String, String>();
-        Map<String, Integer>    aggrColumns         = new HashMap<String, Integer>();
+        Map<String, MergeColumn>    aggrColumns         = new HashMap<String, MergeColumn>();
         List<SQLSelectItem>     selectList          = mysqlSelectQuery.getSelectList();
         boolean                 isNeedChangeSql     = false;
         int                     size                = selectList.size();
@@ -64,17 +64,18 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
                 String method = expr.getMethodName();
 
                 //只处理有别名的情况，无别名添加别名，否则某些数据库会得不到正确结果处理
-                int mergeType = MergeCol.getMergeType(method);
+                MergeColumn.MergeType mergeType = MergeColumn.buildMergeType(method);
 
-                if (MergeCol.MERGE_AVG == mergeType){
+                if (MergeColumn.MergeType.MERGE_AVG == mergeType){
 
-                }else if (MergeCol.MERGE_UNSUPPORT != mergeType){
+                }else if (MergeColumn.MergeType.MERGE_UNSUPPORT != mergeType){
                     if (item.getAlias() != null && item.getAlias().length() > 0){
-                        aggrColumns.put(item.getAlias(), mergeType);
+                        // TODO i对不对？
+                        aggrColumns.put(item.getAlias(), new MergeColumn(item.getAlias(), i, mergeType));
                     } else{
                         //如果不加，jdbc方式时取不到正确结果   ;修改添加别名
                         item.setAlias(method + i);
-                        aggrColumns.put(method + i, mergeType);
+                        aggrColumns.put(method + i, new MergeColumn(method + i, i, mergeType));
                         isNeedChangeSql = true;
                     }
                 }
@@ -83,7 +84,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
             }
         }
 
-        plan.setMergeColumns(aggrColumns);
+        plan.setMergeColumnsName(aggrColumns);
     }
 
     private void parseAggregate(){

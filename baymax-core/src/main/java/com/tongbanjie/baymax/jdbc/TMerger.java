@@ -1,6 +1,8 @@
 package com.tongbanjie.baymax.jdbc;
 
-import com.tongbanjie.baymax.jdbc.merge.MergeCol;
+import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
+import com.tongbanjie.baymax.jdbc.merge.iterator.IteratorResutSet;
+import com.tongbanjie.baymax.jdbc.merge.agg.AggResultSet;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 import java.sql.ResultSet;
@@ -15,34 +17,18 @@ public class TMerger {
 
     public static TResultSet mearge(ExecutePlan plan, List<ResultSet> sets, TStatement outStmt) throws SQLException {
 
-        TResultSet resultSet = new TResultSet(sets, outStmt);
-
-        Map<String, Integer> mergeColumns = plan.getMergeColumns();
+        Map<String, MergeColumn> mergeColumns = plan.getMergeColumnsName();
         if (plan.getSqlList().size() > 1 && sets != null && sets.size() > 1 && mergeColumns != null && mergeColumns.size() > 0){
-            // 合并
-            for (Map.Entry<String, Integer> entry : mergeColumns.entrySet()){
-                String alias = entry.getKey();
-                int mergeType = entry.getValue();
-                switch (mergeType){
-                    case MergeCol.MERGE_COUNT:
-                        resultSet.addMeargeValue(alias, mergeCount(sets, alias));
-                        break;
-                    case MergeCol.MERGE_SUM:
-                        resultSet.addMeargeValue(alias, mergeSum(sets, alias));
-                        break;
-                    case MergeCol.MERGE_MIN:
-                        resultSet.addMeargeValue(alias, mergeMin(sets, alias));
-                        break;
-                    case MergeCol.MERGE_MAX:
-                        resultSet.addMeargeValue(alias, mergeMax(sets, alias));
-                        break;
-                    case MergeCol.MERGE_AVG:
-                        resultSet.addMeargeValue(alias, mergeAvg(sets, alias+"_sum", alias+"_count"));
-                        break;
-                }
-            }
+            // agg
+            return new AggResultSet(sets, outStmt, plan);
         }
-        return resultSet;
+        // agg＋groupby
+        // agg + groupby + orderby
+        // groupby + orderby
+        // orderby
+
+        // 普通ResultSet
+        return new IteratorResutSet(sets, outStmt);
     }
 
     /**
@@ -52,7 +38,7 @@ public class TMerger {
      * @return
      * @throws SQLException
      */
-    private static Long mergeCount(List<ResultSet> sets, String alias) throws SQLException {
+    public static Long mergeCount(List<ResultSet> sets, String alias) throws SQLException {
         Long number = null;
         for (int i = 0; i < sets.size(); i++){
             Object o = sets.get(i).getLong(alias);
@@ -73,7 +59,7 @@ public class TMerger {
      * @return
      * @throws SQLException
      */
-    private static Double mergeSum(List<ResultSet> sets, String alias) throws SQLException {
+    public static Double mergeSum(List<ResultSet> sets, String alias) throws SQLException {
         Double number = null;
         for (int i = 0; i < sets.size(); i++){
             Double value = sets.get(i).getDouble(alias);
@@ -93,7 +79,7 @@ public class TMerger {
      * @return
      * @throws SQLException
      */
-    private static Object mergeMin(List<ResultSet> sets, String alias) throws SQLException {
+    public static Object mergeMin(List<ResultSet> sets, String alias) throws SQLException {
         Double number = null;
         for (int i = 0; i < sets.size(); i++){
             Double value = sets.get(i).getDouble(alias);
@@ -113,7 +99,7 @@ public class TMerger {
      * @return
      * @throws SQLException
      */
-    private static Object mergeMax(List<ResultSet> sets, String alias) throws SQLException {
+    public static Object mergeMax(List<ResultSet> sets, String alias) throws SQLException {
         Double number = null;
         for (int i = 0; i < sets.size(); i++){
             Double value = sets.get(i).getDouble(alias);
@@ -134,7 +120,7 @@ public class TMerger {
      * @return
      * @throws SQLException
      */
-    private static Object mergeAvg(List<ResultSet> sets, String aliasSum, String aliasCount) throws SQLException {
+    public static Object mergeAvg(List<ResultSet> sets, String aliasSum, String aliasCount) throws SQLException {
 
         Double sum = mergeSum(sets, aliasCount);
         Long count = mergeCount(sets, aliasSum);
