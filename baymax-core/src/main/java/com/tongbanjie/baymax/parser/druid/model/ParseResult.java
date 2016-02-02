@@ -28,6 +28,16 @@ public class ParseResult {
 	 */
 	private Map<String, String> tableAliasMap = new LinkedHashMap<String, String>();
 
+    /**
+     * 要查询的所有的列的别名,如果没有别名,别名＝field
+     */
+    private Map<String/*field*/, String/*alias*/> aliaColumns;
+
+    /**
+     * select中是否有*
+     */
+    private boolean hasAllColumnExpr;
+
     /*---------------------------------------------------------------------------------------*/
 
 	public Map<String, String> getTableAliasMap() {
@@ -60,5 +70,25 @@ public class ParseResult {
 
     public void setCalculateUnits(List<CalculateUnit> calculateUnits) {
         this.calculateUnits = calculateUnits;
+    }
+
+    public void setTables(List<String> tables) {
+        this.tables = tables;
+    }
+
+    public Map<String, String> getAliaColumns() {
+        return aliaColumns;
+    }
+
+    public void setAliaColumns(Map<String, String> aliaColumns) {
+        this.aliaColumns = aliaColumns;
+    }
+
+    public boolean isHasAllColumnExpr() {
+        return hasAllColumnExpr;
+    }
+
+    public void setHasAllColumnExpr(boolean hasAllColumnExpr) {
+        this.hasAllColumnExpr = hasAllColumnExpr;
     }
 }

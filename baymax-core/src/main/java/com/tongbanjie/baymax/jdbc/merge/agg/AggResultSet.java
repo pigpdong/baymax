@@ -16,14 +16,14 @@ import java.util.Map;
  */
 public class AggResultSet extends AggResultSetGetterAdapter {
 
-    Map<String/*columnName*/, MergeColumn> mergeColumnsName;
+    Map<String/*columnName*/, MergeColumn.MergeType> mergeColumns;
 
     Map<Integer/*columnIndex*/, String/*columnName*/> mergeColumnsIndex;
 
     public AggResultSet(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) {
         super(listResultSet, statement);
-        mergeColumnsName = plan.getMergeColumnsName();
-        mergeColumnsIndex = plan.getMergeColumnsIndex();
+        mergeColumns = plan.getMergeColumns();
+        // TODO index转化为alias
     }
 
     /**
@@ -59,7 +59,7 @@ public class AggResultSet extends AggResultSetGetterAdapter {
 
     @Override
     public boolean isAggColumn(String name){
-        return mergeColumnsName.containsKey(name);
+        return mergeColumns.containsKey(name);
     }
 
     @Override
@@ -68,7 +68,6 @@ public class AggResultSet extends AggResultSetGetterAdapter {
     }
 
     /**
-     * TODO avg,没有别名的加上别名
      * @param columnLabel
      * @param type
      * @param <T>
@@ -78,8 +77,8 @@ public class AggResultSet extends AggResultSetGetterAdapter {
     @Override
     public <T> T merge(String columnLabel, Class<T> type) throws SQLException {
         Object value = null;
-        MergeColumn column = mergeColumnsName.get(columnLabel);
-        switch (column.getMergeType()) {
+        MergeColumn.MergeType mergeType = mergeColumns.get(columnLabel);
+        switch (mergeType) {
             case MERGE_COUNT:
             case MERGE_SUM:
                 value = TMerger.mergeCount(getResultSet(), columnLabel);
@@ -91,7 +90,7 @@ public class AggResultSet extends AggResultSetGetterAdapter {
                 value = TMerger.mergeMax(getResultSet(), columnLabel);
                 break;
             case MERGE_AVG:
-                value = TMerger.mergeAvg(getResultSet(), column.getAvgSumColumnName(), column.getAvgCountCoumnName());
+                value = TMerger.mergeAvg(getResultSet(), columnLabel+"SUM", columnLabel+"COUNT");
                 break;
         }
         if (value == null){

@@ -22,8 +22,7 @@ public class ExecutePlan {
     /**
      * 有聚合函数的字段
      */
-    private Map<String/*columnName*/,   MergeColumn>            mergeColumnsName;
-    private Map<Integer/*columnIndex*/, String/*columnName*/>   mergeColumnsIndex;
+    private Map<String/*columnName*/, MergeColumn.MergeType>    mergeColumns;
 
     /**
      * 分组
@@ -74,22 +73,6 @@ public class ExecutePlan {
 		this.executeType = executeType;
 	}
 
-    public Map<String, MergeColumn> getMergeColumnsName() {
-        return mergeColumnsName;
-    }
-
-    public void setMergeColumnsName(Map<String, MergeColumn> mergeColumnsName) {
-        this.mergeColumnsName = mergeColumnsName;
-    }
-
-    public Map<Integer, String> getMergeColumnsIndex() {
-        return mergeColumnsIndex;
-    }
-
-    public void setMergeColumnsIndex(Map<Integer, String> mergeColumnsIndex) {
-        this.mergeColumnsIndex = mergeColumnsIndex;
-    }
-
     public List<OrderbyColumn> getOrderbyColumns() {
         return orderbyColumns;
     }
@@ -104,5 +87,13 @@ public class ExecutePlan {
 
     public void setGroupbyColumns(List<String> groupbyColumns) {
         this.groupbyColumns = groupbyColumns;
+    }
+
+    public Map<String, MergeColumn.MergeType> getMergeColumns() {
+        return mergeColumns;
+    }
+
+    public void setMergeColumns(Map<String, MergeColumn.MergeType> mergeColumns) {
+        this.mergeColumns = mergeColumns;
     }
 }

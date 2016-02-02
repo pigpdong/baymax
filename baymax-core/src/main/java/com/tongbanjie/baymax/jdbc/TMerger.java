@@ -3,6 +3,7 @@ package com.tongbanjie.baymax.jdbc;
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
 import com.tongbanjie.baymax.jdbc.merge.iterator.IteratorResutSet;
 import com.tongbanjie.baymax.jdbc.merge.agg.AggResultSet;
+import com.tongbanjie.baymax.jdbc.merge.orderby.OrderByResultSet;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 import java.sql.ResultSet;
@@ -17,15 +18,24 @@ public class TMerger {
 
     public static TResultSet mearge(ExecutePlan plan, List<ResultSet> sets, TStatement outStmt) throws SQLException {
 
-        Map<String, MergeColumn> mergeColumns = plan.getMergeColumnsName();
-        if (plan.getSqlList().size() > 1 && sets != null && sets.size() > 1 && mergeColumns != null && mergeColumns.size() > 0){
-            // agg
+        if (sets == null || sets.size() <= 1){
+            return new IteratorResutSet(sets, outStmt);
+        }
+
+        // agg
+        Map<String, MergeColumn.MergeType> mergeColumns = plan.getMergeColumns();
+        if (mergeColumns != null && mergeColumns.size() > 0){
             return new AggResultSet(sets, outStmt, plan);
         }
-        // agg＋groupby
+
+        // orderby
+        if (plan.getOrderbyColumns() != null && plan.getOrderbyColumns().size() > 0){
+            return new OrderByResultSet(sets, outStmt, plan);
+        }
+
+        // agg + groupby
         // agg + groupby + orderby
         // groupby + orderby
-        // orderby
 
         // 普通ResultSet
         return new IteratorResutSet(sets, outStmt);

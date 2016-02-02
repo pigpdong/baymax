@@ -20,6 +20,14 @@ public class StringUtil {
         return "";
     }
 
+    public static String removeDot(String str){
+        if (str.indexOf(".") > 0){
+            return removeBackquote(str.substring(str.lastIndexOf(".") + 1));
+        }else {
+            return removeBackquote(str);
+        }
+    }
+
     public static boolean contains(String[] array, String s){
         for (String temp : array){
             if (temp.equalsIgnoreCase(s)){

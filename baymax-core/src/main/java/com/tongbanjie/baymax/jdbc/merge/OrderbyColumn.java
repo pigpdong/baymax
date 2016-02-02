@@ -1,33 +1,39 @@
 package com.tongbanjie.baymax.jdbc.merge;
 
+import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
+
 public class OrderbyColumn {
 
     private String      columnName;
-    private int         columnIndex;
-	private OderbyType   orderbyType;
+	private OrderbyType   orderbyType;
 
-	public OrderbyColumn(String columnName, int columnIndex, OderbyType orderbyType) {
+	public OrderbyColumn(String columnName, OrderbyType orderbyType) {
         this.columnName = columnName;
-        this.columnIndex = columnIndex;
         this.orderbyType = orderbyType;
+    }
+
+    public static OrderbyType buildOrderbyType(SQLOrderingSpecification type){
+        if (SQLOrderingSpecification.ASC == type){
+            return OrderbyType.ASC;
+        }
+        if (SQLOrderingSpecification.DESC == type){
+            return OrderbyType.DESC;
+        }
+        return OrderbyType.ASC;
     }
 
     public String getColumnName() {
         return columnName;
     }
 
-    public int getColumnIndex() {
-        return columnIndex;
-    }
-
-    public OderbyType getOrderbyType() {
+    public OrderbyType getOrderbyType() {
         return orderbyType;
     }
 
     /**
      * 聚合函数合并类型
      */
-    public enum OderbyType{
+    public enum OrderbyType{
             ASC,DESC;
     }
 }

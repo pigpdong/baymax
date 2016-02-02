@@ -1,11 +1,19 @@
 package com.tongbanjie.baymax.utils;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,4 +170,39 @@ public class ReflectionUtils {
 			return new IllegalArgumentException(e);
 		}
 	}
+
+    public static void copyProperties(Object fromObj, Object toObj) {
+        Class<? extends Object> fromClass = fromObj.getClass();
+        Class<? extends Object> toClass = toObj.getClass();
+
+        try {
+            BeanInfo fromBean = Introspector.getBeanInfo(fromClass);
+            BeanInfo toBean = Introspector.getBeanInfo(toClass);
+
+            PropertyDescriptor[] toPd = toBean.getPropertyDescriptors();
+            List<PropertyDescriptor> fromPd = Arrays.asList(fromBean
+                    .getPropertyDescriptors());
+
+            for (PropertyDescriptor propertyDescriptor : toPd) {
+                propertyDescriptor.getDisplayName();
+                PropertyDescriptor pd = fromPd.get(fromPd
+                        .indexOf(propertyDescriptor));
+                if (pd.getDisplayName().equals(
+                        propertyDescriptor.getDisplayName())
+                        && !pd.getDisplayName().equals("class")) {
+                    if(propertyDescriptor.getWriteMethod() != null)
+                        propertyDescriptor.getWriteMethod().invoke(toObj, pd.getReadMethod().invoke(fromObj, null));
+                }
+
+            }
+        } catch (IntrospectionException e) {
+            throw  new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            throw  new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw  new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw  new RuntimeException(e);
+        }
+    }
 }
