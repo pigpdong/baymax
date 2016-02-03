@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.parser.druid.model;
+package com.tongbanjie.baymax.parser.model;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

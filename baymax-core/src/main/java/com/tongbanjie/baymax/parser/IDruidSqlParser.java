@@ -1,6 +1,6 @@
-package com.tongbanjie.baymax.parser.druid;
+package com.tongbanjie.baymax.parser;
 
-import com.tongbanjie.baymax.parser.druid.model.ParseResult;
+import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 import java.util.List;

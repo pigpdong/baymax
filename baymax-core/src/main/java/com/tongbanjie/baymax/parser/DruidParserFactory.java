@@ -1,9 +1,6 @@
-package com.tongbanjie.baymax.parser.druid;
+package com.tongbanjie.baymax.parser;
 
-import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.model.SqlType;
-
-import java.util.Map;
 
 /**
  * Created by sidawei on 16/1/27.

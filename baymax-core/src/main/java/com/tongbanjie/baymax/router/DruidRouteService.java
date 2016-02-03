@@ -2,18 +2,17 @@ package com.tongbanjie.baymax.router;
 
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.parser.druid.DruidParserFactory;
-import com.tongbanjie.baymax.parser.druid.IDruidSqlParser;
-import com.tongbanjie.baymax.parser.druid.model.ParseResult;
+import com.tongbanjie.baymax.parser.DruidParserFactory;
+import com.tongbanjie.baymax.parser.IDruidSqlParser;
+import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.parser.utils.SqlTypeUtil;
-import com.tongbanjie.baymax.parser.druid.model.CalculateUnit;
+import com.tongbanjie.baymax.parser.model.CalculateUnit;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
 import com.tongbanjie.baymax.router.strategy.IPartitionTable;
 import com.tongbanjie.baymax.support.BaymaxContext;
-import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
 import java.util.*;

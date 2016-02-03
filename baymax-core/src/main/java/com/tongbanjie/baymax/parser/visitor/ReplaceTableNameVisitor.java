@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.parser.druid.visitor;
+package com.tongbanjie.baymax.parser.visitor;
 
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;

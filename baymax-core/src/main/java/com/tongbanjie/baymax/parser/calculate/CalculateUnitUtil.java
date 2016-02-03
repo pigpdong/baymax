@@ -1,7 +1,7 @@
-package com.tongbanjie.baymax.parser.druid.calculate;
+package com.tongbanjie.baymax.parser.calculate;
 
 import com.alibaba.druid.stat.TableStat;
-import com.tongbanjie.baymax.parser.druid.model.CalculateUnit;
+import com.tongbanjie.baymax.parser.model.CalculateUnit;
 import com.tongbanjie.baymax.utils.StringUtil;
 
 import java.util.ArrayList;

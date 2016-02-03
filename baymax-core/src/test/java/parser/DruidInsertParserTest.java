@@ -6,7 +6,7 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.parser.druid.visitor.ReplaceTableNameVisitor;
+import com.tongbanjie.baymax.parser.visitor.ReplaceTableNameVisitor;
 import com.tongbanjie.baymax.router.DruidRouteService;
 import org.junit.Test;
 

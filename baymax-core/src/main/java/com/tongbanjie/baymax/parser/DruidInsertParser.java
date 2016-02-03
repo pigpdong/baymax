@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.parser.druid;
+package com.tongbanjie.baymax.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
@@ -7,8 +7,8 @@ import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.alibaba.druid.util.JdbcUtils;
 import com.tongbanjie.baymax.exception.BayMaxException;
-import com.tongbanjie.baymax.parser.druid.model.CalculateUnit;
-import com.tongbanjie.baymax.parser.druid.model.ParseResult;
+import com.tongbanjie.baymax.parser.model.CalculateUnit;
+import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.support.BaymaxContext;

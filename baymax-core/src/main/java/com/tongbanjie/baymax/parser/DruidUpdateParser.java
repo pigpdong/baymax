@@ -1,9 +1,9 @@
-package com.tongbanjie.baymax.parser.druid;
+package com.tongbanjie.baymax.parser;
 
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.tongbanjie.baymax.exception.BayMaxException;
-import com.tongbanjie.baymax.parser.druid.model.ParseResult;
+import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.support.BaymaxContext;

@@ -1,6 +1,6 @@
 package com.tongbanjie.baymax.router.strategy;
 
-import com.tongbanjie.baymax.parser.druid.model.CalculateUnit;
+import com.tongbanjie.baymax.parser.model.CalculateUnit;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 

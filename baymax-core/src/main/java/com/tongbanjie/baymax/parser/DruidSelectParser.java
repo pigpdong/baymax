@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.parser.druid;
+package com.tongbanjie.baymax.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
@@ -13,7 +13,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
 import com.tongbanjie.baymax.jdbc.merge.OrderbyColumn;
-import com.tongbanjie.baymax.parser.druid.model.ParseResult;
+import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.utils.ReflectionUtils;
 import com.tongbanjie.baymax.utils.StringUtil;

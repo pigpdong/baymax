@@ -1,14 +1,14 @@
-package com.tongbanjie.baymax.parser.druid;
+package com.tongbanjie.baymax.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.stat.TableStat.Condition;
-import com.tongbanjie.baymax.parser.druid.calculate.CalculateUnitUtil;
-import com.tongbanjie.baymax.parser.druid.model.ParseResult;
-import com.tongbanjie.baymax.parser.druid.visitor.ParserVisitor;
-import com.tongbanjie.baymax.parser.druid.visitor.ReplaceTableNameVisitor;
+import com.tongbanjie.baymax.parser.calculate.CalculateUnitUtil;
+import com.tongbanjie.baymax.parser.model.ParseResult;
+import com.tongbanjie.baymax.parser.visitor.ParserVisitor;
+import com.tongbanjie.baymax.parser.visitor.ReplaceTableNameVisitor;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;

@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.parser.druid.calculate;
+package com.tongbanjie.baymax.parser.calculate;
 
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
