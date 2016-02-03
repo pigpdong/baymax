@@ -1,11 +1,11 @@
 package com.tongbanjie.baymax.jdbc.merge.agg;
 
-import com.tongbanjie.baymax.jdbc.TMerger;
 import com.tongbanjie.baymax.jdbc.TStatement;
-import com.tongbanjie.baymax.jdbc.merge.DataConvert;
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
+
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
@@ -20,10 +20,21 @@ public class AggResultSet extends AggResultSetGetterAdapter {
 
     Map<Integer/*columnIndex*/, String/*columnName*/> mergeColumnsIndex;
 
-    public AggResultSet(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) {
+    public AggResultSet(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) throws SQLException {
         super(listResultSet, statement);
         mergeColumns = plan.getMergeColumns();
+        initMergeColumnIndex(currentResultSet.getMetaData());
         // TODO index转化为alias
+    }
+
+    private void initMergeColumnIndex(ResultSetMetaData metaData) throws SQLException {
+        int size = metaData.getColumnCount();
+        for (int i = 1; i < size; i++){
+            String name = metaData.getColumnLabel(i);
+            if (mergeColumns.containsKey(name)){
+                mergeColumnsIndex.put(i, name);
+            }
+        }
     }
 
     /**
@@ -67,36 +78,9 @@ public class AggResultSet extends AggResultSetGetterAdapter {
         return mergeColumnsIndex.containsKey(index);
     }
 
-    /**
-     * @param columnLabel
-     * @param type
-     * @param <T>
-     * @return
-     * @throws SQLException
-     */
     @Override
     public <T> T merge(String columnLabel, Class<T> type) throws SQLException {
-        Object value = null;
-        MergeColumn.MergeType mergeType = mergeColumns.get(columnLabel);
-        switch (mergeType) {
-            case MERGE_COUNT:
-            case MERGE_SUM:
-                value = TMerger.mergeCount(getResultSet(), columnLabel);
-                break;
-            case MERGE_MIN:
-                value = TMerger.mergeMin(getResultSet(), columnLabel);
-                break;
-            case MERGE_MAX:
-                value = TMerger.mergeMax(getResultSet(), columnLabel);
-                break;
-            case MERGE_AVG:
-                value = TMerger.mergeAvg(getResultSet(), columnLabel+"SUM", columnLabel+"COUNT");
-                break;
-        }
-        if (value == null){
-            return null;
-        }
-        return (T) DataConvert.convertValue(value, type);
+        return AggMerger.merge(getResultSet(), mergeColumns, columnLabel, type);
     }
 
     @Override

@@ -68,8 +68,14 @@ public class GroupByResultSet extends GroupbyResultSetGetterAdapter {
         merge();
         // 结果集排序
         sort();
+        // TODO HAVING
     }
 
+    /**
+     * 合并分组
+     * 合并聚合函数
+     * @throws SQLException
+     */
     private void merge() throws SQLException {
         // 合并数据
         for (ResultSet set : getResultSet()){
@@ -90,6 +96,9 @@ public class GroupByResultSet extends GroupbyResultSetGetterAdapter {
         groupbyVs.toArray(groupbyValues);
     }
 
+    /**
+     * 分组排序
+     */
     private void sort(){
         if (orderbyColumns == null || orderbyColumns.size() == 0){
             return;

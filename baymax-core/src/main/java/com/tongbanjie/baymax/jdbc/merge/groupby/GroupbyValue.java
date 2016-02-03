@@ -41,7 +41,7 @@ public class GroupbyValue {
                 // TODO 合并
                 if (aggColumns.containsKey(columnLabel)){
                     MergeColumn.MergeType mergeType = aggColumns.get(columnLabel);
-                    Object value = GroupbyAggMerge.merge(valus[i], other.getValus()[i], mergeType);
+                    valus[i] = GroupbyAggMerger.merge(valus[i], other.getValus()[i], mergeType);
                 }
             }
         }

@@ -1,24 +1,25 @@
 package com.tongbanjie.baymax.jdbc.merge.groupby;
 
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
+import com.tongbanjie.baymax.jdbc.merge.MergeMath;
 
 /**
  * Created by sidawei on 16/2/2.
  */
-public class GroupbyAggMerge {
+public class GroupbyAggMerger extends MergeMath{
 
     public static Object merge(Object o1, Object o2, MergeColumn.MergeType mergeType){
         Object value = null;
         switch (mergeType) {
             case MERGE_COUNT:
             case MERGE_SUM:
-                value = GroupbyAggMerge.mergeCount(o1, o1);
+                value = GroupbyAggMerger.mergeCount(o1, o1);
                 break;
             case MERGE_MIN:
-                value = GroupbyAggMerge.mergeMin(o1, o2);
+                value = GroupbyAggMerger.mergeMin(o1, o2);
                 break;
             case MERGE_MAX:
-                value = GroupbyAggMerge.mergeMax(o1, o2);
+                value = GroupbyAggMerger.mergeMax(o1, o2);
                 break;
             case MERGE_AVG:
                 //value = GroupbyAggMerge.mergeAvg(getResultSet(), columnLabel+"SUM", columnLabel+"COUNT");
