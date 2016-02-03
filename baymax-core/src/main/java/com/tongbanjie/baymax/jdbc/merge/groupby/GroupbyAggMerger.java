@@ -3,40 +3,54 @@ package com.tongbanjie.baymax.jdbc.merge.groupby;
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
 import com.tongbanjie.baymax.jdbc.merge.MergeMath;
 
+import java.math.BigDecimal;
+
 /**
  * Created by sidawei on 16/2/2.
  */
 public class GroupbyAggMerger extends MergeMath{
 
-    public static Object merge(Object o1, Object o2, MergeColumn.MergeType mergeType){
+    public static Object mergeAvg(BigDecimal sum1, BigDecimal count1, BigDecimal sum2, BigDecimal count2, MergeColumn.MergeType mergeType){
+        return sum1.add(sum2).divide(count1.add(count2));
+    }
+
+    public static Object merge(BigDecimal o1, BigDecimal o2, MergeColumn.MergeType mergeType){
+        if (o1 == null && o2 == null){
+            return null;
+        }
+        if (o1 == null){
+            return o2;
+        }
+        if (o2 == null){
+            return o1;
+        }
+
         Object value = null;
         switch (mergeType) {
             case MERGE_COUNT:
             case MERGE_SUM:
-                value = GroupbyAggMerger.mergeCount(o1, o1);
+                value = mergeSum(o1, o2);
                 break;
             case MERGE_MIN:
-                value = GroupbyAggMerger.mergeMin(o1, o2);
+                value = mergeMin(o1, o2);
                 break;
             case MERGE_MAX:
-                value = GroupbyAggMerger.mergeMax(o1, o2);
-                break;
-            case MERGE_AVG:
-                //value = GroupbyAggMerge.mergeAvg(getResultSet(), columnLabel+"SUM", columnLabel+"COUNT");
+                value = mergeMax(o1, o2);
                 break;
         }
-        return null;
+        return value;
     }
 
-    public static Object mergeCount(Object o1, Object o2) {
-        return null;
+    public static Object mergeSum(BigDecimal o1, BigDecimal o2) {
+        return o1.add(o2);
     }
 
-    public static Object mergeMin(Object valu, Object o) {
-        return null;
+    public static Object mergeMin(BigDecimal o1, BigDecimal o2) {
+        return o1.compareTo(o2) < 0 ? o1 : o2;
     }
 
-    public static Object mergeMax(Object valu, Object o) {
-        return null;
+    public static Object mergeMax(BigDecimal o1, BigDecimal o2) {
+        return o1.compareTo(o2) > 0 ? o1 : o2;
     }
+
 }
