@@ -5,7 +5,6 @@ import com.tongbanjie.baymax.jdbc.merge.OrderbyColumn;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,55 +30,26 @@ public class OrderByCompareUnit implements Comparable{
     }
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(final Object o) {
         if (o == null){
-            return -1;
+            return 1;
         }
-        OrderByCompareUnit unit = (OrderByCompareUnit)o;
-        for (OrderbyColumn c : orderbyColumns){
-            try {
-                Object c1 = set.getObject(c.getColumnName());
-                Object c2 = unit.set.getObject(c.getColumnName());
-
-                int ret = 0;
-
-                if (c1 == null && c2 == null){
-                    ret = 0;
-                }else if (c1 == null){
-                    ret = -1;
-                }else if (c2 == null){
-                    ret = 1;
-                }else {
-                    if (c1 instanceof Number){
-                        double d1 = ((Number) c1).doubleValue();
-                        double d2 = ((Number) c2).doubleValue();
-
-                        if (d1 > d2){
-                            ret = 1;
-                        }else if (d1 < d2){
-                            ret = -1;
-                        }
-                    } else if (c1 instanceof java.util.Date){
-                        // java.sql.Date;Time;Timestamp 都是java.util.Date的之类
-                        ret = ((Date) c1).compareTo((Date)c2);
-                    }else if (c1 instanceof String){
-                        ret = ((String)c1).compareTo((String)c2);
-                    }
+        OrderByComparetor comparetor = new OrderByComparetor(orderbyColumns);
+        try {
+            return comparetor.compare(new OrderByComparetor.CompareEntity() {
+                @Override
+                public Object getValue(String columnName) throws SQLException {
+                    return set.getObject(columnName);
                 }
-
-                if (ret != 0){
-                    if (c.getOrderbyType() == OrderbyColumn.OrderbyType.ASC){
-                        return ret * -1;
-                    }else {
-                        return ret;
-                    }
+            }, new OrderByComparetor.CompareEntity() {
+                @Override
+                public Object getValue(String columnName) throws SQLException {
+                    return ((OrderByCompareUnit)o).set.getObject(columnName);
                 }
-
-            } catch (SQLException e) {
-                throw new BayMaxException("Order by 排序失败, 不能识别的字段类型:" + o.getClass() + ";只能接收Number,Date和String类型.");
-            }
+            });
+        } catch (SQLException e) {
+            throw new BayMaxException("Order by 排序失败, 不能识别的字段类型:" + o.getClass() + ";只能接收Number,Date和String类型.", e);
         }
-        return 0;
     }
 
     public ResultSet getSet() {

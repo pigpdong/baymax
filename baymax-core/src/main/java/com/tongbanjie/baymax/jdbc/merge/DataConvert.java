@@ -38,6 +38,10 @@ public class DataConvert {
             } else {
                 return new BigDecimal(number.toString());
             }
+        }else if (String.class.getName().equals(name)){
+            return number.toString();
+        }else if (Object.class.getName().equals(name)){
+            return number;
         }
         throw new BayMaxException("Unsupported data type:" + convertType);
     }

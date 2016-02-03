@@ -22,11 +22,11 @@ public class GroupbyTest {
 	public void test() throws SQLException, InterruptedException{
 
        new Jdbc(dataSource)
-        .executeSelect("select user_id from t_order t group by t.order_id")
+        .executeSelect("select user_id from t_order t group by user_id,product_id order by user_id desc")
                .printSet(new Jdbc.Print() {
                    @Override
                    public Object print(ResultSet set) throws SQLException {
-                       return set.getString("user_id");
+                       return set.getString("user_id") +"|"+ set.getLong("product_id");
                    }
         }).close();
 	}

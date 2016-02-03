@@ -63,7 +63,7 @@ public class OrderByResultSet extends IteratorResultSetGetterAdapter {
                 compareUnit = new OrderByCompareUnit(set, i, orderbyColumns);
             }else {
                 OrderByCompareUnit temp = new OrderByCompareUnit(set, i, orderbyColumns);
-                if (temp.compareTo(compareUnit) > 0){
+                if (temp.compareTo(compareUnit) < 0){
                     compareUnit = temp;
                 }
             }

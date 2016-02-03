@@ -1,6 +1,7 @@
 package com.tongbanjie.baymax.jdbc;
 
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
+import com.tongbanjie.baymax.jdbc.merge.groupby.GroupByResultSet;
 import com.tongbanjie.baymax.jdbc.merge.iterator.IteratorResutSet;
 import com.tongbanjie.baymax.jdbc.merge.agg.AggResultSet;
 import com.tongbanjie.baymax.jdbc.merge.orderby.OrderByResultSet;
@@ -20,6 +21,12 @@ public class TMerger {
 
         if (sets == null || sets.size() <= 1){
             return new IteratorResutSet(sets, outStmt);
+        }
+
+        // groupby
+        List<String> groupColumns = plan.getGroupbyColumns();
+        if (groupColumns != null && groupColumns.size() > 0){
+            return new GroupByResultSet(sets, outStmt, plan);
         }
 
         // agg
