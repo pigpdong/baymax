@@ -16,19 +16,7 @@ import java.util.*;
 /**
  * Created by sidawei on 16/1/31.
  *
- * groupby + orderby
- *
  * agg + groupby + orderby
- *
- * agg + groupby
- *
- * groupby
- *
- * orderby
- *
- * agg
- *
- * none
  *
  * 注意：暂时不考虑having中有聚合函数的请款,因为需要合并聚合函数的值,然后重新计算表达式
  *

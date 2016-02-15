@@ -58,7 +58,7 @@ public class TConnection extends UnsupportedConnectionAdapter {
 	@Override
 	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
 		// TODO 暂不不支持设置statement的可保存性,并发性等
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("暂不不支持设置statement的可保存性,并发性等");
 		//return createStatement();
 	}
 

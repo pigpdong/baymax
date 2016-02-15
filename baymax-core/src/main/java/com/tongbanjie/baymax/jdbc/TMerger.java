@@ -1,15 +1,12 @@
 package com.tongbanjie.baymax.jdbc;
 
-import com.tongbanjie.baymax.jdbc.merge.DataConvert;
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
-import com.tongbanjie.baymax.jdbc.merge.MergeMath;
+import com.tongbanjie.baymax.jdbc.merge.agg.AggResultSet;
 import com.tongbanjie.baymax.jdbc.merge.groupby.GroupByResultSet;
 import com.tongbanjie.baymax.jdbc.merge.iterator.IteratorResutSet;
-import com.tongbanjie.baymax.jdbc.merge.agg.AggResultSet;
 import com.tongbanjie.baymax.jdbc.merge.orderby.OrderByResultSet;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
