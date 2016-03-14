@@ -1,9 +1,10 @@
-package com.tongbanjie.baymax.router.strategy;
+package com.tongbanjie.baymax.router.strategy.model;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tongbanjie.baymax.parser.model.CalculateUnit;
+import com.tongbanjie.baymax.router.strategy.IPartitionTable;
 import com.tongbanjie.baymax.router.strategy.model.ELRule;
 import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
@@ -18,7 +19,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
-public abstract class AbstractPartitionTable implements IPartitionTable {
+public abstract class PartitionTableMetaData implements IPartitionTable {
 	
 	protected ConfigHolder configHolder = new ConfigHolder();
 
@@ -36,13 +37,13 @@ public abstract class AbstractPartitionTable implements IPartitionTable {
 	
 	protected Map<String/*suffix*/, String/*partition*/> tableMapping = new ConcurrentHashMap<String, String>(); 	// 所有表到分区的映射
 	
-	protected String autoCreatePartition;	// 自动建表分区 000000所在分区
+	//protected String autoCreatePartition;	// 自动建表分区 000000所在分区 用于create table like xxxxx
 	
 	/**
 	 * 路由方法
 	 * 
 	 * @param param
-	 *            更具{@link shardingKeys}从SQL中提取的K=V参数
+	 *            更具{@link }从SQL中提取的K=V参数
 	 * @return
 	 */
 	public abstract Pair<String/* targetDB */, String/* targetTable */> executeRule(Map<?, ?> param);

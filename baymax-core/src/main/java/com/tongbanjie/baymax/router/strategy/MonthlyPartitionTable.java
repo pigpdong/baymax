@@ -89,7 +89,7 @@ public class MonthlyPartitionTable extends ELPartitionTable {
 			if(partition == null){
 				throw new RuntimeException("parseToDate parameter partition can't be null ,when dataStr is 000000");
 			}
-			super.autoCreatePartition = partition;
+			//super.autoCreatePartition = partition;
 			return new Date();
 		} else {
 			SimpleDateFormat sdf = new SimpleDateFormat(format);

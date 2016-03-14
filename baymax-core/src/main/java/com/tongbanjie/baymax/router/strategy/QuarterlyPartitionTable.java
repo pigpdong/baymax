@@ -96,7 +96,7 @@ public class QuarterlyPartitionTable extends MonthlyPartitionTable {
 			if(partition == null){
 				throw new RuntimeException("getYear parameter partition can't be null ,when dataStr is 00000");
 			}
-			super.autoCreatePartition = partition;
+			//super.autoCreatePartition = partition;
 			return new Pair<Integer, Integer>(c.get(Calendar.YEAR), quarter);
 		} else {
 			int quarter = Integer.valueOf(str.substring(4));

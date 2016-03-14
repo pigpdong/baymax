@@ -8,10 +8,10 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 public class DataSourceDispatcher {
-	private Set<DataSourceGroup> dataSourceGroupSet = new HashSet<DataSourceGroup>();
-	private Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
-	private Set<DataSource> dataSourceSet = new HashSet<DataSource>();
-	private DataSource defaultDataSource;
+	private Set<DataSourceGroup>    dataSourceGroupSet  = new HashSet<DataSourceGroup>();
+	private Map<String, DataSource> dataSources         = new HashMap<String, DataSource>();
+	private Set<DataSource>         dataSourceSet       = new HashSet<DataSource>();
+	private DataSource              defaultDataSource;
 
 	public Map<String, DataSource> getDataSources() {
 		return dataSources;
