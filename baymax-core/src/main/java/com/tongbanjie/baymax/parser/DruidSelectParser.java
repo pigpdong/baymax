@@ -205,10 +205,12 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
                 throw new BayMaxException("group by 不支持的表达式:" + item.toString());
             }
             if (result.getAliaColumns() != null){
+                // 有别名,说明在select list中使用了别名
                 String alias = result.getAliaColumns().get(name);
                 if (alias != null){
                     // select user_id as uid ....order by user_id
-                    // 要把oderby的user_id转换为uid,以便结果集合并
+                    // 要把oderby的user_id转换为uid,以便结果集合并,这个替换是等价的
+                    // 因为合并的时候需要根据orderby的字段,取值,比较
                     groupbyColumns.add(alias);
                     continue;
                 }

@@ -1,7 +1,6 @@
 package com.tongbanjie.baymax.parser.utils;
 
 import com.tongbanjie.baymax.parser.model.SqlType;
-import com.tongbanjie.baymax.utils.Pair;
 
 /**
  * Created by sidawei on 16/1/27.

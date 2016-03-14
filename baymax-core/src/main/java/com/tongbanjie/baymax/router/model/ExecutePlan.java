@@ -20,12 +20,12 @@ public class ExecutePlan {
 	private List<TargetSql> sqlList;
 
     /**
-     * 有聚合函数的字段
+     * 聚合函数字段
      */
     private Map<String/*columnName*/, MergeColumn.MergeType>    mergeColumns;
 
     /**
-     * 分组
+     * 分组字段
      */
     private List<String/*columnName*/>                          groupbyColumns;
 

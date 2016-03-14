@@ -4,12 +4,12 @@ import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 
 public class OrderbyColumn {
 
-    private String      columnName;
-	private OrderbyType   orderbyType;
+    private String          columnName;
+	private OrderbyType     orderbyType;
 
 	public OrderbyColumn(String columnName, OrderbyType orderbyType) {
-        this.columnName = columnName;
-        this.orderbyType = orderbyType;
+        this.columnName     =   columnName;
+        this.orderbyType    =   orderbyType;
     }
 
     public static OrderbyType buildOrderbyType(SQLOrderingSpecification type){

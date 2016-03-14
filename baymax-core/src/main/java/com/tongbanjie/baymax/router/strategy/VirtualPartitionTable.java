@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
  * @author dawei
  *
  */
+@Deprecated
 public class VirtualPartitionTable extends ELPartitionTable {
 	
 	private final static Logger logger = LoggerFactory.getLogger(VirtualPartitionTable.class);

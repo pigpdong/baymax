@@ -17,6 +17,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
+@Deprecated
 public class QuarterlyPartitionTable extends MonthlyPartitionTable {
 
 	@Override

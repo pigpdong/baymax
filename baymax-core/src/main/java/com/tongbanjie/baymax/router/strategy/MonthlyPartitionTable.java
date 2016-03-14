@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
  * @author dawei
  *
  */
+@Deprecated
 public class MonthlyPartitionTable extends ELPartitionTable {
 
 	private final static Logger logger = LoggerFactory.getLogger(MonthlyPartitionTable.class);

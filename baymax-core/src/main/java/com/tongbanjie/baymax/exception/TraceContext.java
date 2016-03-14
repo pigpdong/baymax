@@ -7,10 +7,10 @@ import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.jdbc.model.StatementCreateCommand;
 
 public class TraceContext {
-	private String sql;
-	private StatementCreateCommand createCommand;
-	private ExecuteCommand executeCommand; 
-	private Map<Integer, ParameterCommand> parameterCommand;
+	private String                          sql;
+	private StatementCreateCommand          createCommand;
+	private ExecuteCommand                  executeCommand;
+	private Map<Integer, ParameterCommand>  parameterCommand;
 	
 	@Override
 	public String toString() {
