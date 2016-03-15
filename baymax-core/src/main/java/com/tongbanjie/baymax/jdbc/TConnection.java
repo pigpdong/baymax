@@ -1,6 +1,6 @@
 package com.tongbanjie.baymax.jdbc;
 
-import com.tongbanjie.baymax.datasource.MultipleDataSource;
+import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import com.tongbanjie.baymax.jdbc.adapter.UnsupportedConnectionAdapter;
 import com.tongbanjie.baymax.jdbc.model.*;
 import com.tongbanjie.baymax.router.IRouteService;
@@ -17,7 +17,7 @@ public class TConnection extends UnsupportedConnectionAdapter {
 	
 	private final static Logger logger = LoggerFactory.getLogger(TConnection.class);
 
-	private MultipleDataSource          multipleDataSource;
+	private BaymaxDataSource            baymaxDataSource;
 	private Map<DataSource, Connection> openedConnection        = new ConcurrentHashMap<DataSource, Connection>(2);
 	private Connection                  connectionForMetaData;
 	private Set<TStatement>             openedStatements        = new HashSet<TStatement>(2);
@@ -27,9 +27,9 @@ public class TConnection extends UnsupportedConnectionAdapter {
 
     private TExecuter                   executer;
 
-	public TConnection(IRouteService routeService, MultipleDataSource multipleDataSource) {
-        this.multipleDataSource = multipleDataSource;
-        executer = new TExecuter(routeService, multipleDataSource, this, openedConnection);
+	public TConnection(IRouteService routeService, BaymaxDataSource baymaxDataSource) {
+        this.baymaxDataSource = baymaxDataSource;
+        executer = new TExecuter(routeService, baymaxDataSource, this, openedConnection);
     }
 
     /**
@@ -224,7 +224,7 @@ public class TConnection extends UnsupportedConnectionAdapter {
 			if(openedConnection.size() > 0){
 				connectionForMetaData = openedConnection.entrySet().iterator().next().getValue();
 			}else{
-				connectionForMetaData = multipleDataSource.getDefaultConnection();
+				connectionForMetaData = baymaxDataSource.getDefaultConnection();
 			}
 		}
 		if(connectionForMetaData.isClosed()){

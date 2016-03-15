@@ -49,7 +49,6 @@ public class GroupByResultSet extends GroupbyResultSetGetterAdapter {
         orderbyColumns  = plan.getOrderbyColumns();
         groupbyColumns  = plan.getGroupbyColumns();
         aggColumns      = plan.getMergeColumns();
-        plan.getMergeColumns();
         mergedValus     = new HashMap<GroupbyKey, GroupbyValue>();
         metaData        = new GroupbyMetaData(super.currentResultSet.getMetaData());
         // 合并结果集
@@ -68,6 +67,7 @@ public class GroupByResultSet extends GroupbyResultSetGetterAdapter {
         // 合并数据
         for (ResultSet set : getResultSet()){
             while (set.next()){
+                // 计算这行数据的key
                 GroupbyKey key = new GroupbyKey(set, groupbyColumns);
                 if (mergedValus.containsKey(key)){
                     // merge
@@ -86,6 +86,8 @@ public class GroupByResultSet extends GroupbyResultSetGetterAdapter {
 
     /**
      * 分组排序
+     *
+     * TODO 优化：必须有order by 没有order by的 在解析的时候用 groupby的字段 作为orderby 重写sql,这样可以避免内存排序
      */
     private void sort(){
         if (orderbyColumns == null || orderbyColumns.size() == 0){
@@ -99,17 +101,7 @@ public class GroupByResultSet extends GroupbyResultSetGetterAdapter {
             @Override
             public int compare(final GroupbyValue v1, final GroupbyValue v2) {
                 try {
-                    return comparetor.compare(new OrderByComparetor.CompareEntity() {
-                        @Override
-                        public Object getValue(String columnName) throws SQLException {
-                            return v1.getValue(columnName, Object.class);
-                        }
-                    }, new OrderByComparetor.CompareEntity() {
-                        @Override
-                        public Object getValue(String columnName) throws SQLException {
-                            return v2.getValue(columnName, Object.class);
-                        }
-                    });
+                    return comparetor.compare(v1, v2);
                 } catch (SQLException e) {
                     throw new BayMaxException("Group by ...Order by... 排序失败" , e);
                 }
@@ -117,11 +109,6 @@ public class GroupByResultSet extends GroupbyResultSetGetterAdapter {
         });
     }
 
-    /**
-     * 必须有order by 没有order by的 在解析的时候用 groupby的字段 作为orderby 重写sql
-     * @return
-     * @throws SQLException
-     */
     @Override
     public boolean next() throws SQLException {
         if (groupbyValues == null || groupbyValues.length == 0){

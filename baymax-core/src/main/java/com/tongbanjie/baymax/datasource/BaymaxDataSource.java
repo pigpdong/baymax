@@ -16,10 +16,10 @@ import com.tongbanjie.baymax.router.IRouteService;
  * 一个原始的DataSource被包装为了一个{@link DataSourceGroup}
  * 这个类主要个根据DataSource的identity返回对应的{@link DataSourceGroup}
  * 
- * @author dawei
+ * @author si.dawei@tongbanjie.com
  *
  */
-public class MultipleDataSource extends DataSourceDispatcher implements DataSource{
+public class BaymaxDataSource extends DataSourceDispatcher implements DataSource{
 	
 	private IRouteService routeService = new DruidRouteService();
 	

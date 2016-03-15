@@ -5,8 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.tongbanjie.baymax.parser.model.CalculateUnit;
 import com.tongbanjie.baymax.router.strategy.IPartitionTable;
-import com.tongbanjie.baymax.router.strategy.model.ELRule;
-import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -55,7 +53,7 @@ public abstract class PartitionTableMetaData implements IPartitionTable {
 	 */
 	public abstract List<Pair<String/* partion */, String/* table */>> getAllTableNames();
 	
-	protected Map<String, Function<?,?>> functionsMap;
+	protected Map<String, ElFunction<?,?>> functionsMap;
 	
 	protected String getTargetPartition(String suffix){
 		return tableMapping.get(suffix);
@@ -111,7 +109,7 @@ public abstract class PartitionTableMetaData implements IPartitionTable {
 		configHolder.tableMappings = tableMappings;
 	}
 	
-	public void init(Map<String, Function<?,?>> functionsMap) {
+	public void init(Map<String, ElFunction<?,?>> functionsMap) {
 		/*------------------------------init------------------------------*/
 		this.functionsMap = functionsMap;
 		init();

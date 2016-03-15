@@ -1,6 +1,6 @@
 package jdbc;
 
-import com.tongbanjie.baymax.datasource.MultipleDataSource;
+import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import jdbc.frame.Jdbc;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class OrderbyTest {
 	
 	@Autowired
-	private MultipleDataSource dataSource;
+	private BaymaxDataSource dataSource;
 
     @Test
 	public void test() throws SQLException, InterruptedException{

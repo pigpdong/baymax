@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 代表一个分组
+ * 代表一行数据的key,可以是gorupby的值,相同key的要在以后合并
  */
 public class GroupbyKey{
 

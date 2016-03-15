@@ -1,6 +1,8 @@
 package com.tongbanjie.baymax.support;
 
+import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.router.strategy.IPartitionTable;
+import com.tongbanjie.baymax.router.strategy.model.ElFunction;
 
 import java.util.*;
 
@@ -8,6 +10,8 @@ import java.util.*;
  * Created by sidawei on 16/1/29.
  */
 public class BaymaxContext {
+
+    private static boolean isInit = false;
 
     /**
      * 上下文中所有的路由规则列表
@@ -25,7 +29,7 @@ public class BaymaxContext {
      */
     //private SqlParser parser = new DefaultSqlParser();
 
-    private static Map<String, Function<?,?>> functionsMap = new HashMap<String, Function<?,?>>();
+    private static Map<String, ElFunction<?,?>> functionsMap = new HashMap<String, ElFunction<?,?>>();
 
     public static boolean isPartitionTable(String logicTableName){
         return tableRuleMapping.containsKey(logicTableName);
@@ -39,14 +43,17 @@ public class BaymaxContext {
         return tableRuleMapping.get(logicTableName).getShardingKeys();
     }
 
-    public static Map<String, Function<?,?>> getFunctionsMap() {
+    public static Map<String, ElFunction<?,?>> getFunctionsMap() {
         return functionsMap;
     }
 
     /**
      * 初始化
      */
-    public static void init() {
+    public static synchronized void init() {
+        if (isInit){
+            throw new BayMaxException("Baymax Has been initialized");
+        }
         // 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
         // 2. 初始化自动建表程序
         for(IPartitionTable table : partitionTables){
@@ -57,6 +64,7 @@ public class BaymaxContext {
                 throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + table.getLogicTableName());
             }
         }
+        isInit = true;
     }
 
     /*------------------------------------------初始化必要参数-------------------------------------------*/
@@ -65,11 +73,11 @@ public class BaymaxContext {
         BaymaxContext.partitionTables = partitionTables;
     }
 
-    public static void setFunctions(List<Function<?,?>> functions) {
+    public static void setFunctions(List<ElFunction<?,?>> functions) {
         if(functions == null){
             return;
         }
-        for(Function<?,?> f : functions){
+        for(ElFunction<?,?> f : functions){
             BaymaxContext.functionsMap.put(f.getFunctionName(), f);
         }
     }

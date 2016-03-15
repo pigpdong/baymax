@@ -17,6 +17,8 @@ public class CalculateUnit {
     /**
      * set中不会有相同的column 否则会报错
      * 即一个计算单元内的条件都是用and连接的,所以不可能有 a=1 and a=2
+     *
+     * 注意：理论上只会有一个表
      */
     private Map<String/*table*/, Set<ConditionUnit/*column value*/>> tablesAndConditions = new LinkedHashMap<String, Set<ConditionUnit>>();
 

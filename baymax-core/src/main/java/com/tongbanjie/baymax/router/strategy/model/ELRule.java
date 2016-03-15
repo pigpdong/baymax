@@ -9,7 +9,6 @@ import org.mvel2.MVEL;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 
-import com.tongbanjie.baymax.support.Function;
 import com.tongbanjie.baymax.utils.Pair;
 
 /**
@@ -30,8 +29,6 @@ public class ELRule {
 	 * 2. 在一个EL中循环所有ShardingKeys
 	 * 3. 如果一个ShardingKey在EL中被使用到，则加入这个EL的参数名列表
 	 * 
-	 * @param ruleArray
-	 * @param ruleArrayColumns
 	 */
 	public ELRule(String el, String[] shardingKesy) {
 		this.el = el;
@@ -98,12 +95,11 @@ public class ELRule {
 	/**
 	 * 执行EL表达式,结果只能返回Integer或Boolean类型
 	 * 
-	 * @param expression	EL表达式
 	 * @param param			EL表达式参数
 	 * @param functionMap	函数 
 	 * @return
 	 */
-	public <T> Object execute(Object param, Class<T> toType, Map<String, Function<?,?>> functionMap) {
+	public <T> Object execute(Object param, Class<T> toType, Map<String, ElFunction<?,?>> functionMap) {
 		Map<String, Object> vrs = new HashMap<String, Object>();
 		vrs.putAll(functionMap);// 拓展函数
 		vrs.put("$ROOT", param);

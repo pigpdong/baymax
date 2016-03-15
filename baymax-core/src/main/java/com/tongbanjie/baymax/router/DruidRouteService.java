@@ -29,9 +29,10 @@ public class DruidRouteService implements IRouteService {
             return buildExecutePlanTypeNo(sql, null, sqlType);
         }
 
+        // 解析结果
         ParseResult result = new ParseResult();
 
-        // 初始化
+        // 初始化解析器
         parser.init(sql, buildParameters(parameterCommand));
 
         // 解析
@@ -198,7 +199,4 @@ public class DruidRouteService implements IRouteService {
 
         return result;
     }
-
-
-
 }

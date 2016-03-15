@@ -17,16 +17,21 @@ public class ParseResult {
 	 * （共享属性）
 	 */
 	private String sql = "";
-	
-	//tables为路由计算共享属性，多组RouteCalculateUnit使用同样的tables
+
+    // sql中所有的表名
+	// tables为路由计算共享属性，多组RouteCalculateUnit使用同样的tables
 	private List<String> tables = new ArrayList<String>();
 	
     //private RouteCalculateUnit routeCalculateUnit = new RouteCalculateUnit(this);
 
 	/**
+     * sql中所有的表名
 	 * key table alias, value talbe realname;
+     *
+     * select * from `users` u
+     * kv[user:users][u:users]
 	 */
-	private Map<String, String> tableAliasMap = new LinkedHashMap<String, String>();
+	private Map<String/*alias*/, String/*field*/> tableAliasMap = new LinkedHashMap<String, String>();
 
     /**
      * 要查询的所有的列的别名,如果没有别名,别名＝field

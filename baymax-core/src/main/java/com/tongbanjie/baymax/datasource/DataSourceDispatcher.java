@@ -7,11 +7,14 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+/**
+ * DataSource分发
+ */
 public class DataSourceDispatcher {
 	private Set<DataSourceGroup>    dataSourceGroupSet  = new HashSet<DataSourceGroup>();
 	private Map<String, DataSource> dataSources         = new HashMap<String, DataSource>();
 	private Set<DataSource>         dataSourceSet       = new HashSet<DataSource>();
-	private DataSource              defaultDataSource;
+	private DataSource              defaultDataSource   = null;
 
 	public Map<String, DataSource> getDataSources() {
 		return dataSources;
@@ -37,7 +40,6 @@ public class DataSourceDispatcher {
 				defaultDataSource = nativeHandler.getTargetDataSource();
 			}
 		}
-		
 	}
 	
 	public DataSource getDefaultDataSource(){

@@ -7,7 +7,7 @@ public class StringUtil {
 
     public static String removeBackquote(String str){
         //删除名字中的`tablename`和'value'
-        if (str.length() > 0) {
+        if (str != null && str.length() > 0) {
             StringBuilder sb = new StringBuilder(str);
             if (sb.charAt(0) == '`'||sb.charAt(0) == '\'') {
                 sb.deleteCharAt(0);
@@ -21,7 +21,7 @@ public class StringUtil {
     }
 
     public static String removeDot(String str){
-        if (str.indexOf(".") > 0){
+        if (str != null && str.indexOf(".") > 0){
             return removeBackquote(str.substring(str.lastIndexOf(".") + 1));
         }else {
             return removeBackquote(str);

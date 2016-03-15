@@ -12,13 +12,14 @@ import com.tongbanjie.baymax.parser.visitor.ReplaceTableNameVisitor;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
+import com.tongbanjie.baymax.utils.StringUtil;
 
 import java.util.*;
 
 public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
 
     protected SQLStatementParser        parser;
-    protected ParserVisitor visitor;
+    protected ParserVisitor             visitor;
     protected SQLStatement              statement;
     protected String                    sql;
     protected List<Object>              parameters;
@@ -27,21 +28,28 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
     public void init(String sql, List<Object> parameters) {
         this.parser		    = new MySqlStatementParser(sql);
         this.visitor 		= new ParserVisitor(parameters);
-        this.statement 		= parser.parseStatement();
         this.parameters     = parameters;
         this.sql            = sql;
     }
 
     /**
-     * 默认通过visitor解析 之类可以覆盖
+     * 默认通过visitor解析 子类可以覆盖
      *
      * 限制:分表的where中不能出现or,分表key只能出现一次且必须是a=1的类型
      * @param result
      */
     @Override
     public void parse(ParseResult result) {
+        // 解析sql
+        statement = parser.parseStatement();
 
+        // 用visiter遍历sql
         statement.accept(visitor);
+
+        // 表名格式化
+        alisMapFix(result);
+
+        result.setSql(sql);
 
         List<List<Condition>> mergedConditionList = new ArrayList<List<Condition>>();
         if (visitor.hasOrCondition()) {
@@ -54,39 +62,34 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
             mergedConditionList.add(visitor.getConditions());
         }
 
-        alisMapFix(result);
-        result.setSql(sql);
-        result.setCalculateUnits(CalculateUnitUtil.buildCalculateUnits(result.getTableAliasMap(), mergedConditionList));
+        if (CalculateUnitUtil.hasPartitionTable(result.getTables())){
+            // 有分区表 计算路由单元
+            result.setCalculateUnits(CalculateUnitUtil.buildCalculateUnits(result.getTableAliasMap(), mergedConditionList));
+        }
+
     }
 
     /**
      * 表名统一格式
+     * database.`table`  database.'table' ==> table
      * @param result
      */
     private void alisMapFix(ParseResult result){
         Map<String,String> tableAliasMap = new HashMap<String,String>();
         if (visitor.getAliasMap() != null) {
             for (Map.Entry<String, String> entry : visitor.getAliasMap().entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (key != null && key.indexOf("`") >= 0) {
-                    key = key.replaceAll("`", "");
-                }
-                if (value != null && value.indexOf("`") >= 0) {
-                    value = value.replaceAll("`", "");
-                }
-                //表名前面带database的，去掉
-                if (key != null) {
-                    int pos = key.indexOf(".");
-                    if (pos > 0) {
-                        key = key.substring(pos + 1);
-                    }
-                }
+
+                String key      = entry.getKey();
+                String value    = entry.getValue();
+
+                key             = StringUtil.removeDot(key);
+                value           = StringUtil.removeBackquote(value);
 
                 if (key.equals(value)) {
-                    result.addTable(key.toLowerCase());
+                    // sql中所有的表名
+                    result.addTable(key);
                 }
-                tableAliasMap.put(key.toLowerCase(), value);
+                tableAliasMap.put(key, value);
             }
             visitor.getAliasMap().putAll(tableAliasMap);
             result.setTableAliasMap(tableAliasMap);

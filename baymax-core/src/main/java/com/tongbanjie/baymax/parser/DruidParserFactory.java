@@ -9,21 +9,21 @@ public class DruidParserFactory {
 
     public static IDruidSqlParser getParser(SqlType sqlType){
 
-        if (sqlType == null){
+        if (sqlType == null)
             return null;
-        }
 
         switch (sqlType){
-            case INSERT:
-                return new DruidInsertParser();
-            case DELETE:
-                return new DruidDeleteParser();
-            case UPDATE:
-                return new DruidUpdateParser();
             case SELECT:
                 return new DruidSelectParser();
+            case INSERT:
+                return new DruidInsertParser();
+            case UPDATE:
+                return new DruidUpdateParser();
+            case DELETE:
+                return new DruidDeleteParser();
+            default:
+                return null;
         }
-        return null;
     }
 
 }

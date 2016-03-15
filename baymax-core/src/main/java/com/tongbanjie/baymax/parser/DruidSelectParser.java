@@ -155,6 +155,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
             }
             // 所有select字段的别名
             if (item.getExpr() instanceof SQLAllColumnExpr){
+                // select中是否有*
                 result.setHasAllColumnExpr(true);
             }else {
                 // TODO 测试

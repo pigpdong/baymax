@@ -1,6 +1,6 @@
 package example;
 
-import com.tongbanjie.baymax.datasource.MultipleDataSource;
+import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import com.tongbanjie.baymax.sequence.exception.SequenceException;
 import com.tongbanjie.baymax.sequence.impl.DefaultSequence;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class TestSequence {
 	
 	@Autowired
-	private MultipleDataSource dataSource;
+	private BaymaxDataSource dataSource;
 	
 	@Test
 	public void testGetById() throws SQLException, InterruptedException{

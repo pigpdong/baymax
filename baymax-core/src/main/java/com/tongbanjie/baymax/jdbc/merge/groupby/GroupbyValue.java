@@ -2,6 +2,7 @@ package com.tongbanjie.baymax.jdbc.merge.groupby;
 
 import com.tongbanjie.baymax.jdbc.merge.DataConvert;
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
+import com.tongbanjie.baymax.jdbc.merge.orderby.OrderByComparetor;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -11,9 +12,9 @@ import java.util.Map;
 /**
  * Created by sidawei on 16/2/3.
  *
- * 代表分组中的一行数据, 对于聚合函数,有合并功能
+ * 代表一行数据的值, 对于聚合函数,有合并功能
  */
-public class GroupbyValue {
+public class GroupbyValue implements OrderByComparetor.CompareEntity{
     /**
      * 一行中 每一列的值
      */
@@ -27,8 +28,8 @@ public class GroupbyValue {
 
     /**
      *
-     * @param set
-     * @param other     同组的上一行
+     * @param set       当前这行数据的来源
+     * @param other     other!=null则合并
      * @throws SQLException
      */
     public GroupbyValue(ResultSet set, GroupbyMetaData metaData, Map<String, MergeColumn.MergeType> aggColumns, GroupbyValue other) throws SQLException {
@@ -39,7 +40,7 @@ public class GroupbyValue {
             String columnLabel = metaData.getColumnLabel(i);
             if (aggColumns.containsKey(columnLabel)){
                 // 聚合列
-                // 注意：不管何不合并都放入,只要是聚合列都放入Bigdecimal,在get时再转换
+                // 注意：不管合不合并都放入,只要是聚合列都放入Bigdecimal,在get时再转换
                 valus[i] = set.getBigDecimal(columnLabel);
                 if(other != null && other.getValus() != null && other.getValus().length > 0){
                     // 合并
@@ -73,5 +74,16 @@ public class GroupbyValue {
 
     public <T> T getValue(String columnLabel, Class<T> type){
         return (T)DataConvert.convertValue(valus[metaData.getColumnIndex(columnLabel)], type);
+    }
+
+    /**
+     * for compare
+     * @param columnName
+     * @return
+     * @throws SQLException
+     */
+    @Override
+    public Object getValue(String columnName) throws SQLException {
+        return this.getValue(columnName, Object.class);
     }
 }

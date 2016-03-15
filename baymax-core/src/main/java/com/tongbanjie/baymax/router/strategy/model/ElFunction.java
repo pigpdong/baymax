@@ -1,11 +1,11 @@
-package com.tongbanjie.baymax.support;
+package com.tongbanjie.baymax.router.strategy.model;
 
 /**
  * 自定义函数的抽象
  * @author dawei
  *
  */
-public interface Function<I,O> {
+public interface ElFunction<I,O> {
 	
 	/**
 	 * 执行自定义函数

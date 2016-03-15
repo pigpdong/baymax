@@ -1,11 +1,13 @@
 package com.tongbanjie.baymax.support;
 
+import com.tongbanjie.baymax.router.strategy.model.ElFunction;
+
 /**
  * 取一个String或一个数字的后几位转为Int
  * @author dawei
  *
  */
-public class SubInt implements Function<String, String>{
+public class SubInt implements ElFunction<String, String> {
 
 	@Override
 	public String getFunctionName() {

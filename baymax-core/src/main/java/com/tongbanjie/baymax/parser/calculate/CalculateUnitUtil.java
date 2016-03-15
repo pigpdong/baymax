@@ -2,6 +2,7 @@ package com.tongbanjie.baymax.parser.calculate;
 
 import com.alibaba.druid.stat.TableStat;
 import com.tongbanjie.baymax.parser.model.CalculateUnit;
+import com.tongbanjie.baymax.support.BaymaxContext;
 import com.tongbanjie.baymax.utils.StringUtil;
 
 import java.util.ArrayList;
@@ -14,15 +15,18 @@ import java.util.Map;
 public class CalculateUnitUtil {
 
     /**
-     *
+     * 前题：
+     * 1. 只有一个表的Contidion
+     * 2. Condition已经分割好
      * @param tableAliasMap
      * @param conditionList 这里的conditionList应该是已经用or切分好的计算单元
      * @return
      */
-    public static List<CalculateUnit> buildCalculateUnits(Map<String, String> tableAliasMap, List<List<TableStat.Condition>> conditionList) {
+    public static List<CalculateUnit> buildCalculateUnits(Map<String, String> tableAliasMap, List/*or*/<List/*and*/<TableStat.Condition>> conditionList) {
         List<CalculateUnit> retList = new ArrayList<CalculateUnit>();
         //遍历condition ，找分片字段
         for(int i = 0; i < conditionList.size(); i++) {
+            // 一个or一个Unit
             CalculateUnit calculateUnit = new CalculateUnit();
             for(TableStat.Condition condition : conditionList.get(i)) {
                 List<Object> values = condition.getValues();
@@ -30,15 +34,16 @@ public class CalculateUnitUtil {
                     break;
                 }
                 if(checkConditionValues(values)) {
-                    String columnName = StringUtil.removeBackquote(condition.getColumn().getName().toLowerCase());
-                    String tableName = StringUtil.removeBackquote(condition.getColumn().getTable().toLowerCase());
+                    String columnName = StringUtil.removeBackquote(condition.getColumn().getName());
+                    String tableName = StringUtil.removeBackquote(condition.getColumn().getTable());
 
-                    if(tableAliasMap != null && tableAliasMap.get(tableName) != null
-                            && !tableAliasMap.get(tableName).equals(tableName)) {
-                        tableName = tableAliasMap.get(tableName);
-                    }
+                    // 获取真实表名
+                    tableName = getRealTableName(tableAliasMap, tableName);
 
-                    if(tableAliasMap != null && tableAliasMap.get(condition.getColumn().getTable().toLowerCase()) == null) {//子查询的别名条件忽略掉,不参数路由计算，否则后面找不到表
+                    if(tableAliasMap != null && tableAliasMap.get(tableName) == null) {
+                        // 子查询的别名条件忽略掉,不参数路由计算，否则后面找不到表
+                        // 虚拟表直接忽略 select x from (select xxxx) u;
+                        // 忽略u
                         continue;
                     }
 
@@ -55,7 +60,7 @@ public class CalculateUnitUtil {
                     // in暂时不支持 a in (1,2,3)要转化为a=1 or a=2 or a=3会导致计算单元的增加
                     if(operator.equals("=")){
                         //只处理=号和in操作符,其他忽略
-                        calculateUnit.addCondition(tableName.toLowerCase(), columnName, values.toArray());
+                        calculateUnit.addCondition(tableName, columnName, values.toArray());
                     }
                 }
             }
@@ -67,6 +72,23 @@ public class CalculateUnitUtil {
     private static boolean checkConditionValues(List<Object> values) {
         for(Object value : values) {
             if(value != null && !value.toString().equals("")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String getRealTableName(Map<String, String> tableAliasMap, String alias){
+        if (tableAliasMap != null){
+            String realName = tableAliasMap.get(alias);
+            return realName != null ? realName : alias;
+        }
+        return alias;
+    }
+
+    public static boolean hasPartitionTable(List<String> tables){
+        for (String table : tables){
+            if (BaymaxContext.isPartitionTable(table)){
                 return true;
             }
         }

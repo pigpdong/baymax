@@ -1,6 +1,6 @@
 package com.tongbanjie.baymax.jdbc;
 
-import com.tongbanjie.baymax.datasource.MultipleDataSource;
+import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.exception.TraceContext;
 import com.tongbanjie.baymax.jdbc.model.*;
@@ -23,11 +23,11 @@ public class TExecuter {
     private final static Logger logger = LoggerFactory.getLogger(TExecuter.class);
 
     private IRouteService               routeService;
-    private MultipleDataSource          dataSource;
+    private BaymaxDataSource            dataSource;
     private Map<DataSource, Connection> openedConnection;
     private TConnection                 currentConnection;
 
-    public TExecuter(IRouteService routeService, MultipleDataSource dataSource, TConnection currentConnection, Map<DataSource, Connection> openedConnection){
+    public TExecuter(IRouteService routeService, BaymaxDataSource dataSource, TConnection currentConnection, Map<DataSource, Connection> openedConnection){
         this.routeService       = routeService;
         this.dataSource         = dataSource;
         this.openedConnection   = openedConnection;
@@ -193,15 +193,18 @@ public class TExecuter {
      * @return
      */
     private boolean getResultType(Object executeResult, ExecuteMethod method){
-        ExecuteMethod.MethodReturnType   methodReturnType   = method.getReturnType();
-        if(methodReturnType == ExecuteMethod.MethodReturnType.int_type){
-            return false;										// executeUpdate
-        }else if(methodReturnType == ExecuteMethod.MethodReturnType.result_set_type){
-            return true;										// executeQueary
-        }else if(methodReturnType == ExecuteMethod.MethodReturnType.boolean_type){
-            return (Boolean) executeResult; 					//
-        }else {
-            throw new BayMaxException("不支持的返回类型:" + methodReturnType);
+        switch (method.getReturnType()){
+            case int_type:
+                // executeUpdate
+                return false;
+            case result_set_type:
+                // executeQueary
+                return true;
+            case boolean_type:
+                //
+                return (Boolean) executeResult;
+            default:
+                throw new BayMaxException("不支持的返回类型:" + method.getReturnType());
         }
     }
 

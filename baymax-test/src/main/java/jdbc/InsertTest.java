@@ -1,10 +1,6 @@
 package jdbc;
 
-import com.tongbanjie.baymax.datasource.MultipleDataSource;
-import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
-import com.tongbanjie.baymax.jdbc.model.ParameterMethod;
-import com.tongbanjie.baymax.router.DruidRouteService;
-import com.tongbanjie.baymax.router.model.ExecutePlan;
+import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import jdbc.frame.Jdbc;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,19 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/spring-context.xml")
 public class InsertTest {
 	
 	@Autowired
-	private MultipleDataSource dataSource;
+	private BaymaxDataSource dataSource;
 
     @Test
     public void test0() throws SQLException, InterruptedException {

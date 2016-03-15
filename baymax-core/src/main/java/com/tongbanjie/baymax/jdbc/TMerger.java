@@ -33,6 +33,7 @@ public class TMerger {
         }
 
         // agg
+        // agg+orderby 没有这种情况 因为只有一行数据
         Map<String, MergeColumn.MergeType> mergeColumns = plan.getMergeColumns();
         if (mergeColumns != null && mergeColumns.size() > 0){
             return new AggResultSet(sets, outStmt, plan);
@@ -46,6 +47,5 @@ public class TMerger {
         // 普通ResultSet
         return new IteratorResutSet(sets, outStmt);
     }
-
 
 }

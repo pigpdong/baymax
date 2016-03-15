@@ -38,7 +38,7 @@
 	</bean>
 		
 	<!-- 数据源分发器 -->
-	<bean id="multipleDataSource" class="com.tongbanjie.baymax.datasource.MultipleDataSource" init-method="init">
+	<bean id="multipleDataSource" class="com.tongbanjie.baymax.datasource.BaymaxDataSource" init-method="init">
 		<property name="dataSourceGroupSet">
 			<set>
 				<bean class="com.tongbanjie.baymax.datasource.DataSourceGroup">

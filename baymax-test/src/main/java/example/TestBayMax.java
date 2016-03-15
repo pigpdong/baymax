@@ -1,6 +1,6 @@
 package example;
 
-import com.tongbanjie.baymax.datasource.MultipleDataSource;
+import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.jdbc.model.ParameterMethod;
 import com.tongbanjie.baymax.router.DruidRouteService;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class TestBayMax {
 	
 	@Autowired
-	private MultipleDataSource dataSource;
+	private BaymaxDataSource dataSource;
 	
 	@Test
 	public void test() throws SQLException, InterruptedException{
