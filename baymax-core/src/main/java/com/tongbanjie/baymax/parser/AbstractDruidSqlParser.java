@@ -6,6 +6,7 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.parser.calculate.CalculateUnitUtil;
+import com.tongbanjie.baymax.parser.calculate.ConditionSplitUtil;
 import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.parser.visitor.ParserVisitor;
 import com.tongbanjie.baymax.parser.visitor.ReplaceTableNameVisitor;
@@ -49,24 +50,21 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
         // 表名格式化
         alisMapFix(result);
 
+        // 原始sql
         result.setSql(sql);
 
-        List<List<Condition>> mergedConditionList = new ArrayList<List<Condition>>();
-        if (visitor.hasOrCondition()) {
-            //包含or语句
-            // TODO 拆分为(x and x and x) or (x and x) or x的模式
-            // mergedConditionList = visitor.splitConditions();
-            throw new RuntimeException("TODO 拆分为(x and x and x) or (x and x) or x的模式");
-        } else {
-            // 不包含OR语句
-            mergedConditionList.add(visitor.getConditions());
-        }
-
+        // conditions
         if (CalculateUnitUtil.hasPartitionTable(result.getTables())){
+            List<List<Condition>> mergedConditionList = new ArrayList<List<Condition>>();
+            if (visitor.hasOrCondition()) {
+                mergedConditionList = ConditionSplitUtil.splitConditions(visitor.getConditions());
+            } else {
+                // 不包含OR语句
+                mergedConditionList.add(visitor.getConditions());
+            }
             // 有分区表 计算路由单元
             result.setCalculateUnits(CalculateUnitUtil.buildCalculateUnits(result.getTableAliasMap(), mergedConditionList));
         }
-
     }
 
     /**
