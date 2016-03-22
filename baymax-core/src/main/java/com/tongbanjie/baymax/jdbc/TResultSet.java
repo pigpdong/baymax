@@ -28,15 +28,15 @@ import java.util.Map;
 
 public abstract class TResultSet extends UnsupportedResultSetAdapter {
 
-	private List<ResultSet> resultSet;
-    protected ResultSet currentResultSet;
-    private ResultSet metaDataResultSet;
-    private ResultSetMetaData metaData;
+	private List<ResultSet>     resultSet;
+    protected ResultSet         currentResultSet;
+    private ResultSet           metaDataResultSet;
+    private ResultSetMetaData   metaData;
 
-    //protected boolean isFirstSet; // 当前访问的结果是否为第一个结果集
+    //protected boolean         isFirstSet; // 当前访问的结果是否为第一个结果集
 
-	private TStatement statement;
-	private boolean isClosed;
+	private TStatement          statement;
+	private boolean             isClosed;
 
 	public TResultSet(List<ResultSet> listResultSet, TStatement statement) {
 		this.resultSet = listResultSet;

@@ -23,7 +23,7 @@ public class DruidUpdateParser extends AbstractDruidSqlParser {
             MySqlUpdateStatement update = (MySqlUpdateStatement)statement;
             String tableName = StringUtil.removeBackquote(update.getTableName().getSimpleName().toUpperCase());
             List<SQLUpdateSetItem> updateSetItem = update.getItems();
-            String[] partitionColumns = BaymaxContext.getPartitionKeys(tableName);
+            String[] partitionColumns = BaymaxContext.getPartitionColumns(tableName);
             if(partitionColumns != null && partitionColumns.length > 0 && updateSetItem != null && updateSetItem.size() > 0) {
                 for(SQLUpdateSetItem item : updateSetItem) {
                     String column = StringUtil.removeBackquote(item.getColumn().toString());

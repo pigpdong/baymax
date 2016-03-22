@@ -4,14 +4,14 @@ import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.parser.DruidParserFactory;
 import com.tongbanjie.baymax.parser.IDruidSqlParser;
+import com.tongbanjie.baymax.parser.model.CalculateUnit;
 import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.parser.utils.SqlTypeUtil;
-import com.tongbanjie.baymax.parser.model.CalculateUnit;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
-import com.tongbanjie.baymax.router.strategy.IPartitionTable;
+import com.tongbanjie.baymax.router.strategy.PartitionTable;
 import com.tongbanjie.baymax.support.BaymaxContext;
 import com.tongbanjie.baymax.utils.Pair;
 
@@ -54,13 +54,13 @@ public class DruidRouteService implements IRouteService {
             return buildExecutePlanTypeNo(result.getSql(), null, sqlType);
         }
         // 查找逻辑表对应的分区规则
-        IPartitionTable partitionTable = null;
+        PartitionTable partitionTable = null;
         for (String tableName : tables){
             if (BaymaxContext.isPartitionTable(tableName)){
-                if (partitionTable == null){
-                    partitionTable = BaymaxContext.getPartitionTable(tableName);
-                }else {
+                if (partitionTable != null){
                     throw new BayMaxException("sql中包含了两个分区表");
+                }else {
+                    partitionTable = BaymaxContext.getPartitionTable(tableName);
                 }
             }
         }
@@ -77,13 +77,12 @@ public class DruidRouteService implements IRouteService {
         // 路由单元计算-合并
         Set<Pair<String/* targetDB */, String/* targetTable */>> nodeSet = new LinkedHashSet<Pair<String, String>>();
         for (CalculateUnit unit : result.getCalculateUnits()) {
-            Pair<String/* targetDB */, String/* targetTable */> temp = partitionTable.execute(unit);
+            List<Pair<String/* targetDB */, String/* targetTable */>> temp = partitionTable.execute(unit);
             if (temp == null){
                 // 这个单元没有路由结果 需要全表扫描
                 return buildExecutePlanTypeAll(result.getSql(), partitionTable, sqlType);
             }else {
-                // TODO 测试相同的是否会覆盖
-                nodeSet.add(temp);
+                nodeSet.addAll(temp);
             }
         }
 
@@ -124,7 +123,7 @@ public class DruidRouteService implements IRouteService {
      * @param sqlType
      * @return
      */
-    private ExecutePlan buildExecutePlanTypeAll(String sql, IPartitionTable partitionTable, SqlType sqlType){
+    private ExecutePlan buildExecutePlanTypeAll(String sql, PartitionTable partitionTable, SqlType sqlType){
         // 没有命中的shardingKey,则全表扫描
         ExecutePlan plan = new ExecutePlan();
         List<Pair<String/*partion*/, String/*table*/>> mappings = partitionTable.getAllTableNames();
@@ -155,7 +154,7 @@ public class DruidRouteService implements IRouteService {
      * @param nodeSet
      * @return
      */
-    private ExecutePlan buildExecutePlanTypePartition(String sql, IPartitionTable partitionTable, SqlType sqlType, Set<Pair<String/* targetDB */, String/* targetTable */>> nodeSet) {
+    private ExecutePlan buildExecutePlanTypePartition(String sql, PartitionTable partitionTable, SqlType sqlType, Set<Pair<String/* targetDB */, String/* targetTable */>> nodeSet) {
         ExecutePlan routeResult = new ExecutePlan();
         routeResult.setExecuteType(ExecuteType.PARTITION);
         for (Pair<String/* targetDB */, String/* targetTable */> node : nodeSet){
@@ -170,11 +169,11 @@ public class DruidRouteService implements IRouteService {
     }
 
     /**
-     * 参数排序 TODO 测试
+     * 参数排序
      * @param commonds
      * @return
      */
-    private List<Object> buildParameters(Map<Integer, ParameterCommand> commonds){
+    public List<Object> buildParameters(Map<Integer, ParameterCommand> commonds){
 
         if (commonds == null || commonds.size() == 0){
             return null;

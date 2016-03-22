@@ -62,25 +62,7 @@ public class ParserVisitor extends MySqlSchemaStatVisitor {
                 handleRelationship(x.getLeft(), x.getOperator().name, x.getRight());
                 break;
             case BooleanOr:
-                //永真条件，where条件抛弃
-//                if(!isConditionAlwaysTrue(x)) {
-//                    hasOrCondition = true;
-//                    // TODO 暂时只支持作为第一条件
-//
-//                    WhereUnit whereUnit = null;
-//                    if(conditions.size() > 0) {
-//                        whereUnit = new WhereUnit();
-//                        whereUnit.setFinishedParse(true);
-//                        whereUnit.addOutConditions(getConditions());
-//                        WhereUnit innerWhereUnit = new WhereUnit(x);
-//                        whereUnit.addSubWhereUnit(innerWhereUnit);
-//                    } else {
-//                        whereUnit = new WhereUnit(x);
-//                        whereUnit.addOutConditions(getConditions());
-//                    }
-//                    whereUnits.add(whereUnit);
-//                    System.out.println("--{}");
-//                }
+                this.hasOrCondition = true;
                 break;
             case Like:
             case NotLike:
@@ -157,27 +139,6 @@ public class ParserVisitor extends MySqlSchemaStatVisitor {
         accept(x.getItems());
         accept(x.getWhere());
 
-        return false;
-    }
-
-    /**
-     * 判断条件是否永假的
-     * @param expr
-     * @return
-     */
-    public boolean isConditionAlwaysFalse(SQLExpr expr) {
-        Object o = WallVisitorUtils.getValue(expr);
-        if(Boolean.FALSE.equals(o)) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isConditionAlwaysTrue(SQLExpr expr) {
-        Object o = WallVisitorUtils.getValue(expr);
-        if(Boolean.TRUE.equals(o)) {
-            return true;
-        }
         return false;
     }
 }

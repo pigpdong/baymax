@@ -46,4 +46,9 @@ public class Pair<T1, T2> {
 	public void setObject2(T2 object2) {
 		this.object2 = object2;
 	}
+
+    @Override
+    public String toString() {
+        return object1 + "|" + object2;
+    }
 }

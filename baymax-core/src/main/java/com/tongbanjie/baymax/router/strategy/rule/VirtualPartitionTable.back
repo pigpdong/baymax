@@ -19,11 +19,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Deprecated
-public class VirtualPartitionTable extends ELPartitionTable {
-	
+public class VirtualPartitionTable {
+	/*
 	private final static Logger logger = LoggerFactory.getLogger(VirtualPartitionTable.class);
 	
-	private Map<String/*virtualSuffix*/, String/*phySuffix*/> virtualTables;// 所有虚拟表 el表达式直接匹配的表
+	private Map<String*//*virtualSuffix*//*, String*//*phySuffix*//*> virtualTables;// 所有虚拟表 el表达式直接匹配的表
 	
 	@Override
 	public void init() {
@@ -64,19 +64,19 @@ public class VirtualPartitionTable extends ELPartitionTable {
 		}
 	}
 	
-	/**
+	*//**
 	 * 虚拟表后缀转换为物理表后缀
-	 */
+	 *//*
 	@Override
 	protected String getTargetSuffix(String suffix) {
 		return virtualTables.get(suffix);
 	}
 	
-	/**
+	*//**
 	 * 物理表节点
 	 * @author dawei
 	 *
-	 */
+	 *//*
 	public static class TableNode{
 		public int suffix;
 		public String partition;
@@ -85,5 +85,5 @@ public class VirtualPartitionTable extends ELPartitionTable {
 			this.suffix = suffix;
 			this.partition = partition;
 		}
-	}
+	}*/
 }

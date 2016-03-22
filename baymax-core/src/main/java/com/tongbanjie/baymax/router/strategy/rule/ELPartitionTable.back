@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.parser.model.CalculateUnit;
+import com.tongbanjie.baymax.parser.model.ConditionUnit;
+import com.tongbanjie.baymax.parser.model.ConditionUnitOperator;
 import com.tongbanjie.baymax.router.strategy.model.ELRule;
 import com.tongbanjie.baymax.router.strategy.model.PartitionTableMetaData;
 import com.tongbanjie.baymax.utils.Pair;
@@ -14,6 +16,7 @@ import com.tongbanjie.baymax.utils.Pair;
  * @author dawei
  *
  */
+@Deprecated
 public class ELPartitionTable extends PartitionTableMetaData {
 
 	/**
@@ -90,17 +93,22 @@ public class ELPartitionTable extends PartitionTableMetaData {
 
     @Override
     public Pair<String, String> execute(CalculateUnit units) {
-        Set<CalculateUnit.ConditionUnit/*column value*/> conditionUnits = units.getTablesAndConditions().get(getLogicTableName());
+        Set<ConditionUnit/*column value*/> conditionUnits = units.getTablesAndConditions().get(getLogicTableName());
 
         if (conditionUnits == null || conditionUnits.size() == 0){
             return null;
         }
 
         Map<String, String> args = new HashMap<String, String>();
-        for(CalculateUnit.ConditionUnit unit : conditionUnits){
-            args.put(unit.getColumn().toLowerCase(), unit.getValue());
+        for(ConditionUnit unit : conditionUnits){
+            if (unit.getOperator() == ConditionUnitOperator.EQUAL){
+                args.put(unit.getColumn(), unit.getValue());
+            }else if (unit.getOperator() == ConditionUnitOperator.IN){
+
+            }
         }
 
         return executeRule(args);
     }
+
 }

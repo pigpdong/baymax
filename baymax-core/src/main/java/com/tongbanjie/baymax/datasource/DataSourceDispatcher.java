@@ -24,20 +24,20 @@ public class DataSourceDispatcher {
 		if (dataSourceGroupSet == null || dataSourceGroupSet.size() == 0) {
 			return;
 		}
-		for (DataSourceGroup nativeHandler : dataSourceGroupSet) {
-			if(nativeHandler.getIdentity() == null || nativeHandler.getIdentity().trim().length() == 0){
+		for (DataSourceGroup group : dataSourceGroupSet) {
+			if(group.getIdentity() == null || group.getIdentity().trim().length() == 0){
 				throw new RuntimeException("identity must not be empty!");
 			}
-			if(nativeHandler.getTargetDataSource() == null){
+			if(group.getTargetDataSource() == null){
 				throw new RuntimeException("targetDataSource must not be null!");
 			}
-			DataSource dataSourceToUse = nativeHandler.getTargetDataSource();
+			DataSource dataSourceToUse = group.getTargetDataSource();
 			DataSource ds = dataSourceToUse;
-			dataSources.put(nativeHandler.getIdentity(), ds);
+			dataSources.put(group.getIdentity(), ds);
 			dataSourceSet.add(ds);
 			if(defaultDataSource == null){
-				// TODO default need be setting in spring xml config
-				defaultDataSource = nativeHandler.getTargetDataSource();
+				// TODO default need be setting in config
+				defaultDataSource = group.getTargetDataSource();
 			}
 		}
 	}

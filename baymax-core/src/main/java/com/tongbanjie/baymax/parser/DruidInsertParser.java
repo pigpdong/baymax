@@ -8,6 +8,8 @@ import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.alibaba.druid.util.JdbcUtils;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.parser.model.CalculateUnit;
+import com.tongbanjie.baymax.parser.model.ConditionUnit;
+import com.tongbanjie.baymax.parser.model.ConditionUnitOperator;
 import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
@@ -68,7 +70,7 @@ public class DruidInsertParser extends AbstractDruidSqlParser {
      * @throws SQLNonTransientException
      */
     private List<CalculateUnit> parserSingleInsert(String tableName, MySqlInsertStatement insertStmt) {
-        String[] partitionColumn = BaymaxContext.getPartitionKeys(tableName);
+        String[] partitionColumn = BaymaxContext.getPartitionColumns(tableName);
         List<CalculateUnit> units = new ArrayList<CalculateUnit>(insertStmt.getColumns().size());
         CalculateUnit unit = new CalculateUnit();
         boolean isFind = false;
@@ -78,7 +80,7 @@ public class DruidInsertParser extends AbstractDruidSqlParser {
                 SQLExpr valueExpr = insertStmt.getValues().getValues().get(i);
                 Object value = SQLEvalVisitorUtils.eval(JdbcUtils.MYSQL, valueExpr, parameters, false);
                 if (!SQLEvalVisitor.EVAL_VALUE_NULL.equals(value)){
-                    unit.addCondition(tableName, column, new Object[]{value});
+                    unit.addCondition(ConditionUnit.buildConditionUnit(tableName, column, new Object[]{value}, ConditionUnitOperator.EQUAL));
                     isFind = true;
                 }
             }

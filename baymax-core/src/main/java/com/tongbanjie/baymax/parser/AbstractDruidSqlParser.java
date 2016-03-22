@@ -6,8 +6,8 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.stat.TableStat.Condition;
 import com.tongbanjie.baymax.parser.calculate.CalculateUnitUtil;
-import com.tongbanjie.baymax.parser.calculate.ConditionSplitUtil;
 import com.tongbanjie.baymax.parser.model.ParseResult;
+import com.tongbanjie.baymax.parser.visitor.OrVisitor;
 import com.tongbanjie.baymax.parser.visitor.ParserVisitor;
 import com.tongbanjie.baymax.parser.visitor.ReplaceTableNameVisitor;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
@@ -15,7 +15,10 @@ import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
 import com.tongbanjie.baymax.utils.StringUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
 
@@ -36,7 +39,7 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
     /**
      * 默认通过visitor解析 子类可以覆盖
      *
-     * 限制:分表的where中不能出现or,分表key只能出现一次且必须是a=1的类型
+     * 限制:分表的where中,分表key只能出现一次且必须是 a=1 或者 a in ()的类型
      * @param result
      */
     @Override
@@ -54,17 +57,19 @@ public abstract class AbstractDruidSqlParser implements IDruidSqlParser {
         result.setSql(sql);
 
         // conditions
-        if (CalculateUnitUtil.hasPartitionTable(result.getTables())){
+        //if (CalculateUnitUtil.hasPartitionTable(result.getTables())){
             List<List<Condition>> mergedConditionList = new ArrayList<List<Condition>>();
-            if (visitor.hasOrCondition()) {
-                mergedConditionList = ConditionSplitUtil.splitConditions(visitor.getConditions());
-            } else {
-                // 不包含OR语句
-                mergedConditionList.add(visitor.getConditions());
+            if (visitor.hasOrCondition()){
+                OrVisitor orVisitor = new OrVisitor();
+                mergedConditionList = new OrVisitor.OrEntity(orVisitor, statement).getOrConditions();
+            }else {
+                if (visitor.getConditions() != null && visitor.getConditions().size() != 0){
+                    mergedConditionList.add(visitor.getConditions());
+                }
             }
             // 有分区表 计算路由单元
             result.setCalculateUnits(CalculateUnitUtil.buildCalculateUnits(result.getTableAliasMap(), mergedConditionList));
-        }
+        //}
     }
 
     /**

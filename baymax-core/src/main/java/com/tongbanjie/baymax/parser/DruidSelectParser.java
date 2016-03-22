@@ -36,7 +36,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
         super.changeSql(result, plan);
     }
 
-    private void parseStatement(ParseResult result, ExecutePlan plan, SQLSelectStatement statement){
+    protected void parseStatement(ParseResult result, ExecutePlan plan, SQLSelectStatement statement){
         // 只有一个目标sql
         if (plan.getSqlList().size() <= 1){
             return;
@@ -60,7 +60,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
         }
     }
 
-    private void parseMysqlQueary(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
+    protected void parseMysqlQueary(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
         // 解析聚合函数
         parseAggregate(result, plan, mysqlSelectQuery);
         // 解析groupby
@@ -76,7 +76,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
      * @param plan
      * @param mysqlSelectQuery
      */
-    private void parseAggregate(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
+    protected void parseAggregate(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
         // 要合并的列
         Map<String, MergeColumn.MergeType>      aggrColumns         = new HashMap<String, MergeColumn.MergeType>();
         Map<String/*field*/, String/*alias*/>   aliaColumns         = new HashMap<String, String>();
@@ -169,7 +169,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
         result.setAliaColumns(aliaColumns);
     }
 
-    private String getFieldName(SQLSelectItem item){
+    protected String getFieldName(SQLSelectItem item){
         if ((item.getExpr() instanceof SQLPropertyExpr)||(item.getExpr() instanceof SQLMethodInvokeExpr)
                 || (item.getExpr() instanceof SQLIdentifierExpr) || item.getExpr() instanceof SQLBinaryOpExpr) {
             return item.getExpr().toString();//字段别名
@@ -184,7 +184,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
      * @param plan
      * @param mysqlSelectQuery
      */
-    private void parseGroupBy(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
+    protected void parseGroupBy(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
         if(mysqlSelectQuery.getGroupBy() == null) {
             return;
         }
@@ -225,9 +225,8 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
                 addItem.setExpr(exp);
                 exp.setParent(item);
                 selectList.add(addItem);
-
-                groupbyColumns.add(name);
             }
+            groupbyColumns.add(name);
         }
         plan.setGroupbyColumns(groupbyColumns);
     }
@@ -238,7 +237,7 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
      * @param plan
      * @param mysqlSelectQuery
      */
-    private void parseOrderby(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
+    protected void parseOrderby(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
         if (mysqlSelectQuery.getOrderBy() == null){
             return;
         }
@@ -268,14 +267,13 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
                 addItem.setExpr(exp);
                 exp.setParent(item);
                 selectList.add(addItem);
-
-                orderbyColumns.add(new OrderbyColumn(name, OrderbyColumn.buildOrderbyType(item.getType())));
             }
+            orderbyColumns.add(new OrderbyColumn(name, OrderbyColumn.buildOrderbyType(item.getType())));
         }
         plan.setOrderbyColumns(orderbyColumns);
     }
 
-    private void parseLimit(){
+    protected void parseLimit(){
 
     }
 

@@ -38,11 +38,11 @@ public class ExecutePlan {
 
     @Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer()
-		.append(String.format("[ExecuteType:%s]\n", executeType.getValue()));
-		for(TargetSql sql : sqlList){
-			sb.append("######");
-			sb.append(sql.toString());
+		StringBuffer sb = new StringBuffer();
+		sb.append(String.format("[ExecuteType:%s]" + System.getProperty("line.separator"), executeType.getValue()));
+		for(TargetSql targetSql : sqlList){
+			sb.append("######").append(System.getProperty("line.separator"));
+			sb.append(targetSql.toString());
 		}
 		sb.append("######");
 		return sb.toString();
