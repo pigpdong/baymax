@@ -1,11 +1,10 @@
 package com.tongbanjie.baymax.parser;
 
-import com.tongbanjie.baymax.test.PrintUtil;
-import com.tongbanjie.baymax.test.SelectTestSql;
 import com.tongbanjie.baymax.parser.model.ConditionUnit;
 import com.tongbanjie.baymax.parser.model.ConditionUnitOperator;
 import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.parser.model.SqlType;
+import com.tongbanjie.baymax.test.PrintUtil;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -24,7 +24,7 @@ public class PartitionTableTest {
      */
     @Test
      public void testExecute() throws Exception {
-        PartitionTable table = new TableBuilder().appenTable("trade_order", "trade_order_{0}").appendELRule("user_id", "user_id % 4").toTable();
+        PartitionTable table = new TableBuilder().appenTable("trade_order", "trade_order_{0}", "value % 4").appendColumn("user_id", null).toTable();
 
         CalculateUnit unit = new CalculateUnit();
         unit.addCondition(ConditionUnit.buildConditionUnit("trade_order", "user_id", new String[]{"4"}, ConditionUnitOperator.EQUAL));
@@ -42,8 +42,8 @@ public class PartitionTableTest {
     @Test
     public void testExecute_0() throws Exception {
         PartitionTable table = new TableBuilder()
-                .appenTable("trade_order", "trade_order_{0}")
-                .appendELRule("user_id", "user_id % 4")
+                .appenTable("trade_order", "trade_order_{0}", "user_id % 4")
+                .appendColumn("user_id", null)
                 .toTable();
 
         CalculateUnit unit = new CalculateUnit();
@@ -65,8 +65,8 @@ public class PartitionTableTest {
     @Test
     public void testExecute_1() throws Exception {
         PartitionTable table = new TableBuilder()
-                .appenTable("trade_order", "trade_order_{0}")
-                .appendELRule("user_id", "user_id % 4")
+                .appenTable("trade_order", "trade_order_{0}", "user_id % 4")
+                .appendColumn("user_id", null)
                 .toTable();
 
         CalculateUnit unit = new CalculateUnit();

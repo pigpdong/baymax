@@ -24,14 +24,6 @@ public class BaymaxContext {
      */
     private static Map<String/*TableName*/, PartitionTable> tableRuleMapping = new HashMap<String, PartitionTable>();
 
-    /**
-     * SQL解析器
-     * 主要用来提取SQL中的表名,Where中的KEY=VALUE形式的参数
-     */
-    //private SqlParser parser = new DefaultSqlParser();
-
-    //private static Map<String, ElFunction<?,?>> functionsMap = new HashMap<String, ElFunction<?,?>>();
-
     public static boolean isPartitionTable(String logicTableName){
         return tableRuleMapping.containsKey(logicTableName);
     }

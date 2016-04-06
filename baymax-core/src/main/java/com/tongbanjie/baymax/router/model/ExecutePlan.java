@@ -41,10 +41,10 @@ public class ExecutePlan {
 		StringBuffer sb = new StringBuffer();
 		sb.append(String.format("[ExecuteType:%s]" + System.getProperty("line.separator"), executeType.getValue()));
 		for(TargetSql targetSql : sqlList){
-			sb.append("######").append(System.getProperty("line.separator"));
+			sb.append("/*---------------------------------*/").append(System.getProperty("line.separator"));
 			sb.append(targetSql.toString());
 		}
-		sb.append("######");
+		sb.append("/*---------------------------------*/");
 		return sb.toString();
 	}
 

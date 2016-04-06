@@ -1,15 +1,16 @@
 package com.tongbanjie.baymax.router;
 
+import com.tongbanjie.baymax.router.strategy.*;
 import com.tongbanjie.baymax.test.SelectTestSql;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.jdbc.model.ParameterMethod;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
 import com.tongbanjie.baymax.router.model.TargetSql;
-import com.tongbanjie.baymax.router.strategy.PartitionRule;
-import com.tongbanjie.baymax.router.strategy.PartitionTable;
-import com.tongbanjie.baymax.router.strategy.rule.ELRule;
+import com.tongbanjie.baymax.router.strategy.function.ELFunction;
 import com.tongbanjie.baymax.support.BaymaxContext;
+import com.tongbanjie.baymax.utils.New;
+import com.tongbanjie.baymax.utils.NewArrayList;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -32,42 +33,42 @@ public class DruidRouteServiceTest implements SelectTestSql{
     public void testDoRoute() throws Exception {
         ExecutePlan plan = routeService.doRoute(single14, null);
         System.out.println(plan);
-        Assert.assertEquals(ExecuteType.PARTITION, plan.getExecuteType());
+        Assert.assertEquals(ExecuteType.ALL, plan.getExecuteType());
         TargetSql sql = plan.getSqlList().get(0);
         Assert.assertEquals("p1", sql.getPartition());
         Assert.assertEquals("table1", sql.getLogicTableName());
-        Assert.assertEquals("table1_0", sql.getTargetTableName());
+        Assert.assertEquals("table1_1", sql.getTargetTableName());
+        Assert.assertEquals(4, plan.getSqlList().size());
     }
 
     private void ininContext(){
-        // rules
-        List<PartitionRule> rules = new ArrayList<PartitionRule>();
-        PartitionRule rule = new ELRule();
-        rules.add(rule);
-
-        // rule
-        rule.setColumn("a");
-        ((ELRule)rule).setExpression("a % 4");
+        ELFunction function = new ELFunction();
+        function.setExpression("value % 4");
 
         // table
         PartitionTable table = new PartitionTable();
         table.setLogicTableName("table1");
         table.setNamePatten("table1_{0}");
-        table.setRules(rules);
 
-        //tables
-        List<PartitionTable> tables = new ArrayList<PartitionTable>();
-        tables.add(table);
+        // column
+        PartitionColumn column = new PartitionColumn();
+        column.setName("a");
+
+        //rule
+        PartitionTableRule rule = new PartitionTableRule();
+        rule.setColumns(NewArrayList.newIt().add(column).toArrayList());
+        rule.setFunction(function);
+
+        table.setRule(rule);
+
 
         // node mapping
         List<String> nodeMapping = new ArrayList<String>();
-        nodeMapping.add("p1:0");
-        nodeMapping.add("p1:1");
-        nodeMapping.add("p1:2");
-        nodeMapping.add("p1:3");
-        table.setNodeMapping(nodeMapping);
+        nodeMapping.add("p1:0,1,2,3");
 
-        BaymaxContext.setTables(tables);
+        table.setNodeMapping(new SimpleTableNodeMapping(nodeMapping));
+
+        BaymaxContext.setTables(NewArrayList.newIt().add(table).toArrayList());
 
         BaymaxContext.init();
     }

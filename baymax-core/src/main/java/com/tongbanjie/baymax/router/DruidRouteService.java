@@ -78,7 +78,7 @@ public class DruidRouteService implements IRouteService {
         Set<Pair<String/* targetDB */, String/* targetTable */>> nodeSet = new LinkedHashSet<Pair<String, String>>();
         for (CalculateUnit unit : result.getCalculateUnits()) {
             List<Pair<String/* targetDB */, String/* targetTable */>> temp = partitionTable.execute(unit);
-            if (temp == null){
+            if (temp == null || temp.size() == 0){
                 // 这个单元没有路由结果 需要全表扫描
                 return buildExecutePlanTypeAll(result.getSql(), partitionTable, sqlType);
             }else {

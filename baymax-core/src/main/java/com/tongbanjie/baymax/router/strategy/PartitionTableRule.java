@@ -1,0 +1,29 @@
+package com.tongbanjie.baymax.router.strategy;
+
+import java.util.List;
+
+/**
+ * Created by sidawei on 16/4/2.
+ */
+public class PartitionTableRule {
+
+    private List<PartitionColumn> columns;    // 分区键
+
+    private PartitionFunction function;       // 分区函数
+
+    public List<PartitionColumn> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<PartitionColumn> columns) {
+        this.columns = columns;
+    }
+
+    public PartitionFunction getFunction() {
+        return function;
+    }
+
+    public void setFunction(PartitionFunction function) {
+        this.function = function;
+    }
+}

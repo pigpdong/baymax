@@ -25,10 +25,10 @@ public class PartitionTable extends PartitionTableMetaData{
 
         List<Pair<String, String>> targetList = new ArrayList<Pair<String, String>>(1);
 
-        for (PartitionRule rule : rules){
+        for (PartitionColumn column : columns){
             ConditionUnit matchingConditon = null;
             for(ConditionUnit condition : conditionUnits){
-                if (rule.getColumn().equals(condition.getColumn()) && logicTableName.equals(condition.getTable())){
+                if (column.getName().equals(condition.getColumn()) && logicTableName.equals(condition.getTable())){
                     if (matchingConditon != null){
                         throw new BayMaxException("有多个相同列的Condition : " + condition);
                     }else {
@@ -39,10 +39,10 @@ public class PartitionTable extends PartitionTableMetaData{
             if (matchingConditon != null){
                 if (matchingConditon.getOperator() == ConditionUnitOperator.EQUAL){
                     // values
-                    executeRule(targetList, rule, rule.getColumn(), matchingConditon.getValues().get(0));
+                    executeRule(targetList, rule.getFunction(), column, matchingConditon.getValues().get(0));
                 }else if (matchingConditon.getOperator() == ConditionUnitOperator.IN){
                     for (Object obj : matchingConditon.getValues()){
-                        executeRule(targetList, rule, rule.getColumn(), obj);
+                        executeRule(targetList, rule.getFunction(), column, obj);
                     }
                 }
             }
@@ -54,11 +54,11 @@ public class PartitionTable extends PartitionTableMetaData{
         return targetList;
     }
 
-    private void executeRule(List<Pair<String, String>> targetList, PartitionRule rule, String column, Object value){
-        if (rule.getColumnProcess() != null){
-            value = rule.getColumnProcess().apply(value);
+    private void executeRule(List<Pair<String, String>> targetList, PartitionFunction rule, PartitionColumn column, Object value){
+        if (column.getProcess() != null){
+            value = column.getProcess().apply(value);
         }
-        Pair<String/* targetDB */, String/* targetTable */> target = executeRule(rule, column, value);
+        Pair<String/* targetDB */, String/* targetTable */> target = executeRule(rule, column.getName(), value);
         if (target != null && target.getObject1() == null && target.getObject2() != null){
             throw new BayMaxException(target.getObject2() + "没有对应的库");
         }
@@ -67,19 +67,17 @@ public class PartitionTable extends PartitionTableMetaData{
         }
     }
 
-    private Pair<String/* targetDB */, String/* targetTable */> executeRule(PartitionRule rule, String column, Object value) {
-        Map<String, Object> param = new HashMap<String, Object>();
-        param.put(column, value);
+    private Pair<String/* targetDB */, String/* targetTable */> executeRule(PartitionFunction rule, String column, Object value) {
 
         String targetDB = null;
         String targetTable = null;
 
-        Object ruleResult = rule.execute(param, null);
+        Object ruleResult = rule.execute(String.valueOf(value));
         if (Integer.class == ruleResult.getClass() || Integer.class.isAssignableFrom(ruleResult.getClass())) {
             // Integer
             String suffix = super.getSuffix((Integer) ruleResult);
             targetTable = super.format(suffix);
-            targetDB = getTargetPartition(suffix);
+            targetDB = super.nodeMapping.getMapping().get(suffix);
         } else {
             throw new BayMaxException("is the express can return integer only!" + rule);
         }
@@ -93,7 +91,7 @@ public class PartitionTable extends PartitionTableMetaData{
      */
     public List<Pair<String/* targetDB */, String/* targetTable */>> getAllTableNames() {
         List<Pair<String/* targetDB */, String/* targetTable */>> allTables = new ArrayList<Pair<String, String>>();
-        Iterator<Map.Entry<String, String>> ite = super.tableMapping.entrySet().iterator();
+        Iterator<Map.Entry<String, String>> ite = super.nodeMapping.getMapping().entrySet().iterator();
         while(ite.hasNext()){
             Map.Entry<String, String> entry = ite.next();
             allTables.add(new Pair<String, String>(entry.getValue(), super.format(entry.getKey())));

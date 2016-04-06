@@ -107,7 +107,6 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
                 aggrColumns.put(item.getAlias(), mergeType);
 
                 if (MergeColumn.MergeType.MERGE_AVG == mergeType){
-                    //selectList.add(new SQLSelectItem());
                     if (avgColumns == null){
                         avgColumns = new ArrayList<String>();
                     }
@@ -127,8 +126,6 @@ public class DruidSelectParser extends AbstractDruidSqlParser {
                     sum.setExpr(sumExp);
 
                     // 替换
-                    //selectList.set(i, sum);
-                    // 这里不能把avg替换掉,不然有group的地方,处理metadata就不对了
                     selectList.add(sum);
                     aggrColumns.put(sumColName, MergeColumn.MergeType.MERGE_SUM);
 

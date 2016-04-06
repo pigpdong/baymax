@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by sidawei on 16/3/20.
  */
-public class PartitionTableMetaData extends PartitionTableNodeMapping{
+public class PartitionTableMetaData {
 
     /*---------------------------------------------------------------*/
 
@@ -15,9 +15,13 @@ public class PartitionTableMetaData extends PartitionTableNodeMapping{
 
     protected boolean disableFullScan;		    // 关闭全表扫描
 
-    protected List<PartitionRule> rules;		// 路由规则
+    protected PartitionTableRule rule;          // 分区规则
+
+    protected PartitionTableNodeMapping nodeMapping; //
 
     /*---------------------------------------------------------------*/
+    protected List<PartitionColumn> columns;    // 分区键
+
     protected String[] partitionColumns;		// 分区键
 
     protected String prefix;				    // 物理表明格式化模式trade_order_
@@ -25,11 +29,6 @@ public class PartitionTableMetaData extends PartitionTableNodeMapping{
     protected int suffixLength;				    // 后缀的位数
 
     /*---------------------------------------------------------------*/
-
-
-    protected String getTargetPartition(String suffix){
-        return tableMapping.get(suffix);
-    }
 
     public String format(String suffix){
         return prefix + suffix;
@@ -41,7 +40,6 @@ public class PartitionTableMetaData extends PartitionTableNodeMapping{
      * @return
      */
     public String getSuffix(int suffix){
-        // TODO init suffixlength
         String sfx = String.valueOf(suffix);
         if(sfx.length() > suffixLength){
             throw new RuntimeException("suffix is too long then config "+suffix);
@@ -65,12 +63,12 @@ public class PartitionTableMetaData extends PartitionTableNodeMapping{
     }
 
     protected void initRules(){
-        if(rules == null || rules.size() == 0){
+        if(columns == null || columns.size() == 0){
             throw new RuntimeException(String.format("rules must not be empty! strategy{%s}", logicTableName));
         }
-        partitionColumns = new String[rules.size()];
-        for (int i = 0; i < rules.size(); i++) {
-            partitionColumns[i] = rules.get(i).getColumn();
+        partitionColumns = new String[columns.size()];
+        for (int i = 0; i < columns.size(); i++) {
+            partitionColumns[i] = columns.get(i).getName();
         }
         if(this.partitionColumns == null || this.partitionColumns.length == 0){
             throw new RuntimeException(String.format("partitionColumns must not be empty! strategy{%s}", this.logicTableName));
@@ -104,17 +102,34 @@ public class PartitionTableMetaData extends PartitionTableNodeMapping{
         this.disableFullScan = disableFullScan;
     }
 
-    public List<PartitionRule> getRules() {
-        return rules;
-    }
-
-    public void setRules(List<PartitionRule> rules) {
-        this.rules = rules;
-        // init
-        initRules();
-    }
-
     public String[] getPartitionColumns() {
         return partitionColumns;
+    }
+
+    public PartitionTableRule getRule() {
+        return rule;
+    }
+
+    public List<PartitionColumn> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<PartitionColumn> columns) {
+        this.columns = columns;
+    }
+
+    public PartitionTableNodeMapping getNodeMapping() {
+        return nodeMapping;
+    }
+
+    public void setNodeMapping(PartitionTableNodeMapping nodeMapping) {
+        this.nodeMapping = nodeMapping;
+    }
+
+    public void setRule(PartitionTableRule rule) {
+        this.rule = rule;
+        this.setColumns(rule.getColumns());
+        initRules();
+        // init
     }
 }
