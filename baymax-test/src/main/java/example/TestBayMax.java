@@ -3,7 +3,7 @@ package example;
 import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.jdbc.model.ParameterMethod;
-import com.tongbanjie.baymax.router.DruidRouteService;
+import com.tongbanjie.baymax.router.RouteService;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +45,7 @@ public class TestBayMax {
 		Map<Integer, ParameterCommand> args = new HashMap<Integer, ParameterCommand>();
 		ParameterCommand command = new ParameterCommand(ParameterMethod.setString, new Object[]{"10"}, 10);
 		args.put(1, command);
-		ExecutePlan plan = new DruidRouteService().doRoute("select * from @@trade_order where user_id=10", args);
+		ExecutePlan plan = new RouteService().doRoute("select * from @@trade_order where user_id=10", args);
 		System.out.println(plan);
 	}
 }

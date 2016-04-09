@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import com.tongbanjie.baymax.jdbc.TConnection;
-import com.tongbanjie.baymax.router.DruidRouteService;
+import com.tongbanjie.baymax.router.RouteService;
 import com.tongbanjie.baymax.router.IRouteService;
 
 /**
@@ -21,7 +21,7 @@ import com.tongbanjie.baymax.router.IRouteService;
  */
 public class BaymaxDataSource extends DataSourceDispatcher implements DataSource{
 	
-	private IRouteService routeService = new DruidRouteService();
+	private IRouteService routeService = new RouteService();
 	
 	public void init() throws Exception{
 		super.init();

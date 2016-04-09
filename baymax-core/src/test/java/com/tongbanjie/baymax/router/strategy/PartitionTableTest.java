@@ -24,14 +24,16 @@ public class PartitionTableTest {
      */
     @Test
      public void testExecute() throws Exception {
-        PartitionTable table = new TableBuilder().appenTable("trade_order", "trade_order_{0}", "value % 4").appendColumn("user_id", null).toTable();
+        PartitionTable table = new TableBuilder().appenTable("trade_order", "trade_order_{0}", "value % 4")
+                                                 .appendNodeMapping("p0:0,1,2,3")
+                                                 .appendColumn("user_id", null).toTable();
 
         CalculateUnit unit = new CalculateUnit();
         unit.addCondition(ConditionUnit.buildConditionUnit("trade_order", "user_id", new String[]{"4"}, ConditionUnitOperator.EQUAL));
 
         List<Pair<String/* targetDB */, String/* targetTable */>> target = table.execute(unit);
         System.out.println(target);
-        Assert.assertEquals("p1", target.get(0).getObject1());
+        Assert.assertEquals("p0", target.get(0).getObject1());
         Assert.assertEquals("trade_order_0", target.get(0).getObject2());
     }
 
@@ -42,7 +44,9 @@ public class PartitionTableTest {
     @Test
     public void testExecute_0() throws Exception {
         PartitionTable table = new TableBuilder()
-                .appenTable("trade_order", "trade_order_{0}", "user_id % 4")
+                .appenTable("trade_order", "trade_order_{0}", "value % 4")
+                .appendNodeMapping("p0:0,1")
+                .appendNodeMapping("p1:2,3")
                 .appendColumn("user_id", null)
                 .toTable();
 
@@ -51,7 +55,7 @@ public class PartitionTableTest {
 
         List<Pair<String/* targetDB */, String/* targetTable */>> target = table.execute(unit);
         System.out.println(target);
-        Assert.assertEquals("p1", target.get(0).getObject1());
+        Assert.assertEquals("p0", target.get(0).getObject1());
         Assert.assertEquals("trade_order_1", target.get(0).getObject2());
 
         Assert.assertEquals("p1", target.get(1).getObject1());
@@ -59,13 +63,14 @@ public class PartitionTableTest {
     }
 
     /**
-     * And 同有同一个字段
+     * And 有同一个字段
      * @throws Exception
      */
     @Test
     public void testExecute_1() throws Exception {
         PartitionTable table = new TableBuilder()
                 .appenTable("trade_order", "trade_order_{0}", "user_id % 4")
+                .appendNodeMapping("p0:0,1,2,3")
                 .appendColumn("user_id", null)
                 .toTable();
 
@@ -76,7 +81,34 @@ public class PartitionTableTest {
         try{
             List<Pair<String/* targetDB */, String/* targetTable */>> target = table.execute(unit);
         }catch (BayMaxException e){
+            System.out.print(e);
             Assert.assertEquals("有多个相同列的Condition : user_id:[2]", e.getMessage());
         }
     }
+
+    /**
+     * And 有两个不用的分区列
+     * @throws Exception
+     */
+    @Test
+    public void testExecute_2() throws Exception {
+        PartitionTable table = new TableBuilder()
+                .appenTable("trade_order", "trade_order_{0}", "value % 4")
+                .appendNodeMapping("p0:0,1,2,3")
+                .appendColumn("id", null)
+                .appendColumn("user_id", null)
+                .toTable();
+
+        CalculateUnit unit = new CalculateUnit();
+        unit.addCondition(ConditionUnit.buildConditionUnit("trade_order", "id", new String[]{"2"}, ConditionUnitOperator.EQUAL));
+        unit.addCondition(ConditionUnit.buildConditionUnit("trade_order", "user_id", new String[]{"1"}, ConditionUnitOperator.EQUAL));
+
+        try{
+            List<Pair<String/* targetDB */, String/* targetTable */>> target = table.execute(unit);
+            System.out.println(target);
+        }catch (BayMaxException e){
+            Assert.assertEquals("有多个相同列的Condition : user_id:[2]", e.getMessage());
+        }
+    }
+
 }

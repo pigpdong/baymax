@@ -9,6 +9,6 @@ import java.util.Map;
  */
 public interface PartitionFunction {
 
-    Integer execute(String columnValue);
+    Integer execute(String columnValue, Map<String, Object> extention);
 
 }

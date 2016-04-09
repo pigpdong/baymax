@@ -14,7 +14,7 @@ public class TableBuilder {
     List<PartitionTable>    tables          = new ArrayList<PartitionTable>();
     PartitionTable          concurrentTable = null;
     PartitionTableRule      rule            = null;
-    List<PartitionColumn>   columns         = null;
+    List<PartitionColumn>   columns         = new ArrayList<PartitionColumn>();
 
 
     public TableBuilder appenTable(String tableName, String tableNamePatten, String function){
@@ -25,25 +25,28 @@ public class TableBuilder {
         //tables
         tables.add(concurrentTable);
 
-        // node mapping
-        List<String> nodeMapping = new ArrayList<String>();
-        nodeMapping.add("p1:0,1,2,3");
-        concurrentTable.setNodeMapping(new SimpleTableNodeMapping(nodeMapping));
 
-        rule = new PartitionTableRule();
+
         ELFunction func = new ELFunction();
         func.setExpression(function);
+
+        rule = new PartitionTableRule();
         rule.setFunction(func);
-        concurrentTable.setRule(rule);
 
-        columns = new ArrayList<PartitionColumn>();
-        rule.setColumns(columns);
+        return this;
+    }
 
+    List<String> nodeMapping = new ArrayList<String>();
+    public TableBuilder appendNodeMapping(String mapping){
+        nodeMapping.add(mapping);
+        concurrentTable.setNodeMapping(new SimpleTableNodeMapping(nodeMapping));
         return this;
     }
 
     public TableBuilder appendColumn(String column, ColumnProcess process){
         columns.add(new PartitionColumn(column, process));
+        rule.setColumns(columns);
+        concurrentTable.setRule(rule);
         return this;
     }
 

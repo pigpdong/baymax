@@ -7,10 +7,6 @@ import java.util.Map;
 
 public class ParseResult {
 
-	//private List<RouteCalculateUnit> routeCalculateUnits = new ArrayList<RouteCalculateUnit>();
-
-    //private List/*or*/<List/*and*/<SQLBinaryOpExpr>> conditions;
-
     private List<CalculateUnit> calculateUnits;
 	
 	/**
@@ -22,8 +18,6 @@ public class ParseResult {
 	// tables为路由计算共享属性，多组RouteCalculateUnit使用同样的tables
 	private List<String> tables = new ArrayList<String>();
 	
-    //private RouteCalculateUnit routeCalculateUnit = new RouteCalculateUnit(this);
-
 	/**
      * sql中所有的表名
 	 * key table alias, value talbe realname;
@@ -34,7 +28,9 @@ public class ParseResult {
 	private Map<String/*alias*/, String/*field*/> tableAliasMap = new LinkedHashMap<String, String>();
 
     /**
-     * 要查询的所有的列的别名,如果没有别名,别名＝field
+     * select list 中所有的列的别名(普通列，不包含有函数的列),如果没有别名,别名＝列名
+     * 列名：别名
+     * 列名：列名
      */
     private Map<String/*field*/, String/*alias*/> aliaColumns;
 

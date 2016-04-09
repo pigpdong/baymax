@@ -32,7 +32,7 @@ public class DefaultSequence implements Sequence {
 			lock.lock();
 			try {
 				if (range == null) {
-					range = sequenceDao.nextRange(name);
+					range = sequenceDao.nextRange(name,tableName,rangeSize);
 				}
 			} finally {
 				lock.unlock();
@@ -45,7 +45,7 @@ public class DefaultSequence implements Sequence {
 			try {
 				for (;;) {
 					if (range.isClosed()) {
-						range = sequenceDao.nextRange(name);
+						range = sequenceDao.nextRange(name,tableName,rangeSize);
 					}
 
 					value = range.getAndIncrement();

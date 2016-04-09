@@ -17,7 +17,7 @@ public class PartitionTableMetaData {
 
     protected PartitionTableRule rule;          // 分区规则
 
-    protected PartitionTableNodeMapping nodeMapping; //
+    protected PartitionTableNodeMapping nodeMapping; //表名到数据库的映射
 
     /*---------------------------------------------------------------*/
     protected List<PartitionColumn> columns;    // 分区键

@@ -21,7 +21,8 @@
 		<module>baymax-core</module>
 		<module>baymax-test</module>
 		<module>baymax-sequence</module>
-	</modules>
+        <module>baymax-spring</module>
+    </modules>
 
 	<build>
 		<plugins>

@@ -13,25 +13,44 @@ import java.util.Set;
  */
 public class PrintUtil {
 
-    public static void printCalculates(List<CalculateUnit> calculateUnits){
+    public static String printCalculates(List<CalculateUnit> calculateUnits){
+        StringBuffer sb = new StringBuffer();
         for (CalculateUnit unit : calculateUnits){
-            printCalculate(unit);
+            sb.append("{");
+            sb.append(printCalculate(unit));
+            sb.append("}");
         }
+        System.out.println(sb.toString());
+        return sb.toString();
     }
 
-    public static void printCalculate(CalculateUnit unit){
+    public static String printCalculate(CalculateUnit unit){
+        StringBuffer sb = new StringBuffer();
         Map<String/*table*/, Set<ConditionUnit/*column value*/>> tablesAndConditions = unit.getTablesAndConditions();
         for (Iterator ite = tablesAndConditions.entrySet().iterator(); ite.hasNext();){
             Map.Entry<String/*table*/, Set<ConditionUnit/*column value*/>> entry = (Map.Entry<String, Set<ConditionUnit>>) ite.next();
-            StringBuffer sb = new StringBuffer(entry.getKey()).append("==>");
+            sb.append(entry.getKey()).append(":");
             Set<ConditionUnit> conditionUnits = entry.getValue();
             if (conditionUnits != null){
                 for (ConditionUnit conditionUnit : conditionUnits){
+                    sb.append("{");
                     sb.append(conditionUnit.getColumn()).append("=");
-                    sb.append(conditionUnit.getValues()).append("|");
+                    sb.append(conditionUnit.getValues()).append("}");
                 }
             }
-            System.out.println(sb);
+        }
+        return sb.toString();
+    }
+
+    public static void printFildAlisMap(Map<String/*field*/, String/*alias*/> aliaColumns){
+        if (aliaColumns == null || aliaColumns.isEmpty()){
+            return;
+        }
+        for (Iterator<Map.Entry<String/*field*/, String/*alias*/>> ite = aliaColumns.entrySet().iterator(); ite.hasNext(); ){
+            Map.Entry<String/*field*/, String/*alias*/> entry = ite.next();
+            System.out.print("column:{"+entry.getKey()+"}");
+            System.out.print("alias:{"+entry.getValue()+"}");
+            System.out.println();
         }
     }
 

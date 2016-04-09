@@ -36,6 +36,7 @@ public class PartitionTable extends PartitionTableMetaData{
                     }
                 }
             }
+            // 寻找到了分区列
             if (matchingConditon != null){
                 if (matchingConditon.getOperator() == ConditionUnitOperator.EQUAL){
                     // values
@@ -46,7 +47,7 @@ public class PartitionTable extends PartitionTableMetaData{
                     }
                 }
             }
-            // 以第一个有结果的规则为准
+            // 以第一个有结果的PartitionColumn为准,因为Baymax3.0规定，对于有多个分区列的，路由结果必须相同.
             if (targetList.size() != 0){
                 break;
             }
@@ -72,7 +73,7 @@ public class PartitionTable extends PartitionTableMetaData{
         String targetDB = null;
         String targetTable = null;
 
-        Object ruleResult = rule.execute(String.valueOf(value));
+        Object ruleResult = rule.execute(String.valueOf(value), null);
         if (Integer.class == ruleResult.getClass() || Integer.class.isAssignableFrom(ruleResult.getClass())) {
             // Integer
             String suffix = super.getSuffix((Integer) ruleResult);

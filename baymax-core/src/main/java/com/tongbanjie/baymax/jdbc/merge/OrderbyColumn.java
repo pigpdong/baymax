@@ -36,4 +36,9 @@ public class OrderbyColumn {
     public enum OrderbyType{
             ASC,DESC;
     }
+
+    @Override
+    public String toString() {
+        return columnName + "-" + orderbyType;
+    }
 }

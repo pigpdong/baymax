@@ -3,6 +3,7 @@ package com.tongbanjie.baymax.router.strategy.function;
 import com.tongbanjie.baymax.router.strategy.PartitionFunction;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -65,7 +66,7 @@ public class VirtualModFunction implements PartitionFunction{
     }
 
     @Override
-    public Integer execute(String columnValue) {
+    public Integer execute(String columnValue, Map<String, Object> extention) {
         return bucket[((Long) (Long.valueOf(columnValue) % max)).intValue()];
     }
 

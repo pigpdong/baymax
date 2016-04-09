@@ -4,6 +4,7 @@ import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.router.strategy.PartitionFunction;
 import com.tongbanjie.baymax.utils.Hash;
 
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -53,7 +54,7 @@ public class MurmurHashFunction implements PartitionFunction{
     }
 
     @Override
-    public Integer execute(String columnValue) {
+    public Integer execute(String columnValue, Map<String, Object> extention) {
         SortedMap<Integer, Integer> tail = bucketMap.tailMap(Hash.hashUnencodedChars(columnValue));
         if (tail.isEmpty()) {
             return bucketMap.get(bucketMap.firstKey());

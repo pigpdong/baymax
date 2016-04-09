@@ -15,7 +15,7 @@ public class ELFunction implements PartitionFunction {
 
     private String expression;
 
-    public Integer execute(String columnValue) {
+    public Integer execute(String columnValue, Map<String, Object> extention) {
         Map<String, Object> vrs = new HashMap<String, Object>();
         //, Map<String, ElFunction<?,?>> functionMap
         //vrs.putAll(functionMap);// 拓展函数
