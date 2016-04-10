@@ -21,7 +21,7 @@ public class DeleteTest {
     @Test
 	public void test() throws SQLException, InterruptedException{
 
-        int effctCount = new Jdbc(dataSource).executeUpdate("DELETE FROM t_order", new Jdbc.PrepareSetting() {
+        int effctCount = new Jdbc(dataSource).executeUpdate("DELETE FROM t_order where order_id = 3001", new Jdbc.PrepareSetting() {
             @Override
             public void set(PreparedStatement statement) throws SQLException {
             }
@@ -30,5 +30,18 @@ public class DeleteTest {
 
         System.out.println(effctCount);
 	}
+
+    @Test
+    public void test_all() throws SQLException, InterruptedException{
+
+        int effctCount = new Jdbc(dataSource).executeUpdate("DELETE FROM t_order", new Jdbc.PrepareSetting() {
+            @Override
+            public void set(PreparedStatement statement) throws SQLException {
+            }
+        }).close().getEffectCount();
+
+
+        System.out.println(effctCount);
+    }
 	
 }

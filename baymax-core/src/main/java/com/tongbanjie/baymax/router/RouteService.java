@@ -14,10 +14,15 @@ import com.tongbanjie.baymax.router.model.TargetSql;
 import com.tongbanjie.baymax.router.strategy.PartitionTable;
 import com.tongbanjie.baymax.support.BaymaxContext;
 import com.tongbanjie.baymax.utils.Pair;
+import com.tongbanjie.baymax.utils.PrintUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class RouteService implements IRouteService {
+
+    private final Logger logger = LoggerFactory.getLogger(RouteService.class);
 
     /**
      * 路由主方法
@@ -62,6 +67,10 @@ public class RouteService implements IRouteService {
      * @return
      */
     public ExecutePlan route(List<String> tables, List<CalculateUnit> units, String sql, SqlType sqlType){
+        if (logger.isDebugEnabled()){
+            logger.debug("计算单元:" + PrintUtil.printCalculates(units));
+        }
+
         // 判断是否解析到表名
         if (tables == null || tables.size() == 0){
             return buildExecutePlanTypeNo(sql, null, sqlType);

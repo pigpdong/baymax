@@ -20,29 +20,16 @@ public class OrderbyTest {
 
     @Test
 	public void test() throws SQLException, InterruptedException{
+        // asc desc
+        test("select order_id,user_id from t_order t order by user_id asc, t.order_id asc");
 
-       new Jdbc(dataSource)
-        .executeSelect("select order_id from t_order t order by t.order_id desc")
-               .printSet(new Jdbc.Print() {
-                   @Override
-                   public Object print(ResultSet set) throws SQLException {
-                       return set.getString("order_id");
-                   }
-        }).close();
+        // where
+        test("select order_id,user_id from t_order t  where user_id = 2 order by user_id asc");
+
 	}
 
-    @Test
-    public void test_0() throws SQLException, InterruptedException{
-
-        new Jdbc(dataSource)
-                .executeSelect("select order_id from t_order t order by status desc,user_id desc")
-                .printSet(new Jdbc.Print() {
-                    @Override
-                    public Object print(ResultSet set) throws SQLException {
-                        return set.getString("user_id")+"|"+set.getString("status");
-                    }
-                }).close();
+    public void test(String sql) throws SQLException {
+        new Jdbc(dataSource).executeSelect(sql).printSet().close();
     }
-
 
 }

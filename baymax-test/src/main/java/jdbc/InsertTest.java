@@ -18,27 +18,40 @@ public class InsertTest {
 	@Autowired
 	private BaymaxDataSource dataSource;
 
+    Jdbc jdbc;
+
+    /**
+     * 初始化数据＋事务
+     * @throws SQLException
+     * @throws InterruptedException
+     */
     @Test
     public void test0() throws SQLException, InterruptedException {
-        test(1,1,1,"n1",1);
-        test(2,2,1,"n1",1);
-        test(3,3,1,"n1",1);
-        test(4,4,1,"n1",1);
+        jdbc = new Jdbc(dataSource);
+        jdbc.doInTransaction(new Jdbc.DoInTransaction() {
+            @Override
+            public void call() throws SQLException, InterruptedException {
+                test(1000, 0, 1, "prodtct1", 1);
+                test(1001,1,1,"prodtct1",1);
+                test(1002,2,1,"prodtct1",1);
+                test(1003,3,1,"prodtct1",1);
 
-        test(5,1,1,"n1",1);
-        test(6,2,1,"n1",1);
-        test(7,3,1,"n1",1);
-        test(8,4,1,"n1",1);
+                test(2000,0,1,"prodtct1",1);
+                test(2001,1,1,"prodtct1",1);
+                test(2002,2,1,"prodtct1",1);
+                test(2003,3,1,"prodtct1",1);
 
-        test(9,9,1,"n1",1);
-        test(10,10,1,"n1",1);
-        test(11,11,1,"n1",1);
-        test(12,12,1,"n1",1);
+                test(3000,30,1,"prodtct1",1);
+                test(3001,31,1,"prodtct1",1);
+                test(3002,32,1,"prodtct1",1);
+                test(3003, 33, 1, "prodtct1", 1);
+            }
+        });
+        jdbc.close();
     }
-	
-	public void test(final int orderId, final int userId, final int productId, final String productName, final int status) throws SQLException, InterruptedException{
 
-        int effctCount = new Jdbc(dataSource).executeUpdate("INSERT INTO `t_order`(order_id, user_id, product_id, product_name, status) VALUES (?, ?, ?, ?, ?);", new Jdbc.PrepareSetting() {
+    public void test(final int orderId, final int userId, final int productId, final String productName, final int status) throws SQLException, InterruptedException{
+        int effctCount = jdbc.executeUpdate("INSERT INTO `t_order`(order_id, user_id, product_id, product_name, status) VALUES (?, ?, ?, ?, ?);", new Jdbc.PrepareSetting() {
             @Override
             public void set(PreparedStatement statement) throws SQLException {
                 statement.setInt(1, orderId);
@@ -48,9 +61,17 @@ public class InsertTest {
                 statement.setInt(5, status);
             }
         }).getEffectCount();
-
-
         System.out.println(effctCount);
-	}
-	
+    }
+
+    /**
+     * Insert参数不包含分区健测试
+     * @throws SQLException
+     * @throws InterruptedException
+     */
+    @Test
+    public void test1() throws SQLException, InterruptedException {
+        jdbc = new Jdbc(dataSource);
+        int effctCount = jdbc.executeUpdate("INSERT INTO `t_order`(status) VALUES (1);").getEffectCount();
+    }
 }

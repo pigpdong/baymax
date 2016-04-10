@@ -21,14 +21,12 @@ public class GroupbyTest {
     @Test
 	public void test() throws SQLException, InterruptedException{
 
-       new Jdbc(dataSource)
-        .executeSelect("select avg(order_id) as c from t_order t group by user_id")
-               .printSet(new Jdbc.Print() {
-                   @Override
-                   public Object print(ResultSet set) throws SQLException {
-                       return set.getString("user_id") +"|"+ set.getLong("c");
-                   }
-        }).close();
+       test("select user_id  from t_order t group by user_id");
+       test("select user_id  from t_order t group by user_id order by user_id desc");
 	}
+
+    public void test(String sql) throws SQLException {
+        new Jdbc(dataSource).executeSelect(sql).printSet().close();
+    }
 
 }

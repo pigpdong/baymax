@@ -40,11 +40,11 @@
             <list>
                 <bean class="com.tongbanjie.baymax.router.strategy.PartitionColumn">
                     <property name="name"           value="user_id"/>
-                    <property name="process"        ref="subRight2"/>
+                    <property name="process"        ref="subRight1"/>
                 </bean>
                 <bean class="com.tongbanjie.baymax.router.strategy.PartitionColumn">
-                    <property name="name"           value="id"/>
-                    <property name="process"        ref="subRight2"/>
+                    <property name="name"           value="order_id"/>
+                    <property name="process"        ref="subRight1"/>
                 </bean>
             </list>
         </property>
@@ -53,12 +53,12 @@
 
     <!-- 表的分区函数 -->
     <bean name="elfundcion" class="com.tongbanjie.baymax.router.strategy.function.ELFunction">
-        <property name="expression"     value="value % 4"/>
+        <property name="expression"     value="value"/>
     </bean>
 
     <!-- 列的转换函数 -->
-    <bean name="subRight2" class="com.tongbanjie.baymax.support.column.SubRightColumnProcess">
-        <property name="length" value="2"/>
+    <bean name="subRight1" class="com.tongbanjie.baymax.support.column.SubRightColumnProcess">
+        <property name="length" value="1"/>
     </bean>
 
 

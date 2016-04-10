@@ -22,17 +22,8 @@ public class AggTest {
 	public void test() throws SQLException, InterruptedException{
 
        new Jdbc(dataSource)
-        .executeSelect("select count(order_id) as agg_c,sum(order_id) as agg_s,min(order_id) as agg_min,max(order_id) as agg_max,avg(order_id) as agg_avg, user_id from t_order group by user_id")
-               .printSet(new Jdbc.Print() {
-                   @Override
-                   public Object print(ResultSet set) throws SQLException {
-                       return ""+set.getLong("agg_c")
-                              + " | " + set.getLong("agg_s")
-                              + " | " + set.getLong("agg_min")
-                              + " | "+ set.getLong("agg_max")
-                              + " | "+ set.getBigDecimal("agg_avg");
-                   }
-        }).close();
+        .executeSelect("select count(order_id),sum(order_id),min(order_id),max(order_id),avg(order_id),user_id from t_order group by user_id order by user_id asc")
+        .printSet().close();
 	}
 
 }
