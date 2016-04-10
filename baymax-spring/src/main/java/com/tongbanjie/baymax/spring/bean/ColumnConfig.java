@@ -1,7 +1,5 @@
 package com.tongbanjie.baymax.spring.bean;
 
-import com.tongbanjie.baymax.router.ColumnProcess;
-
 /**
  * Created by sidawei on 16/4/10.
  */
