@@ -55,9 +55,28 @@ public class SimpleTableNodeMapping implements PartitionTableNodeMapping{
         return tableMapping;
     }
 
-    public SimpleTableNodeMapping(List<String> config) {
+    public void setConfig(List<String> config) {
         this.config = config;
         this.init();
     }
 
+    public SimpleTableNodeMapping(){
+    }
+
+    public SimpleTableNodeMapping(List<String> config){
+        setConfig(config);
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer("(");
+        for (int i = 0; i < config.size(); i++) {
+            sb.append(config.get(i));
+            if (i + 1 < config.size()){
+                sb.append(" | ");
+            }
+        }
+        sb.append(")");
+        return sb.toString();
+    }
 }

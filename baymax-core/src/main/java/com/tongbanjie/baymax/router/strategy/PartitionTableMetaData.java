@@ -64,7 +64,7 @@ public class PartitionTableMetaData {
 
     protected void initRules(){
         if(columns == null || columns.size() == 0){
-            throw new RuntimeException(String.format("rules must not be empty! strategy{%s}", logicTableName));
+            throw new RuntimeException(String.format("columns must not be empty! strategy{%s}", logicTableName));
         }
         partitionColumns = new String[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
@@ -131,5 +131,15 @@ public class PartitionTableMetaData {
         this.setColumns(rule.getColumns());
         initRules();
         // init
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('\n');
+        sb.append(String.format("--[name:%s] [namePatten:%s] [disableFullScan:%s]", logicTableName, namePatten, disableFullScan)).append('\n');
+        sb.append(String.format("--[rule:%s] ", rule.toString())).append('\n');
+        sb.append(String.format("--[nodeMapping:%s]", nodeMapping.toString())).append('\n');
+        return sb.toString();
     }
 }

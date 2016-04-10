@@ -35,4 +35,9 @@ public class PartitionColumn {
     public void setProcess(ColumnProcess process) {
         this.process = process;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[column:%s] [process:%s]", name, process);
+    }
 }

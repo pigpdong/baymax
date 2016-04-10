@@ -100,4 +100,8 @@ public class PartitionTable extends PartitionTableMetaData{
         return allTables;
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

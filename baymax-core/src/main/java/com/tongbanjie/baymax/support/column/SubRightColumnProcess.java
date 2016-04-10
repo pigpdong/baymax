@@ -25,4 +25,9 @@ public class SubRightColumnProcess implements ColumnProcess {
     public void setLength(int length) {
         this.length = length;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[SubRight:%s]", length);
+    }
 }

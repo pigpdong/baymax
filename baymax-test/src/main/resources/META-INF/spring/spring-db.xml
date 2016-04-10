@@ -67,6 +67,6 @@
 	</bean>
 	
 	<!-- 路由配置文件 -->
-	<import resource="classpath:META-INF/partition/*.xml" />
+	<import resource="classpath:META-INF/partition/baymax-spring.xml" />
 	
 </beans>

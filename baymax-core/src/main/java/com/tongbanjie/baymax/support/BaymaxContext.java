@@ -2,6 +2,8 @@ package com.tongbanjie.baymax.support;
 
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.router.strategy.PartitionTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.Map;
  * Created by sidawei on 16/1/29.
  */
 public class BaymaxContext {
+
+    private final static Logger logger = LoggerFactory.getLogger(BaymaxContext.class);
 
     private static boolean isInit = false;
 
@@ -45,8 +49,10 @@ public class BaymaxContext {
         }
         // 1. 初始化需要被路由的表Map<String/*TableName*/, TableRule>
         // 2. 初始化自动建表程序
+        logger.info("----------------------Baymax 开始加载Table配置---------------------------");
         for(PartitionTable table : partitionTables){
             if(!tableRuleMapping.containsKey(table.getLogicTableName())){
+                logger.info(table.toString());
                 tableRuleMapping.put(table.getLogicTableName(), table);
             }else{
                 throw new RuntimeException("不能对同一个逻辑表明配置过个路由规则！：" + table.getLogicTableName());

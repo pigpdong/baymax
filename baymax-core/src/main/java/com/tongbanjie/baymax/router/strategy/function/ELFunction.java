@@ -31,4 +31,9 @@ public class ELFunction implements PartitionFunction {
     public void setExpression(String expression) {
         this.expression = expression;
     }
+
+    @Override
+    public String toString() {
+        return "ELFunction:" + expression;
+    }
 }

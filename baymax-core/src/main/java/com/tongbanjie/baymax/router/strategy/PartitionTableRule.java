@@ -26,4 +26,9 @@ public class PartitionTableRule {
     public void setFunction(PartitionFunction function) {
         this.function = function;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[function:%s] [columns:%s]", function, columns);
+    }
 }
