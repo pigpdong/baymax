@@ -26,7 +26,7 @@ public class DefaultSequenceDao implements SequenceDao {
 	private final static Logger logger = LoggerFactory.getLogger(DefaultSequenceDao.class);
 
 	public final static String DEFAULT_TABLE_NAME = "tbj_sequence"; 	// 表名
-	public final static int DEFAULT_RANGE_SIZE = 2; 					// 每次取多少个Sequence
+	public final static int DEFAULT_RANGE_SIZE = 500; 					// 每次取多少个Sequence
 	public final static int DEFAULT_RANGE_SIZE_MIN = 1; 				// 最少取多少个
 	public final static int DEFAULT_RANGE_SIZE_MAN = 10000; 			// 最大取多少个
 	public static final int DEFAULT_RETRY_TIMES = 150; 					// 最大重试次数
