@@ -1,6 +1,7 @@
 package com.tongbanjie.baymax.jdbc;
 
 import com.tongbanjie.baymax.jdbc.adapter.UnsupportedResultSetAdapter;
+import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -38,7 +39,11 @@ public abstract class TResultSet extends UnsupportedResultSetAdapter {
 	private TStatement          statement;
 	private boolean             isClosed;
 
-	public TResultSet(List<ResultSet> listResultSet, TStatement statement) {
+    private ExecutePlan         plan;
+
+	public TResultSet(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) {
+        this.plan = plan;
+		this.statement = statement;
 		this.resultSet = listResultSet;
 		if (listResultSet != null && listResultSet.size() > 0) {
 			this.metaDataResultSet = listResultSet.get(0);
@@ -49,7 +54,6 @@ public abstract class TResultSet extends UnsupportedResultSetAdapter {
 				e.printStackTrace();
 			}
 		}
-		this.statement = statement;
 	}
 
 	@SuppressWarnings("unchecked")

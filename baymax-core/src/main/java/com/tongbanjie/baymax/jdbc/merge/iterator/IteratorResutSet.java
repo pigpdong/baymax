@@ -1,6 +1,7 @@
 package com.tongbanjie.baymax.jdbc.merge.iterator;
 
 import com.tongbanjie.baymax.jdbc.TStatement;
+import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,12 +17,12 @@ public class IteratorResutSet extends IteratorResultSetGetterAdapter {
     protected int       index = 0;
     protected boolean   end;
 
-    public IteratorResutSet(List<ResultSet> listResultSet, TStatement statement) {
-        super(listResultSet, statement);
+    public IteratorResutSet(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) {
+        super(listResultSet, statement, plan);
     }
 
     @Override
-    public boolean next() throws SQLException {
+    public boolean nextRow() throws SQLException {
         if (getResultSet() == null || end) {
             return false;
         }
@@ -35,7 +36,7 @@ public class IteratorResutSet extends IteratorResultSetGetterAdapter {
         }else{
             index++;
         }
-        return next();
+        return nextRow();
     }
 
     /**

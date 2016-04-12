@@ -1,7 +1,8 @@
 package com.tongbanjie.baymax.jdbc.merge.groupby;
 
-import com.tongbanjie.baymax.jdbc.TResultSet;
+import com.tongbanjie.baymax.jdbc.TResultSetLimit;
 import com.tongbanjie.baymax.jdbc.TStatement;
+import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -12,13 +13,14 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-public abstract class GroupbyResultSetGetterAdapter extends TResultSet {
+public abstract class GroupbyResultSetGetterAdapter extends TResultSetLimit {
 
     protected GroupbyValue currentValue;
 
-    public GroupbyResultSetGetterAdapter(List<ResultSet> listResultSet, TStatement statement) {
-        super(listResultSet, statement);
+    public GroupbyResultSetGetterAdapter(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) {
+        super(listResultSet, statement, plan);
     }
+
 
     /*------------------------------------------------------------------------*/
 

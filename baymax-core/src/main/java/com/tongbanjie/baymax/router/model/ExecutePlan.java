@@ -2,6 +2,7 @@ package com.tongbanjie.baymax.router.model;
 
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
 import com.tongbanjie.baymax.jdbc.merge.OrderbyColumn;
+import com.tongbanjie.baymax.parser.model.Limit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,8 @@ public class ExecutePlan {
      * 排序字段
      */
     private List<OrderbyColumn>                                 orderbyColumns;
+
+    private Limit                                               limit;
 
     /*------------------------------------------------------------------------------------*/
 
@@ -95,5 +98,13 @@ public class ExecutePlan {
 
     public void setMergeColumns(Map<String, MergeColumn.MergeType> mergeColumns) {
         this.mergeColumns = mergeColumns;
+    }
+
+    public Limit getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Limit limit) {
+        this.limit = limit;
     }
 }

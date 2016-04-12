@@ -31,14 +31,14 @@ public class OrderByResultSet extends IteratorResultSetGetterAdapter {
     private int lastIndex = 0;
 
     public OrderByResultSet(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) {
-        super(listResultSet, statement);
+        super(listResultSet, statement, plan);
         orderbyColumns = plan.getOrderbyColumns();
         noNext = new boolean[listResultSet.size()];
         isends = new boolean[listResultSet.size()];
     }
 
     @Override
-    public boolean next() throws SQLException {
+    public boolean nextRow() throws SQLException {
         List<ResultSet> sets = getResultSet();
         if (sets == null) {
             return false;

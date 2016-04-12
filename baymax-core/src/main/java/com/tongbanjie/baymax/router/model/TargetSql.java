@@ -33,7 +33,7 @@ public class TargetSql {
 	public String toString() {
 		return new StringBuffer()
 		.append(String.format("[partition:%s]\n[logicTableName:%s]\n[targetTableName:%s]\n[originalSql:%s]\n[targetSql:%s]\n",
-                new Object[]{partition, logicTableName, targetTableName, originalSql, targetSql == null ? "" : targetSql.replaceAll("\n", "")})).toString();
+                new Object[]{partition, logicTableName, targetTableName, originalSql, targetSql == null ? "" : targetSql.replaceAll("\n", " ")})).toString();
 				
 	}
 

@@ -13,6 +13,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.jdbc.merge.MergeColumn;
 import com.tongbanjie.baymax.jdbc.merge.OrderbyColumn;
+import com.tongbanjie.baymax.parser.model.Limit;
 import com.tongbanjie.baymax.parser.model.ParseResult;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.utils.ReflectionUtils;
@@ -73,6 +74,8 @@ public class MySqlSelectParser extends MySqlSqlParser {
         parseGroupBy(result, plan, mysqlSelectQuery);
         // 解析orderby
         parseOrderby(result, plan, mysqlSelectQuery);
+        // 解析limit
+        parseLimit(result, plan, mysqlSelectQuery);
 
     }
 
@@ -276,8 +279,34 @@ public class MySqlSelectParser extends MySqlSqlParser {
         plan.setOrderbyColumns(orderbyColumns);
     }
 
-    protected void parseLimit(){
-
+    protected void parseLimit(ParseResult result, ExecutePlan plan, MySqlSelectQueryBlock mysqlSelectQuery){
+        MySqlSelectQueryBlock.Limit x = mysqlSelectQuery.getLimit();
+        if (x == null){
+            return;
+        }
+        int offset = 0;
+        if (null != x.getOffset()) {
+            if (x.getOffset() instanceof SQLNumericLiteralExpr) {
+                offset = ((SQLNumericLiteralExpr) x.getOffset()).getNumber().intValue();
+                SQLNumberExpr offsetExpr = new SQLNumberExpr();
+                offsetExpr.setNumber(0);
+                x.setOffset(offsetExpr);
+            } else {
+                offset = ((Number) parameters.get(((SQLVariantRefExpr) x.getOffset()).getIndex())).intValue();
+                parameters.set(((SQLVariantRefExpr) x.getOffset()).getIndex(), 0);
+            }
+        }
+        int rowCount;
+        if (x.getRowCount() instanceof SQLNumericLiteralExpr) {
+            rowCount = ((SQLNumericLiteralExpr) x.getRowCount()).getNumber().intValue();
+            SQLNumberExpr rowsExpr = new SQLNumberExpr();
+            rowsExpr.setNumber(rowCount + offset);
+            x.setRowCount(rowsExpr);
+        } else {
+            rowCount = ((Number) parameters.get(((SQLVariantRefExpr) x.getRowCount()).getIndex())).intValue();
+            parameters.set(((SQLVariantRefExpr) x.getRowCount()).getIndex(), rowCount + offset);
+        }
+        plan.setLimit(new Limit(offset, rowCount));
     }
 
 }

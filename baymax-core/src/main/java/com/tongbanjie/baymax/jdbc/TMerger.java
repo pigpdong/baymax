@@ -20,7 +20,7 @@ public class TMerger {
     public static TResultSet mearge(ExecutePlan plan, List<ResultSet> sets, TStatement outStmt) throws SQLException {
 
         if (sets == null || sets.size() <= 1){
-            return new IteratorResutSet(sets, outStmt);
+            return new IteratorResutSet(sets, outStmt, plan);
         }
 
         // groupby
@@ -45,7 +45,7 @@ public class TMerger {
         }
 
         // 普通ResultSet
-        return new IteratorResutSet(sets, outStmt);
+        return new IteratorResutSet(sets, outStmt, plan);
     }
 
 }

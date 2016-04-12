@@ -19,11 +19,17 @@ public class AggTest {
 	private BaymaxDataSource dataSource;
 
     @Test
-	public void test() throws SQLException, InterruptedException{
-
+	public void test_0() throws SQLException, InterruptedException{
        new Jdbc(dataSource)
-        .executeSelect("select count(order_id),sum(order_id),min(order_id),max(order_id),avg(order_id),user_id from t_order group by user_id order by user_id asc")
+        .executeSelect("select count(order_id),sum(order_id),min(order_id),max(order_id),avg(order_id) from t_order")
         .printSet().close();
 	}
+
+    @Test
+    public void test() throws SQLException, InterruptedException{
+        new Jdbc(dataSource)
+                .executeSelect("select count(order_id),sum(order_id),min(order_id),max(order_id),avg(order_id),user_id from t_order group by user_id order by user_id asc")
+                .printSet().close();
+    }
 
 }

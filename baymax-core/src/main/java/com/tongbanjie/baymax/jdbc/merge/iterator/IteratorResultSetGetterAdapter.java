@@ -1,8 +1,8 @@
 package com.tongbanjie.baymax.jdbc.merge.iterator;
 
-import com.tongbanjie.baymax.jdbc.TResultSet;
+import com.tongbanjie.baymax.jdbc.TResultSetLimit;
 import com.tongbanjie.baymax.jdbc.TStatement;
-import com.tongbanjie.baymax.jdbc.adapter.UnsupportedResultSetAdapter;
+import com.tongbanjie.baymax.router.model.ExecutePlan;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -10,14 +10,13 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class IteratorResultSetGetterAdapter extends TResultSet {
+public abstract class IteratorResultSetGetterAdapter extends TResultSetLimit {
 
-    public IteratorResultSetGetterAdapter(List<ResultSet> listResultSet, TStatement statement) {
-        super(listResultSet, statement);
+    public IteratorResultSetGetterAdapter(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) {
+        super(listResultSet, statement, plan);
     }
 
     /*------------------------------------------------------------------------*/

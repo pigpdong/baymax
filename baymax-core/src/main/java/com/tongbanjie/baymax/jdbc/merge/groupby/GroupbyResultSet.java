@@ -45,7 +45,7 @@ public class GroupbyResultSet extends GroupbyResultSetGetterAdapter {
     /*-------------------------------------------------------------------------------------------------------*/
 
     public GroupbyResultSet(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) throws SQLException {
-        super(listResultSet, statement);
+        super(listResultSet, statement, plan);
         orderbyColumns  = plan.getOrderbyColumns();
         groupbyColumns  = plan.getGroupbyColumns();
         aggColumns      = plan.getMergeColumns();
@@ -110,7 +110,7 @@ public class GroupbyResultSet extends GroupbyResultSetGetterAdapter {
     }
 
     @Override
-    public boolean next() throws SQLException {
+    public boolean nextRow() throws SQLException {
         if (groupbyValues == null || groupbyValues.length == 0){
             return false;
         }

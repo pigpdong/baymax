@@ -7,6 +7,7 @@ import com.tongbanjie.baymax.router.model.ExecutePlan;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,15 +22,16 @@ public class AggResultSet extends AggResultSetGetterAdapter {
     Map<Integer/*columnIndex*/, String/*columnName*/> mergeColumnsIndex;
 
     public AggResultSet(List<ResultSet> listResultSet, TStatement statement, ExecutePlan plan) throws SQLException {
-        super(listResultSet, statement);
+        super(listResultSet, statement, plan);
         mergeColumns = plan.getMergeColumns();
         initMergeColumnIndex(currentResultSet.getMetaData());
         // TODO index转化为alias
     }
 
     private void initMergeColumnIndex(ResultSetMetaData metaData) throws SQLException {
+        mergeColumnsIndex = new HashMap<Integer, String>();
         int size = metaData.getColumnCount();
-        for (int i = 1; i < size; i++){
+        for (int i = 1; i <= size; i++){
             String name = metaData.getColumnLabel(i);
             if (mergeColumns.containsKey(name)){
                 mergeColumnsIndex.put(i, name);
@@ -43,7 +45,7 @@ public class AggResultSet extends AggResultSetGetterAdapter {
      * @throws SQLException
      */
     @Override
-    public boolean next() throws SQLException {
+    public boolean nextRow() throws SQLException {
         List<ResultSet> sets = getResultSet();
         if (sets == null) {
             return false;

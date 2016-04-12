@@ -23,7 +23,7 @@ public class SelectTest {
     @Test
     public void test() throws SQLException, InterruptedException{
         // or
-        test("select order_id, user_id from t_order where user_id = 1 or user_id = 2");
+        //test("select order_id, user_id from t_order where user_id = 1 or user_id = 2");
 
         // (or)and
         //test("select order_id, user_id from t_order where (user_id = 1 or user_id = 2) and product_name='prodtct1' ");
@@ -33,6 +33,26 @@ public class SelectTest {
 
         // or 全表扫描
         //test("select order_id, user_id, status from t_order where user_id = 1 or status = 1 order by user_id");
+
+        // limit
+        //test("select order_id, user_id from t_order");
+        //test("select order_id, user_id from t_order limit 3, 1");
+
+        // limit order by
+        //test("select order_id, user_id from t_order order by order_id");
+        //test("select order_id, user_id from t_order order by order_id limit 3,1");
+
+        // limit group by
+        //test("select user_id from t_order group by user_id order by user_id");
+        //test("select user_id from t_order group by user_id order by user_id limit 3,1");
+
+        // limit agg
+        //test("select sum(user_id) from t_order");
+        //test("select sum(user_id) from t_order");
+
+        // limit agg group by order by
+        //test("select user_id,sum(user_id) from t_order group by user_id order by user_id");
+        //test("select user_id,sum(user_id) from t_order group by user_id order by user_id limit 3,2");
 
     }
 
