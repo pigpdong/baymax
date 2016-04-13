@@ -57,7 +57,8 @@ public class AggMerger extends MergeMath{
     public static Object mergeSum(List<ResultSet> sets, String alias, Class<?> type) throws SQLException {
         BigDecimal number = null;
         for (int i = 0; i < sets.size(); i++){
-            number = sum(number, sets.get(i).getBigDecimal(alias));
+            BigDecimal value = sets.get(i).getBigDecimal(alias);
+            number = sum(number, value);
         }
         return DataConvert.convertValue(number, type);
     }
@@ -70,14 +71,10 @@ public class AggMerger extends MergeMath{
      * @throws SQLException
      */
     public static Object mergeMin(List<ResultSet> sets, String alias) throws SQLException {
-        Double number = null;
+        BigDecimal number = null;
         for (int i = 0; i < sets.size(); i++){
-            Double value = sets.get(i).getDouble(alias);
-            if (number == null){
-                number = value;
-            }else if (value != null && value < number){
-                number  = value;
-            }
+            BigDecimal value = sets.get(i).getBigDecimal(alias);
+            number = min(number, value);
         }
         return number;
     }
@@ -90,14 +87,10 @@ public class AggMerger extends MergeMath{
      * @throws SQLException
      */
     public static Object mergeMax(List<ResultSet> sets, String alias) throws SQLException {
-        Double number = null;
+        BigDecimal number = null;
         for (int i = 0; i < sets.size(); i++){
-            Double value = sets.get(i).getDouble(alias);
-            if (number == null){
-                number = value;
-            }else if (value != null && value > number){
-                number  = value;
-            }
+            BigDecimal value = sets.get(i).getBigDecimal(alias);
+            number = max(number, value);
         }
         return number;
     }
@@ -112,11 +105,12 @@ public class AggMerger extends MergeMath{
      */
     public static Object mergeAvg(List<ResultSet> sets, String aliasSum, String aliasCount, Class<?> type) throws SQLException {
 
-        Object sum = mergeSum(sets, aliasCount, type);
-        Object count = mergeSum(sets, aliasSum, type);
+        BigDecimal sum = (BigDecimal) mergeSum(sets, aliasCount, type);
+        BigDecimal count = (BigDecimal) mergeSum(sets, aliasSum, type);
 
         if (sum != null && count != null){
-            return DataConvert.convertValue(new BigDecimal(sum.toString()).divide(new BigDecimal(count.toString())), type);
+            BigDecimal number = sum.divide(count, 20, BigDecimal.ROUND_HALF_UP);
+            return DataConvert.convertValue(number, type);
         }
         return null;
     }

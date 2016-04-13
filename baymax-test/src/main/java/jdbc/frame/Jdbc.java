@@ -26,8 +26,6 @@ public class Jdbc {
         conn = dataSource.getConnection();
     }
 
-
-
     public interface DoInTransaction{
         void call() throws SQLException, InterruptedException;
     }
@@ -112,7 +110,7 @@ public class Jdbc {
     }
 
     private String getSpan(Object obj){
-        int length = obj.toString().length();
+        int length = obj == null ? 4 : obj.toString().length();
         StringBuffer sb = new StringBuffer();
         for (;length < 15; length ++){
             sb.append(" ");

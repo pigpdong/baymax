@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class GroupbyAggMerger extends MergeMath{
 
     public static Object mergeAvg(BigDecimal sum1, BigDecimal count1, BigDecimal sum2, BigDecimal count2, MergeColumn.MergeType mergeType){
-        return sum1.add(sum2).divide(count1.add(count2));
+        return sum1.add(sum2).divide(count1.add(count2), 20, BigDecimal.ROUND_HALF_UP);
     }
 
     public static Object merge(BigDecimal o1, BigDecimal o2, MergeColumn.MergeType mergeType){
@@ -29,28 +29,16 @@ public class GroupbyAggMerger extends MergeMath{
         switch (mergeType) {
             case MERGE_COUNT:
             case MERGE_SUM:
-                value = mergeSum(o1, o2);
+                value = sum(o1, o2);
                 break;
             case MERGE_MIN:
-                value = mergeMin(o1, o2);
+                value = min(o1, o2);
                 break;
             case MERGE_MAX:
-                value = mergeMax(o1, o2);
+                value = max(o1, o2);
                 break;
         }
         return value;
-    }
-
-    public static Object mergeSum(BigDecimal o1, BigDecimal o2) {
-        return o1.add(o2);
-    }
-
-    public static Object mergeMin(BigDecimal o1, BigDecimal o2) {
-        return o1.compareTo(o2) < 0 ? o1 : o2;
-    }
-
-    public static Object mergeMax(BigDecimal o1, BigDecimal o2) {
-        return o1.compareTo(o2) > 0 ? o1 : o2;
     }
 
 }
