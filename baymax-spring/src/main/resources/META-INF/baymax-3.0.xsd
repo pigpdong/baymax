@@ -67,7 +67,7 @@
                     <xsd:element ref="columnProcess" minOccurs="0" maxOccurs="unbounded" />
                 </xsd:choice>
                 <xsd:attribute name="name" type="xsd:string" use="required"/>
-                <xsd:attribute name="process-ref" type="xsd:string" use="required"/>
+                <xsd:attribute name="process-ref" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
 
