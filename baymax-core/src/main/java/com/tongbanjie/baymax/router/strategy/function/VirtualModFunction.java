@@ -24,6 +24,8 @@ import java.util.TreeSet;
  * 
  */
 public class VirtualModFunction implements PartitionFunction{
+	
+	private int add = 0;
 
     /**
      * 最大真实节点数
@@ -46,7 +48,7 @@ public class VirtualModFunction implements PartitionFunction{
         int length = max / count;
         int lengthIndex = 0;
 
-        int suffix = 1;
+        int suffix = 0;
 
         for (int i = 0; i < max; i++) {
             bucket[i] = suffix;
@@ -54,7 +56,7 @@ public class VirtualModFunction implements PartitionFunction{
             suffixSet.add(suffix);
             if (lengthIndex == length){
                 lengthIndex = 0;
-                suffix = i + 2;
+                suffix = i + 1;
             }
         }
     }
@@ -65,9 +67,17 @@ public class VirtualModFunction implements PartitionFunction{
         this.init();
     }
 
-    @Override
+    public int getAdd() {
+		return add;
+	}
+
+	public void setAdd(int add) {
+		this.add = add;
+	}
+	
+	@Override
     public Integer execute(String columnValue, Map<String, Object> extention) {
-        return bucket[((Long) (Long.valueOf(columnValue) % max)).intValue()];
+        return bucket[((Long) (Long.valueOf(columnValue) % max)).intValue()] + add;
     }
 
     @Override
