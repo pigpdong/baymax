@@ -65,7 +65,9 @@ public class BaymaxSpringContext implements ApplicationListener<ContextRefreshed
         for (ColumnConfig cf : tableConfig.getColumns()){
             PartitionColumn column = new PartitionColumn();
             column.setName(cf.getName());
-            column.setProcess((ColumnProcess) applicationContext.getBean(cf.getProcess()));
+            String columnProcessBeanName = cf.getProcess();
+            if(columnProcessBeanName != null && columnProcessBeanName.length() > 0)
+                column.setProcess((ColumnProcess) applicationContext.getBean(cf.getProcess()));
             columnList.add(column);
         }
         rule.setColumns(columnList);
