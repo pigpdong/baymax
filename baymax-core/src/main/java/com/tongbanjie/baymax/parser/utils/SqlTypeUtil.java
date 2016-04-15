@@ -29,8 +29,9 @@ public class SqlTypeUtil {
             sqlType = SqlType.INSERT;
         }else if(sql.startsWith("delete")){
             sqlType = SqlType.DELETE;
+        }else if(sql.startsWith("explan")){
+            sqlType = SqlType.EXPLAN;
         }
-
         return sqlType;
     }
 }

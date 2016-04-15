@@ -51,8 +51,8 @@ public class SelectTest {
         //test("select sum(user_id) from t_order");
 
         // limit agg group by order by
-        //test("select user_id,sum(user_id) from t_order group by user_id order by user_id");
-        //test("select user_id,sum(user_id) from t_order group by user_id order by user_id limit 3,2");
+        test("select user_id,sum(user_id) from t_order group by user_id order by user_id");
+        test("select user_id,sum(user_id) from t_order group by user_id order by user_id limit 3,2");
 
     }
 
