@@ -1,6 +1,6 @@
 package com.tongbanjie.baymax.support;
 
-import com.tongbanjie.baymax.utils.Pair;
+import com.tongbanjie.baymax.router.model.TargetTableEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,41 +10,47 @@ import java.util.List;
  */
 public class IteratorAllTableTemplate {
 
-    public static void iterator(String tableName, Callbal call){
-        iterator(tableName, call, 1);
-    }
+    private static ThreadLocal<TargetTableEntity> local = new ThreadLocal<TargetTableEntity>();
 
-    public static void iterator(String tableName, Callbal call, int iteratorTimes){
-        List<Pair<String/* targetDB */, String/* targetTable */>> tables = ManualRoute.getAllTables(tableName);
+    public static void iterator(String tableName, Callbal call){
+
+        List<TargetTableEntity> tables = ManualRoute.getAllTables(tableName);
+
         if (tables == null || tables.size() == 0){
             return;
         }
+
         // 获取所有表名
-        for (int time = 0; time < iteratorTimes; time++) {
-            for (int i = 0; i < tables.size(); i++) {
-                Pair<String/* targetDB */, String/* targetTable */> table = tables.get(i);
-                // TODO PUT TO THREAD LOCAL
-                call.call(table.getObject2());
-                // TODO CLEAR THREAD LOCAL
+        for (int i = 0; i < tables.size(); i++) {
+
+            TargetTableEntity table = tables.get(i);
+
+            /**
+             * 设定之后Sql的路由结果
+             */
+            local.set(table);
+            try{
+                call.call(i, tables.size(), table.getTargetDB(), table.getTargetTable());
+            }finally {
+                /**
+                 * 清除之前的设定
+                 */
+                local.remove();
             }
         }
     }
 
-
     interface Callbal{
-        void call(String tableName);
+        /**
+         * 循环所有的表，每个表调用一次，并且在ThreadLocal中放值路由结果
+         * @param index     当前循环到第几个表了
+         * @param size      一共有几个表
+         * @param dbName    当前表所在的数据库DataSource标示
+         * @param tableName 当前表的物理表名
+         */
+        void call(int index, int size, String dbName, String tableName);
     }
 
-    public void test(){
-        final List<Object> result = new ArrayList<Object>();
-        IteratorAllTableTemplate.iterator("trade_order", new Callbal() {
-            @Override
-            public void call(String tableName) {
-                Object data = null; // select * from trade_order where xxxx
-                result.add(data);
-            }
-        });
-    }
 }
 
 

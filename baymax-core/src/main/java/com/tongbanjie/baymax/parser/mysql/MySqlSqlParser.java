@@ -13,7 +13,7 @@ import com.tongbanjie.baymax.parser.mysql.visitor.SqlVisitor;
 import com.tongbanjie.baymax.parser.mysql.visitor.ReplaceTableNameVisitor;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
-import com.tongbanjie.baymax.router.model.TargetSql;
+import com.tongbanjie.baymax.router.model.TrargetSqlEntity;
 import com.tongbanjie.baymax.utils.StringUtil;
 
 import java.util.ArrayList;
@@ -103,12 +103,12 @@ public abstract class MySqlSqlParser implements SqlParser {
     @Override
     public void changeSql(ParseResult result, ExecutePlan plan) {
         if (ExecuteType.NO == plan.getExecuteType()){
-            for (TargetSql sql : plan.getSqlList()){
+            for (TrargetSqlEntity sql : plan.getSqlList()){
                 sql.setOriginalSql(result.getSql());
                 sql.setTargetSql(result.getSql());
             }
         }else {
-            for (TargetSql sql : plan.getSqlList()){
+            for (TrargetSqlEntity sql : plan.getSqlList()){
                 ReplaceTableNameVisitor replaceVisitor = new ReplaceTableNameVisitor(sql.getLogicTableName(), sql.getTargetTableName());
                 StringBuilder out = new StringBuilder();
                 MySqlOutputVisitor outPutVisitor = new MySqlOutputVisitor(out);

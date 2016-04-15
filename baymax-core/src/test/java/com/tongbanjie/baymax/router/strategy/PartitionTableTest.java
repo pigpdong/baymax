@@ -4,6 +4,7 @@ import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.parser.model.CalculateUnit;
 import com.tongbanjie.baymax.parser.model.ConditionUnit;
 import com.tongbanjie.baymax.parser.model.ConditionUnitOperator;
+import com.tongbanjie.baymax.router.model.TargetTableEntity;
 import com.tongbanjie.baymax.test.TableBuilder;
 import com.tongbanjie.baymax.utils.Pair;
 import junit.framework.Assert;
@@ -31,10 +32,10 @@ public class PartitionTableTest {
         CalculateUnit unit = new CalculateUnit();
         unit.addCondition(ConditionUnit.buildConditionUnit("trade_order", "user_id", new String[]{"4"}, ConditionUnitOperator.EQUAL));
 
-        List<Pair<String/* targetDB */, String/* targetTable */>> target = table.execute(unit);
+        List<TargetTableEntity> target = table.execute(unit);
         System.out.println(target);
-        Assert.assertEquals("p0", target.get(0).getObject1());
-        Assert.assertEquals("trade_order_0", target.get(0).getObject2());
+        Assert.assertEquals("p0", target.get(0).getTargetDB());
+        Assert.assertEquals("trade_order_0", target.get(0).getTargetTable());
     }
 
     /**
@@ -53,13 +54,13 @@ public class PartitionTableTest {
         CalculateUnit unit = new CalculateUnit();
         unit.addCondition(ConditionUnit.buildConditionUnit("trade_order", "user_id", new String[]{"1","2"}, ConditionUnitOperator.IN));
 
-        List<Pair<String/* targetDB */, String/* targetTable */>> target = table.execute(unit);
+        List<TargetTableEntity> target = table.execute(unit);
         System.out.println(target);
-        Assert.assertEquals("p0", target.get(0).getObject1());
-        Assert.assertEquals("trade_order_1", target.get(0).getObject2());
+        Assert.assertEquals("p0", target.get(0).getTargetDB());
+        Assert.assertEquals("trade_order_1", target.get(0).getTargetTable());
 
-        Assert.assertEquals("p1", target.get(1).getObject1());
-        Assert.assertEquals("trade_order_2", target.get(1).getObject2());
+        Assert.assertEquals("p1", target.get(1).getTargetDB());
+        Assert.assertEquals("trade_order_2", target.get(1).getTargetTable());
     }
 
     /**
@@ -79,7 +80,7 @@ public class PartitionTableTest {
         unit.addCondition(ConditionUnit.buildConditionUnit("trade_order", "user_id", new String[]{"2"}, ConditionUnitOperator.EQUAL));
 
         try{
-            List<Pair<String/* targetDB */, String/* targetTable */>> target = table.execute(unit);
+            List<TargetTableEntity> target = table.execute(unit);
         }catch (BayMaxException e){
             System.out.print(e);
             Assert.assertEquals("有多个相同列的Condition : user_id:[2]", e.getMessage());
@@ -104,7 +105,7 @@ public class PartitionTableTest {
         unit.addCondition(ConditionUnit.buildConditionUnit("trade_order", "user_id", new String[]{"1"}, ConditionUnitOperator.EQUAL));
 
         try{
-            List<Pair<String/* targetDB */, String/* targetTable */>> target = table.execute(unit);
+            List<TargetTableEntity> target = table.execute(unit);
             System.out.println(target);
         }catch (BayMaxException e){
             Assert.assertEquals("有多个相同列的Condition : user_id:[2]", e.getMessage());

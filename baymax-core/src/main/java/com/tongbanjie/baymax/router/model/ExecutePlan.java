@@ -18,7 +18,7 @@ public class ExecutePlan {
     /**
      * 目标sql
      */
-	private List<TargetSql> sqlList;
+	private List<TrargetSqlEntity> sqlList;
 
     /**
      * 聚合函数字段
@@ -43,28 +43,28 @@ public class ExecutePlan {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(String.format("[ExecuteType:%s]" + System.getProperty("line.separator"), executeType.getValue()));
-		for(TargetSql targetSql : sqlList){
+		for(TrargetSqlEntity trargetSqlEntity : sqlList){
 			sb.append("/*---------------------------------*/").append(System.getProperty("line.separator"));
-			sb.append(targetSql.toString());
+			sb.append(trargetSqlEntity.toString());
 		}
 		sb.append("/*---------------------------------*/");
 		return sb.toString();
 	}
 
-	public void addSql(TargetSql sql){
+	public void addSql(TrargetSqlEntity sql){
 		if(sqlList == null){
-			sqlList = new ArrayList<TargetSql>();
+			sqlList = new ArrayList<TrargetSqlEntity>();
 		}
 		sqlList.add(sql);
 	}
 
     /*------------------------------------------------------------------------------------*/
 
-	public List<TargetSql> getSqlList() {
+	public List<TrargetSqlEntity> getSqlList() {
 		return sqlList;
 	}
 
-	public void setSqlList(List<TargetSql> sqlList) {
+	public void setSqlList(List<TrargetSqlEntity> sqlList) {
 		this.sqlList = sqlList;
 	}
 

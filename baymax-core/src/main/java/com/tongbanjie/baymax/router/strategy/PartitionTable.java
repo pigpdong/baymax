@@ -4,6 +4,7 @@ import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.parser.model.CalculateUnit;
 import com.tongbanjie.baymax.parser.model.ConditionUnit;
 import com.tongbanjie.baymax.parser.model.ConditionUnitOperator;
+import com.tongbanjie.baymax.router.model.TargetTableEntity;
 import com.tongbanjie.baymax.utils.Pair;
 
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.*;
  */
 public class PartitionTable extends PartitionTableMetaData{
 
-    public List<Pair<String/* targetDB */, String/* targetTable */>> execute(CalculateUnit calculateUnit) {
+    public List<TargetTableEntity> execute(CalculateUnit calculateUnit) {
         // and 相连的条件
         Set<ConditionUnit/*column value*/> conditionUnits = calculateUnit.getTablesAndConditions().get(getLogicTableName());
 
@@ -23,7 +24,7 @@ public class PartitionTable extends PartitionTableMetaData{
 
         // 检查conditon
 
-        List<Pair<String, String>> targetList = new ArrayList<Pair<String, String>>(1);
+        List<TargetTableEntity> targetList = new ArrayList<TargetTableEntity>(1);
 
         for (PartitionColumn column : columns){
             ConditionUnit matchingConditon = null;
@@ -55,20 +56,20 @@ public class PartitionTable extends PartitionTableMetaData{
         return targetList;
     }
 
-    private void executeRule(List<Pair<String, String>> targetList, PartitionFunction rule, PartitionColumn column, Object value){
+    private void executeRule(List<TargetTableEntity> targetList, PartitionFunction rule, PartitionColumn column, Object value){
         if (column.getProcess() != null){
             value = column.getProcess().apply(value);
         }
-        Pair<String/* targetDB */, String/* targetTable */> target = executeRule(rule, column.getName(), value);
-        if (target != null && target.getObject1() == null && target.getObject2() != null){
-            throw new BayMaxException(target.getObject2() + "没有对应的库");
+        TargetTableEntity target = executeRule(rule, column.getName(), value);
+        if (target != null && target.getTargetDB() == null && target.getTargetTable() != null){
+            throw new BayMaxException(target.getTargetTable() + "没有对应的库");
         }
-        if (target != null && target.getObject1() != null && target.getObject2() != null){
+        if (target != null && target.getTargetDB() != null && target.getTargetTable() != null){
             targetList.add(target);
         }
     }
 
-    private Pair<String/* targetDB */, String/* targetTable */> executeRule(PartitionFunction rule, String column, Object value) {
+    private TargetTableEntity executeRule(PartitionFunction rule, String column, Object value) {
 
         String targetDB = null;
         String targetTable = null;
@@ -82,7 +83,7 @@ public class PartitionTable extends PartitionTableMetaData{
         } else {
             throw new BayMaxException("is the express can return integer only!" + rule);
         }
-        return new Pair<String, String>(targetDB, targetTable);
+        return new TargetTableEntity(targetDB, targetTable);
     }
 
     /**
@@ -90,12 +91,12 @@ public class PartitionTable extends PartitionTableMetaData{
      *
      * @return
      */
-    public List<Pair<String/* targetDB */, String/* targetTable */>> getAllTableNames() {
-        List<Pair<String/* targetDB */, String/* targetTable */>> allTables = new ArrayList<Pair<String, String>>();
+    public List<TargetTableEntity> getAllTableNames() {
+        List<TargetTableEntity> allTables = new ArrayList<TargetTableEntity>();
         Iterator<Map.Entry<String, String>> ite = super.nodeMapping.getMapping().entrySet().iterator();
         while(ite.hasNext()){
             Map.Entry<String, String> entry = ite.next();
-            allTables.add(new Pair<String, String>(entry.getValue(), super.format(entry.getKey())));
+            allTables.add(new TargetTableEntity(entry.getValue(), super.format(entry.getKey())));
         }
         return allTables;
     }

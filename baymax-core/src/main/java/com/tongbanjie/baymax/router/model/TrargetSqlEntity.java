@@ -8,7 +8,7 @@ import com.tongbanjie.baymax.parser.model.SqlType;
  * @author dawei
  *
  */
-public class TargetSql {
+public class TrargetSqlEntity {
 	
 	/**
 	 * 如果partition == null 表示在默认分区上执行

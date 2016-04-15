@@ -7,7 +7,7 @@ import com.tongbanjie.baymax.jdbc.model.ParameterCommand;
 import com.tongbanjie.baymax.jdbc.model.ParameterMethod;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.ExecuteType;
-import com.tongbanjie.baymax.router.model.TargetSql;
+import com.tongbanjie.baymax.router.model.TrargetSqlEntity;
 import com.tongbanjie.baymax.support.BaymaxContext;
 import com.tongbanjie.baymax.test.TableBuilder;
 import com.tongbanjie.baymax.utils.NewArrayList;
@@ -49,7 +49,7 @@ public class RouteServiceTest implements SelectTestSql{
         ExecutePlan plan = routeService.doRoute(single14, null);
         System.out.println(plan);
         Assert.assertEquals(ExecuteType.ALL, plan.getExecuteType());
-        TargetSql sql = plan.getSqlList().get(0);
+        TrargetSqlEntity sql = plan.getSqlList().get(0);
         Assert.assertEquals("p1", sql.getPartition());
         Assert.assertEquals("table1", sql.getLogicTableName());
         Assert.assertEquals("table1_1", sql.getTargetTableName());

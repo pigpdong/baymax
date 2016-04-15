@@ -6,7 +6,7 @@ import com.tongbanjie.baymax.exception.TraceContext;
 import com.tongbanjie.baymax.jdbc.model.*;
 import com.tongbanjie.baymax.router.IRouteService;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
-import com.tongbanjie.baymax.router.model.TargetSql;
+import com.tongbanjie.baymax.router.model.TrargetSqlEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
@@ -80,7 +80,7 @@ public class TExecuter {
         }
 
         ResultSetHandler    resultSetHandler = new ResultSetHandler();
-        List<TargetSql>     sqlList = plan.getSqlList();					// 所有要执行的SQL
+        List<TrargetSqlEntity>     sqlList = plan.getSqlList();					// 所有要执行的SQL
         List<ResultSet>     resultSet = new ArrayList<ResultSet>(sqlList.size());
 
         // 清理
@@ -88,7 +88,7 @@ public class TExecuter {
         boolean resultType = false;
 
         // 执行
-        for (TargetSql target : sqlList) {
+        for (TrargetSqlEntity target : sqlList) {
             Connection      conn = getConnection(target);
             Statement       targetStatement = getStatement(isPreparedStatement, createCommand, parameterCommand, conn, target);
             ExecuteMethod   method          = executeCommand.getMethod();
@@ -147,7 +147,7 @@ public class TExecuter {
      * @return
      * @throws SQLException
      */
-    private Connection getConnection(TargetSql target) throws SQLException {
+    private Connection getConnection(TrargetSqlEntity target) throws SQLException {
         String      targetPartition = target.getPartition();
         DataSource  targetDataSource = targetPartition == null ? dataSource.getDefaultDataSource() : dataSource.getDataSourceByName(targetPartition);
         Connection  conn = openedConnection.get(targetDataSource);	// 尝试获取一个已经打开的Connection
@@ -170,7 +170,7 @@ public class TExecuter {
      * @return
      * @throws SQLException
      */
-    private Statement getStatement(boolean isPreparedStatement, StatementCreateCommand createCommand, Map<Integer, ParameterCommand> parameterCommand, Connection conn, TargetSql target) throws SQLException {
+    private Statement getStatement(boolean isPreparedStatement, StatementCreateCommand createCommand, Map<Integer, ParameterCommand> parameterCommand, Connection conn, TrargetSqlEntity target) throws SQLException {
         Statement targetStatement;
         if(isPreparedStatement){
             Object[] args = createCommand.getArgs();
