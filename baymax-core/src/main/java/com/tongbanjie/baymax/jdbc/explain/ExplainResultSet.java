@@ -40,7 +40,7 @@ public class ExplainResultSet extends UnsupportedResultSetAdapter {
 	@Override
 	public boolean next() throws SQLException {
 		offset ++;
-		return plan.getSqlList().get(offset) != null;
+		return plan.getSqlList().size() > offset;
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ExplainResultSet extends UnsupportedResultSetAdapter {
 	@Override
 	public String getString(int columnIndex) throws SQLException {
 		String targetSql = plan.getSqlList().get(offset).getTargetSql();
-		return targetSql.replace("\n", "");
+		return targetSql.replaceAll("\n", " ");
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class ExplainResultSet extends UnsupportedResultSetAdapter {
 	@Override
 	public String getString(String columnLabel) throws SQLException {
 		String targetSql = plan.getSqlList().get(offset).getTargetSql();
-		return targetSql.replace("\n", "");
+		return targetSql.replaceAll("\n", " ");
 	}
 
 	@Override
@@ -234,13 +234,13 @@ public class ExplainResultSet extends UnsupportedResultSetAdapter {
 	@Override
 	public Object getObject(int columnIndex) throws SQLException {
 		String targetSql = plan.getSqlList().get(offset).getTargetSql();
-		return targetSql.replace("\n", "");
+		return targetSql.replaceAll("\n", " ");
 	}
 
 	@Override
 	public Object getObject(String columnLabel) throws SQLException {
 		String targetSql = plan.getSqlList().get(offset).getTargetSql();
-		return targetSql.replace("\n", "");
+		return targetSql.replaceAll("\n", " ");
 	}
 
 	@Override
@@ -333,7 +333,7 @@ public class ExplainResultSet extends UnsupportedResultSetAdapter {
 	public Object getObject(String columnLabel, Map<String, Class<?>> map)
 			throws SQLException {
 		String targetSql = plan.getSqlList().get(offset).getTargetSql();
-		return targetSql.replace("\n", "");
+		return targetSql.replaceAll("\n", " ");
 	}
 
 	@Override
