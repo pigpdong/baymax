@@ -1,102 +1,54 @@
 package example.vo;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 public class TradeOrder {
-	private String id;
-	private String productId;
-	private BigDecimal amount;
-	private BigDecimal realPayAmount;
-	private Date createTime;
-	private Date modifyTime;
-	private int status;
-	private int type;
-	private String userId;
-	private String taId;
-	
-//	@Override
-//	public String toString() {
-//		return "[id:"+id+" amount:"+amount+"]"; 
-//	}
 
-	public String getId() {
-		return id;
-	}
+	private Integer orderId;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+	private Integer userId;
 
-	public String getProductId() {
-		return productId;
-	}
+	private Integer productId;
 
-	public void setProductId(String productId) {
-		this.productId = productId;
-	}
+	private String productName;
 
-	public BigDecimal getAmount() {
-		return amount;
-	}
+	private Integer status;
 
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
+    public Integer getOrderId() {
+        return orderId;
+    }
 
-	public BigDecimal getRealPayAmount() {
-		return realPayAmount;
-	}
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
+    }
 
-	public void setRealPayAmount(BigDecimal realPayAmount) {
-		this.realPayAmount = realPayAmount;
-	}
+    public Integer getUserId() {
+        return userId;
+    }
 
-	public Date getCreateTime() {
-		return createTime;
-	}
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
+    public Integer getProductId() {
+        return productId;
+    }
 
-	public Date getModifyTime() {
-		return modifyTime;
-	}
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
 
-	public void setModifyTime(Date modifyTime) {
-		this.modifyTime = modifyTime;
-	}
+    public String getProductName() {
+        return productName;
+    }
 
-	public int getStatus() {
-		return status;
-	}
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
-	public void setStatus(int status) {
-		this.status = status;
-	}
+    public Integer getStatus() {
+        return status;
+    }
 
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getTaId() {
-		return taId;
-	}
-
-	public void setTaId(String taId) {
-		this.taId = taId;
-	}
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 }

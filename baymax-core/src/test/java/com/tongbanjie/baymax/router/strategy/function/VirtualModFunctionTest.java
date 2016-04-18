@@ -26,4 +26,11 @@ public class VirtualModFunctionTest {
         VirtualModFunction function = new VirtualModFunction128_32();
         System.out.println(function);
     }
+    @Test
+    public void VirtualModFunction64_8() throws Exception {
+        VirtualModFunction function = new VirtualModFunction64_8();
+        System.out.println(function);
+    }
+
+
 }
