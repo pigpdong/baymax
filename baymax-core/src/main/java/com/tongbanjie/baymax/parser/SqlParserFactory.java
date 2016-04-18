@@ -2,6 +2,7 @@ package com.tongbanjie.baymax.parser;
 
 import com.tongbanjie.baymax.parser.model.SqlType;
 import com.tongbanjie.baymax.parser.mysql.MySqlDeleteParser;
+import com.tongbanjie.baymax.parser.mysql.MySqlExplainSqlParser;
 import com.tongbanjie.baymax.parser.mysql.MySqlInsertParser;
 import com.tongbanjie.baymax.parser.mysql.MySqlSelectParser;
 import com.tongbanjie.baymax.parser.mysql.MySqlUpdateParser;
@@ -25,6 +26,8 @@ public class SqlParserFactory {
                 return new MySqlUpdateParser();
             case DELETE:
                 return new MySqlDeleteParser();
+            case EXPLAIN:
+                return new MySqlExplainSqlParser();
             default:
                 return null;
         }

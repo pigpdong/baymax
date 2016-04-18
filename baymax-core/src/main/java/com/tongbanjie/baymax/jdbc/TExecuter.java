@@ -3,13 +3,20 @@ package com.tongbanjie.baymax.jdbc;
 import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import com.tongbanjie.baymax.exception.BayMaxException;
 import com.tongbanjie.baymax.exception.TraceContext;
+import com.tongbanjie.baymax.jdbc.explain.ExplainResultSet;
+import com.tongbanjie.baymax.jdbc.merge.iterator.IteratorResutSet;
 import com.tongbanjie.baymax.jdbc.model.*;
+import com.tongbanjie.baymax.parser.model.SqlType;
+import com.tongbanjie.baymax.parser.utils.SqlTypeUtil;
 import com.tongbanjie.baymax.router.IRouteService;
 import com.tongbanjie.baymax.router.model.ExecutePlan;
 import com.tongbanjie.baymax.router.model.TrargetSqlEntity;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.sql.DataSource;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +93,16 @@ public class TExecuter {
         // 清理
         outStmt.closeOpenedStatement();									// 关闭上一个SQL打开的Statement,一个JDBC规范的Statement只能保持最近一个开发的ResultSet,所以如果用户在同一个Statement上执行SQL,意味着前面的ResultSet可以被关闭了。
         boolean resultType = false;
+        
+        //处理explain
+        SqlType sqlType = SqlTypeUtil.getSqlType(sql);
+        if(SqlType.EXPLAIN == sqlType){
+        	 resultSet.add(new ExplainResultSet(plan));
+        	 resultSetHandler.setResultSet(new IteratorResutSet(resultSet, outStmt, plan));
+        	 setResultToStatement(true, outStmt, resultSetHandler);
+        	 return resultSetHandler;
+        }
+        
 
         // 执行
         for (TrargetSqlEntity target : sqlList) {

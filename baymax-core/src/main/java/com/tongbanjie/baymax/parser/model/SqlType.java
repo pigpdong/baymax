@@ -19,7 +19,7 @@ public enum SqlType {
     /** */
     REPLACE(5),
 
-    EXPLAN(6),
+    EXPLAIN(6),
     /** */
     OTHER(-1);
 
