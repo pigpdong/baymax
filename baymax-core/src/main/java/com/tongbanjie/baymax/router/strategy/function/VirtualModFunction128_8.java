@@ -3,7 +3,7 @@ package com.tongbanjie.baymax.router.strategy.function;
 /**
  * Created by sidawei on 16/4/2.
  *
- * suffix: [1, 17, 33, 49, 65, 81, 97, 113]
+ * suffix: [0, 16, 32, 48, 64, 80, 96, 112]
  */
 public class VirtualModFunction128_8 extends VirtualModFunction{
 
