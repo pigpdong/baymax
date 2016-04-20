@@ -1,4 +1,4 @@
-package com.tongbanjie.baymax.sequence.impl;
+package com.tongbanjie.baymax.sequence.impl.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

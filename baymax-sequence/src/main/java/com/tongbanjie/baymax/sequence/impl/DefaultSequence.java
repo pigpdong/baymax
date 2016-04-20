@@ -5,6 +5,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sql.DataSource;
 
+import com.tongbanjie.baymax.sequence.impl.dao.DefaultSequenceDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
