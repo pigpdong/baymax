@@ -103,10 +103,6 @@ public abstract class MySqlSqlParser implements SqlParser {
     @Override
     public void changeSql(ParseResult result, ExecutePlan plan) {
         if (ExecuteType.NO == plan.getExecuteType()){
-            for (TrargetSqlEntity sql : plan.getSqlList()){
-                sql.setOriginalSql(result.getSql());
-                sql.setTargetSql(result.getSql());
-            }
         }else {
             for (TrargetSqlEntity sql : plan.getSqlList()){
                 ReplaceTableNameVisitor replaceVisitor = new ReplaceTableNameVisitor(sql.getLogicTableName(), sql.getTargetTableName());

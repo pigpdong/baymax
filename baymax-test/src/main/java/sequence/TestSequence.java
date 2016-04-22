@@ -1,4 +1,4 @@
-package example;
+package sequence;
 
 import com.tongbanjie.baymax.datasource.BaymaxDataSource;
 import com.tongbanjie.baymax.sequence.exception.SequenceException;

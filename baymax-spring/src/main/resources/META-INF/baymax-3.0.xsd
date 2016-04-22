@@ -123,7 +123,7 @@
                     <xsd:documentation><![CDATA[
         The exact type that the value should be converted to. Only needed
         if the type of the target property or constructor argument is
-        too generic: for example, in case of a collection element.
+        too generic: for mybatis, in case of a collection element.
                         ]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>

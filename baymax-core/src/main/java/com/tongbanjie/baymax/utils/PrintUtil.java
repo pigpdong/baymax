@@ -14,6 +14,9 @@ import java.util.Set;
 public class PrintUtil {
 
     public static String printCalculates(List<CalculateUnit> calculateUnits){
+        if (calculateUnits == null || calculateUnits.size() == 0){
+            return "";
+        }
         StringBuffer sb = new StringBuffer();
         for (CalculateUnit unit : calculateUnits){
             sb.append("{");
@@ -27,6 +30,9 @@ public class PrintUtil {
     public static String printCalculate(CalculateUnit unit){
         StringBuffer sb = new StringBuffer();
         Map<String/*table*/, Set<ConditionUnit/*column value*/>> tablesAndConditions = unit.getTablesAndConditions();
+        if (tablesAndConditions == null){
+            return "";
+        }
         for (Iterator ite = tablesAndConditions.entrySet().iterator(); ite.hasNext();){
             Map.Entry<String/*table*/, Set<ConditionUnit/*column value*/>> entry = (Map.Entry<String, Set<ConditionUnit>>) ite.next();
             sb.append(entry.getKey()).append(":");

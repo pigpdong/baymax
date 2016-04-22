@@ -1,7 +1,12 @@
-package example.vo;
+package mybatis.vo;
 
+import com.tbjfund.framework.tpa.annotation.PrimaryKey;
+import com.tbjfund.framework.tpa.annotation.Table;
+
+@Table(name = "t_order_1")
 public class TradeOrder {
 
+    @PrimaryKey
 	private Integer orderId;
 
 	private Integer userId;

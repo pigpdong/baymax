@@ -51,7 +51,7 @@ public class RouteService implements IRouteService {
         parser.parse(result);
 
         // 路由
-        ExecutePlan plan = route(result.getTables(), result.getCalculateUnits(), result.getSql(), sqlType);
+        ExecutePlan plan = route(result.getTables(), result.getCalculateUnits(), sql, sqlType);
 
         // 改写plan中sql
         parser.changeSql(result, plan);
