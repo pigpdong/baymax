@@ -3,7 +3,7 @@ package mybatis.vo;
 import com.tbjfund.framework.tpa.annotation.PrimaryKey;
 import com.tbjfund.framework.tpa.annotation.Table;
 
-@Table(name = "t_order_1")
+@Table(name = "t_order")
 public class TradeOrder {
 
     @PrimaryKey
