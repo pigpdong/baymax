@@ -47,4 +47,8 @@ public class TargetTableEntity {
         this.targetTable = targetTable;
     }
 
+    @Override
+    public String toString() {
+        return String.format("{DB:%s, Table:%s}", new String[]{targetDB, targetTable});
+    }
 }

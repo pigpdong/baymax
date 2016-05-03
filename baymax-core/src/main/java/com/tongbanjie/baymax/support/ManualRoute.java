@@ -31,8 +31,7 @@ public class ManualRoute {
         CalculateUnit unit = new CalculateUnit();
         if (parameters != null && !parameters.isEmpty()){
             for (Map.Entry entry : parameters.entrySet()){
-                ConditionUnit conditionUnit = new ConditionUnit();
-                conditionUnit.buildConditionUnit(tableName, entry.getKey().toString(), new Object[]{entry.getValue()}, ConditionUnitOperator.EQUAL);
+                ConditionUnit conditionUnit = ConditionUnit.buildConditionUnit(tableName, entry.getKey().toString(), new Object[]{entry.getValue()}, ConditionUnitOperator.EQUAL);
                 unit.addCondition(conditionUnit);
             }
         }
