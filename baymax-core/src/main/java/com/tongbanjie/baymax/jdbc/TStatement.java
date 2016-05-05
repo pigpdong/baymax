@@ -8,8 +8,6 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import com.tongbanjie.baymax.jdbc.adapter.UnsupportedPreparedStatementAdapter;
 import com.tongbanjie.baymax.jdbc.adapter.UnsupportedStatementAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
