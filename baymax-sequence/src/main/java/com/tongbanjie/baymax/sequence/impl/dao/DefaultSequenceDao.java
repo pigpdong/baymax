@@ -70,16 +70,16 @@ public class DefaultSequenceDao implements SequenceDao {
 
 				if (oldValue < 0) {
 					StringBuilder message = new StringBuilder();
-					message.append("Sequence value cannot be less than zero, value = ").append(oldValue);
-					message.append(", please check table ").append(tableName);
+					message.append("Sequence的值不能小于0, value = ").append(oldValue);
+					message.append(", 表名: ").append(tableName);
 
 					throw new SequenceException(message.toString());
 				}
 
 				if (oldValue > Long.MAX_VALUE - 100000000L) {
 					StringBuilder message = new StringBuilder();
-					message.append("Sequence value overflow, value = ").append(oldValue);
-					message.append(", please check table ").append(tableName);
+					message.append("Sequence 溢出, value = ").append(oldValue);
+					message.append(", 表名: ").append(tableName);
 
 					throw new SequenceException(message.toString());
 				}
@@ -118,13 +118,13 @@ public class DefaultSequenceDao implements SequenceDao {
 				conn = null;
 			}
 		}
-		throw new SequenceException("Retried too many times, retryTimes = " + retryTimes);
+		throw new SequenceException("重试次数过多, retryTimes = " + retryTimes);
 	}
 	
     public void checkRangeSize(int size) {
         if (size < DEFAULT_RANGE_SIZE_MIN || size > DEFAULT_RANGE_SIZE_MAN) {
             StringBuilder message = new StringBuilder();
-            message.append("Property step out of range [").append(size);
+            message.append("Sequence溢出 [").append(size);
             message.append(",").append(DEFAULT_RANGE_SIZE_MAN).append("], step = ").append(size);
 
             throw new IllegalArgumentException(message.toString());
@@ -136,9 +136,9 @@ public class DefaultSequenceDao implements SequenceDao {
 			try {
 				rs.close();
 			} catch (SQLException e) {
-				logger.debug("Could not close JDBC ResultSet", e);
+				logger.debug("JDBC ResultSet 关闭异常", e);
 			} catch (Throwable e) {
-				logger.debug("Unexpected exception on closing JDBC ResultSet", e);
+				logger.debug("JDBC ResultSet 关闭异常", e);
 			}
 		}
 	}
@@ -148,9 +148,9 @@ public class DefaultSequenceDao implements SequenceDao {
 			try {
 				stmt.close();
 			} catch (SQLException e) {
-				logger.debug("Could not close JDBC Statement", e);
+				logger.debug("JDBC Statement 关闭异常", e);
 			} catch (Throwable e) {
-				logger.debug("Unexpected exception on closing JDBC Statement", e);
+				logger.debug("JDBC Statement 关闭异常", e);
 			}
 		}
 	}
@@ -160,9 +160,9 @@ public class DefaultSequenceDao implements SequenceDao {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				logger.debug("Could not close JDBC Connection", e);
+				logger.debug("JDBC Connection 关闭异常", e);
 			} catch (Throwable e) {
-				logger.debug("Unexpected exception on closing JDBC Connection", e);
+				logger.debug("JDBC Connection 关闭异常", e);
 			}
 		}
 	}

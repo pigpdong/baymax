@@ -63,7 +63,7 @@ public class DefaultSequence implements Sequence {
 		}
 
 		if (value < 0) {
-			throw new SequenceException("Sequence value overflow, value = " + value);
+			throw new SequenceException("Sequence 溢出, value = " + value);
 		}
 		return value;
 	}
