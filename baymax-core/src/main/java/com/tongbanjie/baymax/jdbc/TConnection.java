@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 
 public class TConnection extends UnsupportedConnectionAdapter {
 	
@@ -325,4 +326,5 @@ public class TConnection extends UnsupportedConnectionAdapter {
 	public boolean isValid(int timeout) throws SQLException {
 		return isClosed();
 	}
+
 }

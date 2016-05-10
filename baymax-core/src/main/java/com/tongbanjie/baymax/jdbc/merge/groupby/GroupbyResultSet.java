@@ -122,8 +122,4 @@ public class GroupbyResultSet extends GroupbyResultSetGetterAdapter {
         return true;
     }
 
-    @Override
-    public boolean needEscape() {
-        return false;
-    }
 }

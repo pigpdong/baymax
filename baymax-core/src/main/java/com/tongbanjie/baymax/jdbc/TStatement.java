@@ -371,7 +371,7 @@ public class TStatement extends UnsupportedStatementAdapter {
 		return this.closed;
 	}
 
-	protected void setCurrentResultSet(TResultSet currentResultSet) {
+    protected void setCurrentResultSet(TResultSet currentResultSet) {
 		this.currentResultSet = currentResultSet;
 	}
 

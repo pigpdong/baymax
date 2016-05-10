@@ -42,4 +42,37 @@ public abstract class UnsupportedStatementAdapter implements Statement {
     public boolean isPoolable() throws SQLException {
         throw new SQLException("not support exception");
     }
+
+    /**
+     * Specifies that this {@code Statement} will be closed when all its
+     * dependent result sets are closed. If execution of the {@code Statement}
+     * does not produce any result sets, this method has no effect.
+     * <p/>
+     * <strong>Note:</strong> Multiple calls to {@code closeOnCompletion} do
+     * not toggle the effect on this {@code Statement}. However, a call to
+     * {@code closeOnCompletion} does effect both the subsequent execution of
+     * statements, and statements that currently have open, dependent,
+     * result sets.
+     *
+     * @throws SQLException if this method is called on a closed
+     *                      {@code Statement}
+     * @since 1.7
+     */
+    public void closeOnCompletion() throws SQLException {
+        throw new SQLException("closeOnCompletion");
+    }
+
+    /**
+     * Returns a value indicating whether this {@code Statement} will be
+     * closed when all its dependent result sets are closed.
+     *
+     * @return {@code true} if the {@code Statement} will be closed when all
+     * of its dependent result sets are closed; {@code false} otherwise
+     * @throws SQLException if this method is called on a closed
+     *                      {@code Statement}
+     * @since 1.7
+     */
+    public boolean isCloseOnCompletion() throws SQLException {
+        throw new SQLException("isCloseOnCompletion");
+    }
 }
