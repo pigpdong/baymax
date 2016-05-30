@@ -22,7 +22,7 @@
 	</select>
 	
 	<select id="getCount" resultType="int">
-		select count(*) from trade_order
+		select current(*) from trade_order
 	</select>
 	
 	<select id="listByExample" parameterType="TradeOrder" resultMap="TradeOrderMap">

@@ -11,9 +11,16 @@ import java.util.*;
 
 /**
  * Created by sidawei on 16/3/20.
+ *
+ * 分区规则计算的入口,对外层提供了路由计算的api,计算需要的一些其他参数继承自父类.
  */
 public class PartitionTable extends PartitionTableMetaData{
 
+    /**
+     * 外层路由计算的入口,传入sql中提取的计算单元,返回当前这个分区表配置使用此参数计算后的路由结果.
+     * @param calculateUnit
+     * @return
+     */
     public List<TargetTableEntity> execute(CalculateUnit calculateUnit) {
         // and 相连的条件
         Set<ConditionUnit/*column value*/> conditionUnits = calculateUnit.getTablesAndConditions().get(getLogicTableName());

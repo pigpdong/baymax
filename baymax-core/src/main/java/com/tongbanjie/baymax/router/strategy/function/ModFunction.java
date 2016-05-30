@@ -6,6 +6,8 @@ import java.util.Map;
 
 /**
  * Created by sidawei on 16/4/2.
+ *
+ * Mod的分区函数实现
  */
 public class ModFunction implements PartitionFunction {
 
@@ -14,7 +16,7 @@ public class ModFunction implements PartitionFunction {
     private int add = 0;
 
     @Override
-    public Integer execute(String columnValue, Map<String, Object> extention) {
+    public Integer execute(String columnValue, Map<String, Object> extension) {
         return ((Long)(Long.valueOf(columnValue) % mode + add)).intValue();
     }
 

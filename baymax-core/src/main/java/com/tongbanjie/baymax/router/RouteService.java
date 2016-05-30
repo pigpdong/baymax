@@ -21,14 +21,17 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * 路由服务的流程
+ */
 public class RouteService implements IRouteService {
 
     private final Logger logger = LoggerFactory.getLogger(RouteService.class);
 
     /**
-     * 路由主方法
-     * @param sql
-     * @param parameterCommand
+     * 路由入口
+     * @param sql   原始的sql语句
+     * @param parameterCommand 业务层通过setString(1, "")等设置的参数
      * @return
      */
     public ExecutePlan doRoute(String sql, Map<Integer, ParameterCommand> parameterCommand) {

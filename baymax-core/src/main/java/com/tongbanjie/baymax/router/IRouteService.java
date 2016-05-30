@@ -6,7 +6,7 @@ import com.tongbanjie.baymax.router.model.ExecutePlan;
 import java.util.Map;
 
 /**
- * SQL路由服务
+ * SQL路由服务入口
  * @author dawei
  *
  */
