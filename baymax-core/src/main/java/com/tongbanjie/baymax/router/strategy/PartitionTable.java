@@ -56,11 +56,11 @@ public class PartitionTable extends PartitionTableMetaData{
         return targetList;
     }
 
-    private void executeRule(List<TargetTableEntity> targetList, PartitionFunction rule, PartitionColumn column, Object value){
+    private void executeRule(List<TargetTableEntity> targetList, PartitionFunction function, PartitionColumn column, Object value){
         if (column.getProcess() != null){
             value = column.getProcess().apply(value);
         }
-        TargetTableEntity target = executeRule(rule, column.getName(), value);
+        TargetTableEntity target = executeRule(function, value);
         if (target != null && target.getTargetDB() == null && target.getTargetTable() != null){
             throw new BayMaxException(target.getTargetTable() + "根据表名后缀找不到对应的库 请检查你的配置");
         }
@@ -69,20 +69,11 @@ public class PartitionTable extends PartitionTableMetaData{
         }
     }
 
-    private TargetTableEntity executeRule(PartitionFunction rule, String column, Object value) {
-
-        String targetDB = null;
-        String targetTable = null;
-
-        Object ruleResult = rule.execute(String.valueOf(value), null);
-        if (Integer.class == ruleResult.getClass() || Integer.class.isAssignableFrom(ruleResult.getClass())) {
-            // Integer
-            String suffix = super.getSuffix((Integer) ruleResult);
-            targetTable = super.format(suffix);
-            targetDB = super.nodeMapping.getMapping().get(suffix);
-        } else {
-            throw new BayMaxException("is the express can return integer only!" + rule);
-        }
+    private TargetTableEntity executeRule(PartitionFunction function, Object value) {
+        Integer ruleResult = function.execute(String.valueOf(value), null);
+        String suffix = super.getSuffix(ruleResult);
+        String targetTable = super.format(suffix);
+        String targetDB = super.nodeMapping.getMapping().get(suffix);
         return new TargetTableEntity(targetDB, targetTable);
     }
 

@@ -1,5 +1,6 @@
 package com.tongbanjie.baymax.router.model;
 
+
 public class TargetTableEntity {
 
     private String targetDB;
