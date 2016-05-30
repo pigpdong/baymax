@@ -62,7 +62,7 @@ public class PartitionTable extends PartitionTableMetaData{
         }
         TargetTableEntity target = executeRule(rule, column.getName(), value);
         if (target != null && target.getTargetDB() == null && target.getTargetTable() != null){
-            throw new BayMaxException(target.getTargetTable() + "没有对应的库");
+            throw new BayMaxException(target.getTargetTable() + "根据表名后缀找不到对应的库 请检查你的配置");
         }
         if (target != null && target.getTargetDB() != null && target.getTargetTable() != null){
             targetList.add(target);

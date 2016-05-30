@@ -8,29 +8,27 @@
 	                       http://baymax.tongbanjie.com/schema/baymax-3.0.xsd">
 
 
-    <baymax:context />
 
-    <baymax:table tableName="t_order" namePatten="t_order_{0}">
+    <baymax:table tableName="usermng_user_msg" namePatten="usermng_user_msg_{00}">
 
         <baymax:columns>
-            <baymax:column name="order_id"  process-ref="subRight1"/>
-            <baymax:column name="user_id"   process-ref="subRight1"/>
+            <baymax:column name="user_id"  process-ref="subRight2"/>
+            <baymax:column name="id"   process-ref="subRight2"/>
         </baymax:columns>
 
         <baymax:function class="com.tongbanjie.baymax.router.strategy.function.ELFunction">
-            <property name="expression" value="value"/>
+            <property name="expression" value="value % 4 + 1"/>
         </baymax:function>
 
         <baymax:nodeMapping class="com.tongbanjie.baymax.router.strategy.SimpleTableNodeMapping">
-            <baymax:node>p1:0,1</baymax:node>
-            <baymax:node>p2:2,3</baymax:node>
+            <baymax:node>p1:0,1,2,3,4</baymax:node>
         </baymax:nodeMapping>
 
     </baymax:table>
 
     <!-- 列的转换函数 -->
-    <baymax:process name="subRight1" class="com.tongbanjie.baymax.support.column.SubRightColumnProcess">
-        <property name="length" value="1"/>
+    <baymax:process name="subRight2" class="com.tongbanjie.baymax.support.column.SubRightColumnProcess">
+        <property name="length" value="2"/>
     </baymax:process>
 
 
