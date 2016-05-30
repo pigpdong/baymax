@@ -69,12 +69,6 @@ public class SqlVisitor extends MySqlSchemaStatVisitor {
         return true;
     }
 
-//    @Override
-//    public boolean visit(final SQLInListExpr x) {
-//        parseContext.addCondition(x.getExpr(), x.isNot() ? BinaryOperator.NOT_IN : BinaryOperator.IN, x.getTargetList(), getDatabaseType(), getParameters());
-//        return super.visit(x);
-//    }
-
     @Override
     public boolean visit(MySqlDeleteStatement x) {
         setAliasMap();

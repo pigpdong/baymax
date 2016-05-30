@@ -28,7 +28,10 @@ import java.util.TreeSet;
  * 
  */
 public class VirtualModFunction implements PartitionFunction{
-	
+
+    /**
+     * 这个add比较奇特, 由于历史原因, 有些表的后缀是1开始的,baymax3.0默认后缀为0开始,可以设置add=1兼容老的表规则.
+     */
 	private int add = 0;
 
     /**

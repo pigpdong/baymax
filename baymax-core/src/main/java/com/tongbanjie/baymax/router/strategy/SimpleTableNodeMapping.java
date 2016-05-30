@@ -14,6 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleTableNodeMapping implements PartitionTableNodeMapping{
 
+    /**
+     * 注入配置 格式 分区名:表后缀1,表后缀2
+     * 例子 partition1:00,01,02
+     */
     private List<String> config;
 
     /*---------------------------------------------------------------*/

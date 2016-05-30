@@ -9,6 +9,11 @@ package com.tongbanjie.baymax.router;
  */
 public interface ColumnProcess {
 
+    /**
+     * 列值的处理
+     * @param columnValue sql中提取到的 原始的列值
+     * @return 处理后的列值
+     */
     Object apply(Object columnValue);
 
 }

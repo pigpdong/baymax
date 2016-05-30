@@ -43,12 +43,12 @@ public class TrargetSqlEntity {
 	private SqlType sqlType;
 
     /**
-     * 原始limit的值 用户结果集合并时做截取
+     * 需要改写的limit值
      */
     private int limitStart;
 
     /**
-     * 原始limit的值
+     * 需要改写的limit值
      */
     private int limitSize;
 	

@@ -64,10 +64,10 @@ public class RouteService implements IRouteService {
 
     /**
      * 根据CalculateUnit进行路由计算
-     * @param tables
-     * @param units
-     * @param sql
-     * @param sqlType
+     * @param tables sql中提取到的所有表名
+     * @param units sql中提取到的计算单元
+     * @param sql 原始sql
+     * @param sqlType sql类型
      * @return
      */
     public ExecutePlan route(List<String> tables, List<CalculateUnit> units, String sql, SqlType sqlType){
@@ -97,7 +97,7 @@ public class RouteService implements IRouteService {
 
         // 没有计算单元 全表扫描
         if (units == null || units.size() == 0){
-            return buildExecutePlanTypeAll(sql, partitionTable, sqlType);
+            return buildExecutePlanTypeAll(partitionTable, sqlType);
         }
 
         // 路由单元计算-合并
@@ -106,7 +106,7 @@ public class RouteService implements IRouteService {
             List<TargetTableEntity> temp = partitionTable.execute(unit);
             if (temp == null || temp.size() == 0){
                 // 这个单元没有路由结果 需要全表扫描
-                return buildExecutePlanTypeAll(sql, partitionTable, sqlType);
+                return buildExecutePlanTypeAll(partitionTable, sqlType);
             }else {
                 nodeSet.addAll(temp);
             }
@@ -116,11 +116,11 @@ public class RouteService implements IRouteService {
             return buildExecutePlanTypeNo(sql, partitionTable.getLogicTableName(), sqlType);
         }
 
-        return buildExecutePlanTypePartition(sql, partitionTable, sqlType, nodeSet);
+        return buildExecutePlanTypePartition(partitionTable, sqlType, nodeSet);
     }
 
     /**
-     * 创建无路由执行计划
+     * 如果一个表不是分区表,着创建无路由执行计划
      * @param sql
      * @param tableName
      * @param sqlType
@@ -142,14 +142,13 @@ public class RouteService implements IRouteService {
     }
 
     /**
-     * 创建全表扫描执行计划
+     * 如果一个表是分区表,但是当前sql不满足某些条件,创建全表扫描执行计划
      * TODO 考虑聚合函数
-     * @param sql
      * @param partitionTable
      * @param sqlType
      * @return
      */
-    private ExecutePlan buildExecutePlanTypeAll(String sql, PartitionTable partitionTable, SqlType sqlType){
+    private ExecutePlan buildExecutePlanTypeAll(PartitionTable partitionTable, SqlType sqlType){
         // 没有命中的shardingKey,则全表扫描
         ExecutePlan plan = new ExecutePlan();
         List<TargetTableEntity> mappings = partitionTable.getAllTableNames();
@@ -173,14 +172,13 @@ public class RouteService implements IRouteService {
     }
 
     /**
-     * 创建分区执行计划
-     * @param sql
+     * 是分区表,切sql满足分区执行条件,创建分区执行计划
      * @param partitionTable
      * @param sqlType
      * @param nodeSet
      * @return
      */
-    private ExecutePlan buildExecutePlanTypePartition(String sql, PartitionTable partitionTable, SqlType sqlType, Set<TargetTableEntity> nodeSet) {
+    private ExecutePlan buildExecutePlanTypePartition(PartitionTable partitionTable, SqlType sqlType, Set<TargetTableEntity> nodeSet) {
         ExecutePlan routeResult = new ExecutePlan();
         routeResult.setExecuteType(ExecuteType.PARTITION);
         for (TargetTableEntity node : nodeSet){
@@ -196,6 +194,7 @@ public class RouteService implements IRouteService {
 
     /**
      * 参数排序
+     * 业务层通过setString(1, "")等设置的参数, 这里按照1这个位置的数排序,以便在后面sql解析时把sql中的?替换为具体的值.
      * @param commonds
      * @return
      */

@@ -13,6 +13,8 @@ import java.util.Map;
 
 /**
  * Created by sidawei on 16/1/25.
+ *
+ * sql中提取到的条件转换为路由计算单元
  */
 public class CalculateUnitUtil {
 
